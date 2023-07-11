@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
 
 library(testthat)
-library(rapidrail)
+library(railvarr)
 
-test_check("rapidrail")
+test_check("railvarr")
