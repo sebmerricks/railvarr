@@ -28,7 +28,7 @@
 #' names <- c("x", "y")
 #' types <- readr::cols(
 #' "x" = readr::col_character(),
-#' "y" = readr::col_character()
+#' "y" = readr::col_integer()
 #' )
 #'
 #' # Read the data using read_centrix()
@@ -37,7 +37,7 @@
 #' # Delete the temporary directory
 #' unlink(tempdir, recursive = TRUE)
 #'
-read_multiple_files <- function(path, names, types) {
+read_multiple_files <- function(path, names = NULL, types = NULL) {
   # find all the files inside the directory at `path`
   filenames <- glue::glue("{path}/{list.files(path)}")
   # throw an error if the directory is empty
