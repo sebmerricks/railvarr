@@ -2,3 +2,5 @@
 
 export(read_multiple_files)
 export(wrangle_centrix)
+importFrom(dplyr,"%>%")
+importFrom(dplyr,mutate)

@@ -37,6 +37,8 @@
 #' # Delete the temporary directory
 #' unlink(tempdir, recursive = TRUE)
 #'
+#' @importFrom dplyr %>% mutate
+#'
 read_multiple_files <- function(path, names = NULL, types = NULL) {
   # find all the files inside the directory at `path`
   filenames <- glue::glue("{path}/{list.files(path)}")
@@ -50,14 +52,13 @@ read_multiple_files <- function(path, names = NULL, types = NULL) {
       col_types = types,
       skip = 1L
     ) %>%
-      dplyr::mutate(batch = .y)
+      mutate(batch = .y)
   })
 
   return(raw_data)
 }
 
-# takes the raw data as input and returns the fully processed data
-
+#' Wrangle raw Centrix data
 #' @export
 wrangle_centrix <- function() {
 

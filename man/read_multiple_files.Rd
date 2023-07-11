@@ -4,7 +4,7 @@
 \alias{read_multiple_files}
 \title{Read raw data from multiple files}
 \usage{
-read_multiple_files(path, names, types)
+read_multiple_files(path, names = NULL, types = NULL)
 }
 \arguments{
 \item{path}{A string pointing to the directory pointing to the relevant files.}
@@ -38,7 +38,7 @@ write.csv(df, file = file_path, row.names = FALSE)
 names <- c("x", "y")
 types <- readr::cols(
 "x" = readr::col_character(),
-"y" = readr::col_character()
+"y" = readr::col_integer()
 )
 
 # Read the data using read_centrix()
