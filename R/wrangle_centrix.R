@@ -21,7 +21,7 @@ read_centrix <- function(path, names, types) {
       dplyr::mutate(batch = .y)
   })
 
-  raw_centrix
+  return(raw_centrix)
 }
 
 # takes the raw data as input and returns the fully processed data
