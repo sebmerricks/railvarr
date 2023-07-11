@@ -32,28 +32,23 @@
 #' )
 #'
 #' # Read the data using read_centrix()
-#' read_multiple_files(tempdir, names, types)
+#' read_files(tempdir, names, types)
 #'
 #' # Delete the temporary directory
 #' unlink(tempdir, recursive = TRUE)
 #'
-#' @importFrom dplyr %>% mutate
-#'
-read_multiple_files <- function(path, names = NULL, types = NULL) {
+read_files <- function(path, names = NULL, types = NULL) {
   # find all the files inside the directory at `path`
   filenames <- glue::glue("{path}/{list.files(path)}")
   # throw an error if the directory is empty
   stopifnot("`path` must not be an empty directory" = length(filenames) > 0)
 
-  raw_data <- purrr::imap_dfr(filenames, ~ {
-    readr::read_csv(
-      file = .x,
-      col_names = names,
-      col_types = types,
-      skip = 1L
-    ) %>%
-      mutate(batch = .y)
-  })
+  raw_data <- readr::read_csv(
+    filenames,
+    col_names = names,
+    col_types = types,
+    skip = 1L
+  )
 
   return(raw_data)
 }
