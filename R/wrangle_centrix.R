@@ -53,6 +53,32 @@ read_files <- function(path, names = NULL, types = NULL) {
   return(raw_data)
 }
 
+#' Split raw events into separate signal and track events
+#'
+#' @export
+#'
+#' @importFrom dplyr %>% mutate group_by group_split
+#'
+split_signal_track_events <- function(raw_events,
+                                      is_track =
+                                        quote(stringr::str_starts(asset, "T"))
+                                      ) {
+  tpl_raw_events <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+  stopifnot(vetr::alike(tpl_raw_events, raw_events))
+
+  events <- raw_events %>%
+    mutate(is_track = eval(is_track)) %>%
+    group_by(is_track) %>%
+    group_split(.keep = F)
+
+  return(events)
+}
+
 #' Preprocess raw signal events
 #'
 #' @export
@@ -100,6 +126,10 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
     ungroup()
 
   return(aspect_events)
+}
+
+preprocess_track_events <- function(raw_track_events) {
+
 }
 
 #' Wrangle raw Centrix data

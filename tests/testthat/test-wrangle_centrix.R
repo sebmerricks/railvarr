@@ -43,6 +43,64 @@ test_that("read_files() reads multiple files", {
 })
 
 
+test_that("split_signal_track_events() errors with incorrect raw_events
+          structure", {
+  test1 <- data.frame(
+    asset = character(),
+    dt = double(),
+    transition = character(),
+    period = numeric()
+    )
+  test2 <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character()
+    )
+  test3 <- data.frame(
+    asset = character(),
+    datetime = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+    )
+
+  expect_error(split_signal_track_events(test1))
+  expect_error(split_signal_track_events(test2))
+  expect_error(split_signal_track_events(test3))
+})
+
+test_that("split_signal_track_events() splits signal and track events", {
+  raw_events <- tribble(
+    ~asset, ~dt, ~transition, ~period,
+    "S1", lubridate::as_datetime(100), "DN to UP", 1,
+    "T1", lubridate::as_datetime(200), "DN to UP", 1
+  )
+
+  out <- raw_events %>%
+    dplyr::mutate(is_track = stringr::str_starts(asset, "T")) %>%
+    dplyr::group_by(is_track) %>%
+    dplyr::group_split(.keep = F)
+
+  expect_equal(split_signal_track_events(raw_events), out)
+})
+
+test_that("split_signal_track_events() works with custom is_track definition", {
+  raw_events <- tribble(
+    ~asset, ~dt, ~transition, ~period,
+    "S1", lubridate::as_datetime(100), "DN to UP", 1,
+    "D1", lubridate::as_datetime(200), "DN to UP", 1
+  )
+
+  is_track = quote(stringr::str_starts(asset, "D"))
+
+  out <- raw_events %>%
+    dplyr::mutate(is_track = eval(is_track)) %>%
+    dplyr::group_by(is_track) %>%
+    dplyr::group_split(.keep = F)
+
+  expect_equal(split_signal_track_events(raw_events, is_track), out)
+})
+
+
 test_that("preprocess_signal_events() errors if raw_signal_events has incorrect
           structure", {
   test1 <- data.frame(
