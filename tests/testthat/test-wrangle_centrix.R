@@ -1,4 +1,4 @@
-setup_test <- function(name, n) {
+setup_test_read_files <- function(name, n) {
   tempdir <- file.path(tempdir(), name)
   dir.create(tempdir)
 
@@ -16,13 +16,13 @@ setup_test <- function(name, n) {
 }
 
 test_that("read_files() errors if directory is empty", {
-  tempdir <- setup_test("error_test", 0)
+  tempdir <- setup_test_read_files("error_test", 0)
   expect_error(read_files(tempdir))
   unlink(tempdir, recursive = TRUE)
 })
 
 test_that("read_files() reads a single file", {
-  tempdir <- setup_test("single_file_test", 1)
+  tempdir <- setup_test_read_files("single_file_test", 1)
   names <- c("x", "y")
   types <- readr::cols(
     "x" = readr::col_character(),
@@ -33,11 +33,118 @@ test_that("read_files() reads a single file", {
 })
 
 test_that("read_files() reads multiple files", {
-  tempdir <- setup_test("multiple_file_test", 5)
+  tempdir <- setup_test_read_files("multiple_file_test", 5)
   names <- c("x", "y")
   types <- readr::cols(
     "x" = readr::col_character(),
     "y" = readr::col_integer()
   )
   expect_equal(nrow(read_files(tempdir, names, types)), 15)
+})
+
+
+test_that("preprocess_signal_events() errors if raw_signal_events has incorrect
+          structure", {
+  test1 <- data.frame(
+    asset = character(),
+    dt = double(),
+    transition = character(),
+    period = numeric()
+    )
+  test2 <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character()
+  )
+  test3 <- data.frame(
+    asset = character(),
+    datetime = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+
+  dummy <- data.frame(
+    state = character(),
+    aspect = factor()
+  )
+
+  expect_error(preprocess_signal_events(test1, dummy))
+  expect_error(preprocess_signal_events(test2, dummy))
+  expect_error(preprocess_signal_events(test3, dummy))
+})
+
+test_that("preprocess_signal_events() errors if state_mapping has incorrect
+          structure", {
+  dummy <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+
+  test1 <- data.frame(
+    state = character(),
+    aspect = character()
+  )
+  test2 <- data.frame(
+    state = character()
+  )
+  test3 <- data.frame(
+    status = character(),
+    aspect = factor()
+  )
+
+  expect_error(preprocess_signal_events(dummy, test1))
+  expect_error(preprocess_signal_events(dummy, test2))
+  expect_error(preprocess_signal_events(dummy, test3))
+})
+
+test_that("preprocess_signal_events() completes if data structures are correct",
+          {
+  rse <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+  sm <- data.frame(
+    state = character(),
+    aspect = factor()
+  )
+
+  expect_no_error(preprocess_signal_events(rse, sm))
+})
+
+test_that("preprocess_signal_events() successfully converts to signal/aspect", {
+  rse <- dplyr::tribble(
+    ~asset, ~dt, ~transition, ~period,
+    "S1 RGE", lubridate::as_datetime(100), "DN to UP", 1,
+    "S2 HGE", lubridate::as_datetime(200), "DN to UP", 1,
+    "S3 DGE", lubridate::as_datetime(300), "DN to UP", 1,
+    "S4 HHGE", lubridate::as_datetime(400), "DN to UP", 1
+  )
+  sm <- data.frame(
+    state = c("RGE", "HGE", "HHGE", "DGE"),
+    aspect = factor(
+      c("R", "Y", "YY", "G"),
+      levels = c("R", "Y", "YY", "G")
+    )
+  )
+
+  out <- dplyr::tibble(data.frame(
+    period = c(1, 1, 1, 1),
+    signal = c("S1", "S2", "S3", "S4"),
+    dt = c(lubridate::as_datetime(100), lubridate::as_datetime(200),
+           lubridate::as_datetime(300), lubridate::as_datetime(400)),
+    aspect = factor(
+      c("R", "Y", "G", "YY"),
+      levels = c("R", "Y", "YY", "G")
+    ),
+    past_aspect = factor(
+      c(NA_character_, NA_character_, NA_character_, NA_character_),
+      levels = c("R", "Y", "YY", "G")
+    )
+  ))
+
+  expect_equal(preprocess_signal_events(rse, sm), out)
 })

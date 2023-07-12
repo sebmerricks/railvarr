@@ -4,7 +4,7 @@
 \alias{wrangle_centrix}
 \title{Wrangle raw Centrix data}
 \usage{
-wrangle_centrix()
+wrangle_centrix(raw_signal_events, raw_track_events)
 }
 \description{
 Wrangle raw Centrix data

@@ -68,7 +68,7 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
     period = numeric()
   )
   # Check whether the raw data matches the expected structure
-  vet(tpl_signal_events, raw_signal_events)
+  stopifnot(vetr::alike(tpl_signal_events, raw_signal_events))
 
   # Define the expected structure for state_mapping
   tpl_state_mapping <- data.frame(
@@ -76,7 +76,7 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
     aspect = factor()
   )
   # Check the structure
-  vet(tpl_state_mapping, state_mapping)
+  stopifnot(vetr::alike(tpl_state_mapping, state_mapping))
 
   # Identify signal IDs and states
   signal_events <- raw_signal_events %>%
@@ -84,7 +84,7 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
       signal = stringr::str_split_i(asset, " ", i = 1),
       state = stringr::str_split_i(asset, " ", i = 2)
     ) %>%
-    filter(transition = "DN to UP") %>%
+    filter(transition == "DN to UP") %>%
     select(signal, dt, state, period)
 
   # Convert states to aspects
