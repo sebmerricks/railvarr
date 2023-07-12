@@ -7,8 +7,7 @@
 #'
 #' @import dplyr
 #'
-wrangle_centrix <- function(aspect_events, track_events,
-                            override_tracks = NA, override_signals = NA) {
+wrangle_centrix <- function(aspect_events, track_events) {
   map <- get_map()
   start_track <- (map %>% first())$track
   end_track <- (map %>% last())$track
@@ -84,10 +83,9 @@ wrangle_centrix <- function(aspect_events, track_events,
       .groups = "drop"
     )
 
-  track_count <- map %>% distinct(track) %>% nrow()
-  if (all(!is.na(override_tracks))) {
-    track_count <- nrow(override_tracks)
-  }
+  track_count <- map %>%
+    distinct(track) %>%
+    nrow()
 
   valid_track_activations_windowed <- track_activation_counts %>%
     group_by(period, window) %>%
@@ -115,10 +113,9 @@ wrangle_centrix <- function(aspect_events, track_events,
   ) %>%
     select(window, signal, dt, aspect, past_aspect)
 
-  signals <- map %>% select(signal)
-  if (all(!is.na(override_signals))) {
-    signals <- override_signals
-  }
+  signals <- map %>%
+    filter(event == "vacates") %>%
+    distinct(signal)
 
   red_events_windowed <- aspect_events_windowed %>%
     semi_join(signals, by = "signal") %>%
@@ -135,10 +132,10 @@ wrangle_centrix <- function(aspect_events, track_events,
       .groups = "drop"
     )
 
-  signal_count <- map %>% distinct(signal) %>% nrow()
-  if (all(!is.na(override_signals))) {
-    signal_count <- nrow(override_signals)
-  }
+  signal_count <- map %>%
+    filter(event == "vacates") %>%
+    distinct(signal) %>%
+    nrow()
 
   valid_red_events_windowed <-
     red_events_counts %>%

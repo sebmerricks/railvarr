@@ -4,12 +4,7 @@
 \alias{wrangle_centrix}
 \title{Wrangle raw Centrix data}
 \usage{
-wrangle_centrix(
-  aspect_events,
-  track_events,
-  override_tracks = NA,
-  override_signals = NA
-)
+wrangle_centrix(aspect_events, track_events)
 }
 \arguments{
 \item{aspect_events}{Data frame containing pre-processed signal data.}
