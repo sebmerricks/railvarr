@@ -53,6 +53,55 @@ read_files <- function(path, names = NULL, types = NULL) {
   return(raw_data)
 }
 
+#' Preprocess raw signal events
+#'
+#' @export
+#'
+#' @import dplyr
+#'
+preprocess_signal_events <- function(raw_signal_events, state_mapping) {
+  # Define the expected data structure
+  tpl_signal_events <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+  # Check whether the raw data matches the expected structure
+  vet(tpl_signal_events, raw_signal_events)
+
+  # Define the expected structure for state_mapping
+  tpl_state_mapping <- data.frame(
+    state = character(),
+    aspect = factor()
+  )
+  # Check the structure
+  vet(tpl_state_mapping, state_mapping)
+
+  # Identify signal IDs and states
+  signal_events <- raw_signal_events %>%
+    mutate(
+      signal = stringr::str_split_i(asset, " ", i = 1),
+      state = stringr::str_split_i(asset, " ", i = 2)
+    ) %>%
+    filter(transition = "DN to UP") %>%
+    select(signal, dt, state, period)
+
+  # Convert states to aspects
+  aspect_events <- signal_events %>%
+    inner_join(
+      state_mapping,
+      by = "state"
+    ) %>%
+    arrange(signal, dt) %>%
+    select(period, signal, dt, aspect) %>%
+    group_by(signal) %>%
+    mutate(past_aspect = lag(aspect)) %>%
+    ungroup()
+
+  return(aspect_events)
+}
+
 #' Wrangle raw Centrix data
 #'
 #' @export
