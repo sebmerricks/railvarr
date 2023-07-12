@@ -6,6 +6,11 @@
 \usage{
 wrangle_centrix(raw_signal_events, raw_track_events)
 }
+\arguments{
+\item{raw_signal_events}{Data frame containing raw signal data.}
+
+\item{raw_track_events}{Data frame containing raw track data.}
+}
 \description{
 Wrangle raw Centrix data
 }

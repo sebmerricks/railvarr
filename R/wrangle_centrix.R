@@ -55,6 +55,9 @@ read_files <- function(path, names = NULL, types = NULL) {
 
 #' Split raw events into separate signal and track events
 #'
+#' @param raw_events Data frame containing raw data.
+#' @param is_track Expression determining how to split tracks and signals.
+#'
 #' @export
 #'
 #' @importFrom dplyr %>% mutate group_by group_split
@@ -80,6 +83,10 @@ split_signal_track_events <- function(raw_events,
 }
 
 #' Preprocess raw signal events
+#'
+#' @param raw_signal_events Raw signal data.
+#' @param state_mapping Data frame defining how to convert signal states to
+#'        aspects.
 #'
 #' @export
 #'
@@ -134,6 +141,9 @@ preprocess_track_events <- function(raw_track_events) {
 
 #' Wrangle raw Centrix data
 #'
+#' @param raw_signal_events Data frame containing raw signal data.
+#' @param raw_track_events Data frame containing raw track data.
+#'
 #' @export
 #'
 wrangle_centrix <- function(raw_signal_events, raw_track_events) {
@@ -145,8 +155,8 @@ wrangle_centrix <- function(raw_signal_events, raw_track_events) {
     period = numeric()
   )
   # Check whether the raw data matches the expected structure
-  vet(template, raw_signal_events)
-  vet(template, raw_track_events)
+  vetr::vet(template, raw_signal_events)
+  vetr::vet(template, raw_track_events)
 }
 
 

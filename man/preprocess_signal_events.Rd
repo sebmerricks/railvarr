@@ -6,6 +6,12 @@
 \usage{
 preprocess_signal_events(raw_signal_events, state_mapping)
 }
+\arguments{
+\item{raw_signal_events}{Raw signal data.}
+
+\item{state_mapping}{Data frame defining how to convert signal states to
+aspects.}
+}
 \description{
 Preprocess raw signal events
 }

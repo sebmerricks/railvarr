@@ -9,6 +9,11 @@ split_signal_track_events(
   is_track = quote(stringr::str_starts(asset, "T"))
 )
 }
+\arguments{
+\item{raw_events}{Data frame containing raw data.}
+
+\item{is_track}{Expression determining how to split tracks and signals.}
+}
 \description{
 Split raw events into separate signal and track events
 }
