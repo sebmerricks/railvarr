@@ -96,8 +96,12 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
     filter(transition == "DN to UP") %>%
     select(signal, dt, state, period)
 
+  signals <- get_map() %>%
+    select(signal)
+
   # Convert states to aspects
   aspect_events <- signal_events %>%
+    semi_join(signals, by = "signal") %>%
     inner_join(
       state_mapping,
       by = "state"
@@ -120,7 +124,7 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
 #'
 #' @importFrom dplyr %>% mutate if_else select rename arrange semi_join
 #'
-preprocess_track_events <- function(raw_track_events, tracks) {
+preprocess_track_events <- function(raw_track_events) {
   tpl_track_events <- data.frame(
     asset = character(),
     dt = lubridate::POSIXct(),
@@ -129,10 +133,8 @@ preprocess_track_events <- function(raw_track_events, tracks) {
   )
   stopifnot(vetr::alike(tpl_track_events, raw_track_events))
 
-  tpl_tracks <- data.frame(
-    track = character()
-  )
-  stopifnot(vetr::alike(tpl_tracks, tracks))
+  tracks <- get_map() %>%
+    select(track)
 
   track_activations <- raw_track_events %>%
     mutate(occupied = if_else(transition == "UP to DN", T, F)) %>%

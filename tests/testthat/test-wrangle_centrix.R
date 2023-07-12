@@ -56,6 +56,15 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
     "S3 DGE", lubridate::as_datetime(300), "DN to UP", 1,
     "S4 HHGE", lubridate::as_datetime(400), "DN to UP", 1
   )
+
+  map <- data.frame(
+    signal = c("S1", "S2", "S3", "S4"),
+    berth = c("", "", "", ""),
+    track = c("", "", "", ""),
+    event = c("", "", "", "")
+  )
+  set_map(map)
+
   sm <- data.frame(
     state = c("RGE", "HGE", "HHGE", "DGE"),
     aspect = factor(
@@ -91,6 +100,15 @@ test_that("dplyr integration works", {
     "S3 DGE", lubridate::as_datetime(300), "DN to UP", 1,
     "S4 HHGE", lubridate::as_datetime(400), "DN to UP", 1
   )
+
+  map <- data.frame(
+    signal = c("S1", "S2", "S3", "S4"),
+    berth = c("", "", "", ""),
+    track = c("", "", "", ""),
+    event = c("", "", "", "")
+  )
+  set_map(map)
+
   sm <- data.frame(
     state = c("RGE", "HGE", "HHGE", "DGE"),
     aspect = factor(
@@ -130,9 +148,14 @@ test_that("preprocess_track_events() correctly processes track data", {
     "TD", dt, "UP to DN", 1
   )
 
-  tracks <- dplyr::tribble(
-    ~track, "TA-1", "TB-1", "TC"
+
+  map <- data.frame(
+    signal = c("", "", ""),
+    berth = c("", "", ""),
+    track = c("TA-1", "TB-1", "TC"),
+    event = c("", "", "")
   )
+  set_map(map)
 
   out <- dplyr::tribble(
     ~period, ~track, ~dt, ~occupied, ~event, ~date,
@@ -141,5 +164,5 @@ test_that("preprocess_track_events() correctly processes track data", {
     1, "TC", dt, F, "vacates", lubridate::as_date(dt)
   )
 
-  expect_equal(preprocess_track_events(rte, tracks), out)
+  expect_equal(preprocess_track_events(rte), out)
 })
