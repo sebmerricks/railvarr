@@ -1,6 +1,6 @@
 Package: railvarr
 Title: Rail Network Performance Variability Analysis
-Version: 0.0.0.9000
+Version: 0.0.0.9001
 Authors@R: 
     person("Sebastian", "Merricks", , "b8072600@newcastle.ac.uk", 
            role = c("aut", "cre"))
