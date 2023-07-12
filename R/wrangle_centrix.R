@@ -9,6 +9,7 @@
 #'
 wrangle_centrix <- function(aspect_events, track_events) {
   map <- get_map()
+
   start_track <- (map %>% first())$track
   end_track <- (map %>% last())$track
 
@@ -104,6 +105,18 @@ wrangle_centrix <- function(aspect_events, track_events) {
     ) %>%
     ungroup()
 
+  valid_signals <- map %>%
+    group_by(signal) %>%
+    filter(n() == 2) %>%
+    ungroup()
+
+  signals <- valid_signals %>%
+    distinct(signal)
+
+  signal_count <- valid_signals %>%
+    distinct(signal) %>%
+    nrow()
+
   aspect_events_windowed <- inner_join(
     aspect_events,
     time_windows %>%
@@ -112,10 +125,6 @@ wrangle_centrix <- function(aspect_events, track_events) {
     join_by(between(dt, start_time, end_time))
   ) %>%
     select(window, signal, dt, aspect, past_aspect)
-
-  signals <- map %>%
-    filter(event == "vacates") %>%
-    distinct(signal)
 
   red_events_windowed <- aspect_events_windowed %>%
     semi_join(signals, by = "signal") %>%
@@ -131,11 +140,6 @@ wrangle_centrix <- function(aspect_events, track_events) {
       n_red_off = sum(aspect != "R"),
       .groups = "drop"
     )
-
-  signal_count <- map %>%
-    filter(event == "vacates") %>%
-    distinct(signal) %>%
-    nrow()
 
   valid_red_events_windowed <-
     red_events_counts %>%
