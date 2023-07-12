@@ -1,11 +1,15 @@
+read_rds_test <- function(path) {
+  readr::read_rds(system.file("extdata", path, package = "railvarr", mustWork = TRUE))
+}
+
 test_that("wrangle_centrix() works", {
-  map <- readr::read_rds("~/RStudio/railvarr/inst/extdata/sample_map.rds")
+  map <- read_rds_test("sample_map.rds")
   set_map(map)
 
-  se <- readr::read_rds("~/RStudio/railvarr/inst/extdata/sample_aspect_events.rds")
-  te <- readr::read_rds("~/RStudio/railvarr/inst/extdata/sample_track_events.rds")
+  se <- read_rds_test("sample_aspect_events.rds")
+  te <- read_rds_test("sample_track_events.rds")
 
-  out <- readr::read_rds("~/RStudio/railvarr/inst/extdata/sample_berth_events.rds")
+  out <- read_rds_test("sample_berth_events.rds")
 
   expect_equal(wrangle_centrix(se, te), out)
 })
