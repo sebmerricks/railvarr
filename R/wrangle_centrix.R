@@ -135,8 +135,41 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
   return(aspect_events)
 }
 
-preprocess_track_events <- function(raw_track_events) {
+#' Preprocess raw track data
+#'
+#' @param raw_track_events Data frame containing raw track data
+#' @param tracks Data frame containing list of tracks
+#'
+#' @export
+#'
+#' @importFrom dplyr %>% mutate if_else select rename arrange semi_join
+#'
+preprocess_track_events <- function(raw_track_events, tracks) {
+  tpl_track_events <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+  stopifnot(vetr::alike(tpl_track_events, raw_track_events))
 
+  tpl_tracks <- data.frame(
+    track = character()
+  )
+  stopifnot(vetr::alike(tpl_tracks, tracks))
+
+  track_activations <- raw_track_events %>%
+    mutate(occupied = if_else(transition == "UP to DN", T, F)) %>%
+    select(-transition) %>%
+    rename(track = asset) %>%
+    mutate(track = stringr::str_extract(track, "^([A-z])+(-[0-9])?")) %>%
+    select(period, track, dt, occupied) %>%
+    arrange(track, dt) %>%
+    mutate(event = if_else(occupied, "enters", "vacates")) %>%
+    mutate(date = lubridate::as_date(dt)) %>%
+    semi_join(tracks)
+
+  return(track_activations)
 }
 
 #' Wrangle raw Centrix data

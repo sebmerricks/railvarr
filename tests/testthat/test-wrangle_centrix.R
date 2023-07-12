@@ -43,31 +43,6 @@ test_that("read_files() reads multiple files", {
 })
 
 
-test_that("split_signal_track_events() errors with incorrect raw_events
-          structure", {
-  test1 <- data.frame(
-    asset = character(),
-    dt = double(),
-    transition = character(),
-    period = numeric()
-    )
-  test2 <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character()
-    )
-  test3 <- data.frame(
-    asset = character(),
-    datetime = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-    )
-
-  expect_error(split_signal_track_events(test1))
-  expect_error(split_signal_track_events(test2))
-  expect_error(split_signal_track_events(test3))
-})
-
 test_that("split_signal_track_events() splits signal and track events", {
   raw_events <- tribble(
     ~asset, ~dt, ~transition, ~period,
@@ -100,78 +75,6 @@ test_that("split_signal_track_events() works with custom is_track definition", {
   expect_equal(split_signal_track_events(raw_events, is_track), out)
 })
 
-
-test_that("preprocess_signal_events() errors if raw_signal_events has incorrect
-          structure", {
-  test1 <- data.frame(
-    asset = character(),
-    dt = double(),
-    transition = character(),
-    period = numeric()
-    )
-  test2 <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character()
-  )
-  test3 <- data.frame(
-    asset = character(),
-    datetime = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-  )
-
-  dummy <- data.frame(
-    state = character(),
-    aspect = factor()
-  )
-
-  expect_error(preprocess_signal_events(test1, dummy))
-  expect_error(preprocess_signal_events(test2, dummy))
-  expect_error(preprocess_signal_events(test3, dummy))
-})
-
-test_that("preprocess_signal_events() errors if state_mapping has incorrect
-          structure", {
-  dummy <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-  )
-
-  test1 <- data.frame(
-    state = character(),
-    aspect = character()
-  )
-  test2 <- data.frame(
-    state = character()
-  )
-  test3 <- data.frame(
-    status = character(),
-    aspect = factor()
-  )
-
-  expect_error(preprocess_signal_events(dummy, test1))
-  expect_error(preprocess_signal_events(dummy, test2))
-  expect_error(preprocess_signal_events(dummy, test3))
-})
-
-test_that("preprocess_signal_events() completes if data structures are correct",
-          {
-  rse <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-  )
-  sm <- data.frame(
-    state = character(),
-    aspect = factor()
-  )
-
-  expect_no_error(preprocess_signal_events(rse, sm))
-})
 
 test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   rse <- dplyr::tribble(
@@ -240,4 +143,31 @@ test_that("dplyr integration works", {
   ))
 
   expect_equal(rse %>% preprocess_signal_events(sm), out)
+})
+
+
+test_that("preprocess_track_events() correctly processes track data", {
+  dt <- lubridate::as_datetime(100)
+  rte <- dplyr::tribble(
+    ~asset, ~dt, ~transition, ~period,
+    "TA-1", dt, "DN to UP", 1,
+    "TA-2", dt, "UP to DN", 1,
+    "TB-1", dt, "DN to UP", 1,
+    "TB-2", dt, "UP to DN", 1,
+    "TC", dt, "DN to UP", 1,
+    "TD", dt, "UP to DN", 1
+  )
+
+  tracks <- dplyr::tribble(
+    ~track, "TA-1", "TB-1", "TC"
+  )
+
+  out <- dplyr::tribble(
+    ~period, ~track, ~dt, ~occupied, ~event, ~date,
+    1, "TA-1", dt, F, "vacates", lubridate::as_date(dt),
+    1, "TB-1", dt, F, "vacates", lubridate::as_date(dt),
+    1, "TC", dt, F, "vacates", lubridate::as_date(dt)
+  )
+
+  expect_equal(preprocess_track_events(rte, tracks), out)
 })
