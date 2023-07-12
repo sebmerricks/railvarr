@@ -4,12 +4,12 @@
 \alias{wrangle_centrix}
 \title{Wrangle raw Centrix data}
 \usage{
-wrangle_centrix(raw_signal_events, raw_track_events)
+wrangle_centrix(signal_events, track_events)
 }
 \arguments{
-\item{raw_signal_events}{Data frame containing raw signal data.}
+\item{signal_events}{Data frame containing pre-processed signal data.}
 
-\item{raw_track_events}{Data frame containing raw track data.}
+\item{track_events}{Data frame containing pre-processed track data.}
 }
 \description{
 Wrangle raw Centrix data

@@ -118,7 +118,6 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
 #' Preprocess raw track data
 #'
 #' @param raw_track_events Data frame containing raw track data
-#' @param tracks Data frame containing list of tracks
 #'
 #' @export
 #'
