@@ -1,5 +1,10 @@
 env <- new.env(parent = emptyenv())
-env$map <- data.frame()
+env$map <- data.frame(
+  signal = character(),
+  berth = character(),
+  track = character(),
+  event = character()
+)
 
 #' Report network map
 #'

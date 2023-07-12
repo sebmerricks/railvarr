@@ -1,5 +1,10 @@
 test_that("get_map() works", {
-  expect_equal(get_map(), data.frame())
+  expect_equal(get_map(), data.frame(
+    signal = character(),
+    berth = character(),
+    track = character(),
+    event = character()
+  ))
 })
 
 test_that("set_map() works", {
