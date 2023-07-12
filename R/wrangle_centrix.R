@@ -54,9 +54,20 @@ read_files <- function(path, names = NULL, types = NULL) {
 }
 
 #' Wrangle raw Centrix data
+#'
 #' @export
-wrangle_centrix <- function() {
-
+#'
+wrangle_centrix <- function(raw_signal_events, raw_track_events) {
+  # Define the expected data structure
+  template <- data.frame(
+    asset = character(),
+    dt = lubridate::POSIXct(),
+    transition = character(),
+    period = numeric()
+  )
+  # Check whether the raw data matches the expected structure
+  vet(template, raw_signal_events)
+  vet(template, raw_track_events)
 }
 
 
