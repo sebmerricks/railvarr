@@ -206,3 +206,38 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
 
   expect_equal(preprocess_signal_events(rse, sm), out)
 })
+
+
+test_that("dplyr integration works", {
+  rse <- dplyr::tribble(
+    ~asset, ~dt, ~transition, ~period,
+    "S1 RGE", lubridate::as_datetime(100), "DN to UP", 1,
+    "S2 HGE", lubridate::as_datetime(200), "DN to UP", 1,
+    "S3 DGE", lubridate::as_datetime(300), "DN to UP", 1,
+    "S4 HHGE", lubridate::as_datetime(400), "DN to UP", 1
+  )
+  sm <- data.frame(
+    state = c("RGE", "HGE", "HHGE", "DGE"),
+    aspect = factor(
+      c("R", "Y", "YY", "G"),
+      levels = c("R", "Y", "YY", "G")
+    )
+  )
+
+  out <- dplyr::tibble(data.frame(
+    period = c(1, 1, 1, 1),
+    signal = c("S1", "S2", "S3", "S4"),
+    dt = c(lubridate::as_datetime(100), lubridate::as_datetime(200),
+           lubridate::as_datetime(300), lubridate::as_datetime(400)),
+    aspect = factor(
+      c("R", "Y", "G", "YY"),
+      levels = c("R", "Y", "YY", "G")
+    ),
+    past_aspect = factor(
+      c(NA_character_, NA_character_, NA_character_, NA_character_),
+      levels = c("R", "Y", "YY", "G")
+    )
+  ))
+
+  expect_equal(rse %>% preprocess_signal_events(sm), out)
+})
