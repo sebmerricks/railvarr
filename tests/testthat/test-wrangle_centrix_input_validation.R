@@ -1,3 +1,30 @@
+test_that("set_map() errors with incorrect map structure", {
+  test1 <- data.frame(
+    signal = factor(),
+    berth = character(),
+    track = character(),
+    event = character()
+  )
+  test2 <- data.frame(
+    signal = character(),
+    berth = character(),
+    track = character(),
+    event = character(),
+    mileage = numeric()
+  )
+  test3 <- data.frame(
+    signal = character(),
+    berth = character(),
+    tracks = character(),
+    event = character()
+  )
+
+  expect_error(set_map(test1))
+  expect_error(set_map(test2))
+  expect_error(set_map(test3))
+})
+
+
 test_that("split_signal_track_events() errors with incorrect raw_events
           structure", {
             test1 <- data.frame(

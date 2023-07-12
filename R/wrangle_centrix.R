@@ -16,6 +16,14 @@ get_map <- function() {
 #' @export
 #'
 set_map <- function(map) {
+  template <- data.frame(
+    signal = character(),
+    berth = character(),
+    track = character(),
+    event = character()
+  )
+  stopifnot(vetr::alike(template, map))
+
   old <- env$map
   env$map <- map
   invisible(old)
@@ -135,7 +143,7 @@ preprocess_track_events <- function(raw_track_events, tracks) {
     arrange(track, dt) %>%
     mutate(event = if_else(occupied, "enters", "vacates")) %>%
     mutate(date = lubridate::as_date(dt)) %>%
-    semi_join(tracks)
+    semi_join(tracks, by = "track")
 
   return(track_activations)
 }
