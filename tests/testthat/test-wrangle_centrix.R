@@ -2,7 +2,7 @@ read_rds_test <- function(path) {
   readr::read_rds(system.file("extdata", path, package = "railvarr", mustWork = TRUE))
 }
 
-test_that("wrangle_centrix() works", {
+test_that("wrangle_centrix() produces expected output", {
   map <- read_rds_test("sample_map.rds")
   set_map(map)
 
