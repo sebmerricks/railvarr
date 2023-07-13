@@ -9,7 +9,25 @@ env$event_mapping <- tribble(
 
 env$stations <- NULL
 
-#' Read timetable data
+get_stations <- function() {
+  return(env$stations)
+}
+
+set_stations <- function(stations) {
+  vetr::vet(list(), stations, stop = TRUE)
+  stopifnot("Please input stations using
+            set_stations(c('station1', 'station2', 'station3'))" =
+              length(stations) > 0)
+  for (x in seq_along(stations)) {
+    stopifnot("Every station must be a string! Please input stations using
+              set_stations(c('station1', 'station2', 'station3'))" =
+                is.character(stations[[x]]))
+  }
+
+  env$stations <- stations
+}
+
+#' Reads and pre-processes timetable data
 #'
 #' Reads excel data from a given path and renames the columns according to
 #' `names`
@@ -22,7 +40,7 @@ env$stations <- NULL
 #'
 #' @importFrom dplyr %>% select rename_with left_join rename
 #'
-read_timetable <- function(path, names, ...) {
+preprocess_timetable <- function(path, names, ...) {
   timetable <- read_excel_files(path, ...) %>%
     select(
       names(names) %>% stringr::str_subset(".+")
@@ -34,20 +52,23 @@ read_timetable <- function(path, names, ...) {
   timetable <- timetable %>%
     left_join(event_mapping, by = "event") %>%
     select(-"event") %>%
-    rename(.data$event = .data$name)
+    rename(event = .data$name)
 
   return(timetable)
 }
 
 #' Identifies the services that travel through the stations from start to end
 #'
+#' @param timetable Pre-processed timetable data
+#'
 #' @export
 #'
 #' @import dplyr
 #'
 wrangle_timetable <- function(timetable) {
-  stopifnot(!is.null(env$stations), "Please input stations using
-            set_stations(c('station1', 'station2', 'station3'))")
+  stopifnot("Please input stations using
+            set_stations(c('station1', 'station2', 'station3'))" =
+              !is.null(env$stations))
 
   start_station <- first(env$stations)
   end_station <- last(env$stations)
@@ -109,7 +130,7 @@ wrangle_timetable <- function(timetable) {
     by = c("train_id", "dt_origin")
   ) %>%
     filter(geo %in% env$stations) %>%
-    filter(direction = forwards) %>%
+    filter(direction == forwards) %>%
     mutate(allow = allow_perf + allow_path + allow_eng) %>%
     select(train_id, geo, dt_origin, event, wtt, t, delay, allow) %>%
     rename(train_header = train_id) %>%
