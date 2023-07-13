@@ -3,7 +3,7 @@
 export(get_map)
 export(preprocess_signal_events)
 export(preprocess_track_events)
-export(read_files)
+export(read_csv_files)
 export(set_map)
 export(split_signal_track_events)
 export(wrangle_centrix)

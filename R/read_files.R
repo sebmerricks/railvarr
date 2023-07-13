@@ -35,12 +35,12 @@
 #' )
 #'
 #' # Read the data using read_centrix()
-#' read_files(tempdir, names, types)
+#' read_csv_files(tempdir, names, types)
 #'
 #' # Delete the temporary directory
 #' unlink(tempdir, recursive = TRUE)
 #'
-read_files <- function(path, names = NULL, types = NULL) {
+read_csv_files <- function(path, names = NULL, types = NULL) {
   # find all the files inside the directory at `path`
   filenames <- glue::glue("{path}/{list.files(path)}")
   # throw an error if the directory is empty

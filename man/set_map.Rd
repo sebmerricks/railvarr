@@ -7,7 +7,8 @@
 set_map(map)
 }
 \arguments{
-\item{map}{New network map to set.}
+\item{map}{New network map to set. Should be in order: the first entry is the
+start of the track, while the last entry is the end.}
 }
 \description{
 Set network map
