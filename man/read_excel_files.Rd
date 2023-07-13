@@ -11,8 +11,7 @@ read_excel_files(path, progress = TRUE, ...)
 
 \item{progress}{Whether to show a progress bar, see \code{\link{map}}}
 
-\item{...}{Additional arguments to be passed to
-\code{\link{read_excel}}}
+\item{...}{Additional arguments to be passed to \code{\link{read_excel}}}
 }
 \description{
 Read raw excel data from multiple files

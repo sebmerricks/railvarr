@@ -36,12 +36,10 @@ set_map <- function(map) {
   invisible(old)
 }
 
-env$state_mapping <- tribble(
-  ~state, ~aspect,
-  "RGE", "R",
-  "HGE", "Y",
-  "HHGE", "YY",
-  "DGE", "G"
+env$state_mapping <- data.frame(
+  state = c("RGE", "HGE", "HHGE", "DGE"),
+  aspect = factor(c("R", "Y", "YY", "G"),
+                  levels = c("R", "Y", "YY", "G"))
 )
 
 #' Split raw events into separate signal and track events
@@ -76,8 +74,6 @@ split_signal_track_events <- function(raw_events,
 #' Preprocess raw signal events
 #'
 #' @param raw_signal_events Raw signal data.
-#' @param state_mapping Data frame defining how to convert signal states to
-#'        aspects.
 #'
 #' @export
 #'
@@ -110,7 +106,7 @@ preprocess_signal_events <- function(raw_signal_events) {
   aspect_events <- signal_events %>%
     semi_join(signals, by = "signal") %>%
     inner_join(
-      state_mapping,
+      env$state_mapping,
       by = "state"
     ) %>%
     arrange(signal, dt) %>%

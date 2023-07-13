@@ -63,11 +63,12 @@ read_csv_files <- function(path, names = NULL, types = NULL) {
 #' @param ... Additional arguments to be passed to \code{\link{read_excel}}
 #'
 #' @export
+#'
 read_excel_files <- function(path, progress = TRUE, ...) {
   filenames <- glue::glue("{path}/{list.files(path)}")
   stopifnot("`path` must not be an empty directory" = length(filenames) > 0)
 
-  raw_data <- map(filenames,
+  raw_data <- purrr::map(filenames,
                   readxl::read_excel,
                   .progress = progress,
                   ...) %>%
