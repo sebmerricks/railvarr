@@ -7,9 +7,28 @@
 set_map(map)
 }
 \arguments{
-\item{map}{New network map to set. Should be in order: the first entry is the
-start of the track, while the last entry is the end.}
+\item{map}{Network map to store. The following columns must be present:
+\verb{signal, berth, track, event}\cr
+All columns must be of type \code{\link[=character]{character()}}. An error will be thrown if the
+map does not conform to this specification.\cr
+The map is assumed to be ordered, so the first row defines the start of the
+track section while the last row defines the end of the section.}
 }
 \description{
-Set network map
+\code{set_map()} stores a network map in the internal environment for use by other
+data processing functions. It is important to set the map before attempting
+to process the data. Use \code{\link[=get_map]{get_map()}} to access the map once it has been
+stored.
+}
+\examples{
+map <- tribble(
+  ~signal, ~berth, ~track, ~event,
+  "S1", "B1", "T1", "enters",
+  "S1", "B1", "T2", "vacates",
+  "S2", "B2", "T3", "enters",
+  "S2", "B2", "T4", "vacates"
+)
+
+set_map(map)
+
 }

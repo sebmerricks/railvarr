@@ -6,21 +6,42 @@ env$map <- data.frame(
   event = character()
 )
 
-#' Report network map
+#' Retrieve network map
+#'
+#' `get_map()` retrieves the network map from the internal environment. By
+#' default, this will equal `NULL`. Use [set_map()] to store a map.
 #'
 #' @export
-#'
 get_map <- function() {
   return(env$map)
 }
 
 #' Set network map
 #'
-#' @param map New network map to set. Should be in order: the first entry is the
-#'            start of the track, while the last entry is the end.
+#' `set_map()` stores a network map in the internal environment for use by other
+#' data processing functions. It is important to set the map before attempting
+#' to process the data. Use [get_map()] to access the map once it has been
+#' stored.
+#'
+#' @param map Network map to store. The following columns must be present:
+#'  `signal, berth, track, event`\cr
+#'  All columns must be of type [character()]. An error will be thrown if the
+#'  map does not conform to this specification.\cr
+#'  The map is assumed to be ordered, so the first row defines the start of the
+#'  track section while the last row defines the end of the section.
+#'
+#' @examples
+#' map <- tribble(
+#'   ~signal, ~berth, ~track, ~event,
+#'   "S1", "B1", "T1", "enters",
+#'   "S1", "B1", "T2", "vacates",
+#'   "S2", "B2", "T3", "enters",
+#'   "S2", "B2", "T4", "vacates"
+#' )
+#'
+#' set_map(map)
 #'
 #' @export
-#'
 set_map <- function(map) {
   template <- data.frame(
     signal = character(),
@@ -50,7 +71,6 @@ env$state_mapping <- data.frame(
 #' @export
 #'
 #' @importFrom dplyr %>% mutate group_by group_split
-#'
 split_signal_track_events <- function(raw_events,
                                       is_track =
                                         quote(stringr::str_starts(asset, "T"))

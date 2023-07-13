@@ -2,10 +2,11 @@
 % Please edit documentation in R/preprocess_centrix.R
 \name{get_map}
 \alias{get_map}
-\title{Report network map}
+\title{Retrieve network map}
 \usage{
 get_map()
 }
 \description{
-Report network map
+\code{get_map()} retrieves the network map from the internal environment. By
+default, this will equal \code{NULL}. Use \code{\link[=set_map]{set_map()}} to store a map.
 }
