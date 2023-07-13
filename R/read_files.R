@@ -1,5 +1,8 @@
 #' Read raw data from multiple files
 #'
+#' Reads all the files contained in the directory pointed to by `path` into a
+#' single data frame.
+#'
 #' @param path A string pointing to the directory pointing to the relevant files.
 #' @param names A character vector containing the column names.
 #' @param types A column specification created with \code{\link[readr]{cols}}.

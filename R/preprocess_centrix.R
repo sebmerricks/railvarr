@@ -16,7 +16,8 @@ get_map <- function() {
 
 #' Set network map
 #'
-#' @param map New network map to set.
+#' @param map New network map to set. Should be in order: the first entry is the
+#'            start of the track, while the last entry is the end.
 #'
 #' @export
 #'
@@ -27,7 +28,8 @@ set_map <- function(map) {
     track = character(),
     event = character()
   )
-  stopifnot(vetr::alike(template, map))
+
+  vetr::vet(template, map, stop = TRUE)
 
   old <- env$map
   env$map <- map
@@ -53,7 +55,7 @@ split_signal_track_events <- function(raw_events,
     transition = character(),
     period = numeric()
   )
-  stopifnot(vetr::alike(tpl_raw_events, raw_events))
+  vetr::vet(tpl_raw_events, raw_events, stop = TRUE)
 
   events <- raw_events %>%
     mutate(is_track = eval(is_track)) %>%
@@ -82,7 +84,7 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
     period = numeric()
   )
   # Check whether the raw data matches the expected structure
-  stopifnot(vetr::alike(tpl_signal_events, raw_signal_events))
+  vetr::vet(tpl_signal_events, raw_signal_events, stop = TRUE)
 
   # Define the expected structure for state_mapping
   tpl_state_mapping <- data.frame(
@@ -135,7 +137,8 @@ preprocess_track_events <- function(raw_track_events) {
     transition = character(),
     period = numeric()
   )
-  stopifnot(vetr::alike(tpl_track_events, raw_track_events))
+
+  vetr::vet(tpl_track_events, raw_track_events, stop = TRUE)
 
   tracks <- get_map() %>%
     select(track)

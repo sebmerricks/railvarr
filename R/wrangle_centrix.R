@@ -8,6 +8,25 @@
 #' @import dplyr
 #'
 wrangle_centrix <- function(aspect_events, track_events) {
+  aspect_template <- data.frame(
+    period = numeric(),
+    signal = character(),
+    dt = lubridate::POSIXct(),
+    aspect = factor(),
+    past_aspect = factor()
+  )
+
+  track_template <- data.frame(
+    period = numeric(),
+    track = character(),
+    dt = lubridate::POSIXct(),
+    occupied = logical(),
+    event = character()
+  )
+
+  vetr::vet(aspect_template, aspect_events, stop = TRUE)
+  vetr::vet(track_template, track_events, stop = TRUE)
+
   map <- get_map()
 
   start_track <- (map %>% first())$track
