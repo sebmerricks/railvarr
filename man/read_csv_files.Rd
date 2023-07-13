@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_files.R
 \name{read_csv_files}
 \alias{read_csv_files}
-\title{Read raw data from multiple files}
+\title{Read raw csv data from multiple files}
 \usage{
 read_csv_files(path, names = NULL, types = NULL)
 }

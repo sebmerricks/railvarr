@@ -1,4 +1,4 @@
-#' Read raw data from multiple files
+#' Read raw csv data from multiple files
 #'
 #' Reads all the files contained in the directory pointed to by `path` into a
 #' single data frame.
@@ -52,6 +52,26 @@ read_csv_files <- function(path, names = NULL, types = NULL) {
     col_types = types,
     skip = 1L
   )
+
+  return(raw_data)
+}
+
+#' Read raw excel data from multiple files
+#'
+#' @param path A string pointing to the directory containing excel files
+#' @param progress Whether to show a progress bar, see \code{\link{map}}
+#' @param ... Additional arguments to be passed to \code{\link{read_excel}}
+#'
+#' @export
+read_excel_files <- function(path, progress = TRUE, ...) {
+  filenames <- glue::glue("{path}/{list.files(path)}")
+  stopifnot("`path` must not be an empty directory" = length(filenames) > 0)
+
+  raw_data <- map(filenames,
+                  readxl::read_excel,
+                  .progress = progress,
+                  ...) %>%
+    list_rbind()
 
   return(raw_data)
 }
