@@ -36,6 +36,14 @@ set_map <- function(map) {
   invisible(old)
 }
 
+env$state_mapping <- tribble(
+  ~state, ~aspect,
+  "RGE", "R",
+  "HGE", "Y",
+  "HHGE", "YY",
+  "DGE", "G"
+)
+
 #' Split raw events into separate signal and track events
 #'
 #' @param raw_events Data frame containing raw data.
@@ -75,7 +83,7 @@ split_signal_track_events <- function(raw_events,
 #'
 #' @import dplyr
 #'
-preprocess_signal_events <- function(raw_signal_events, state_mapping) {
+preprocess_signal_events <- function(raw_signal_events) {
   # Define the expected data structure
   tpl_signal_events <- data.frame(
     asset = character(),
@@ -85,14 +93,6 @@ preprocess_signal_events <- function(raw_signal_events, state_mapping) {
   )
   # Check whether the raw data matches the expected structure
   vetr::vet(tpl_signal_events, raw_signal_events, stop = TRUE)
-
-  # Define the expected structure for state_mapping
-  tpl_state_mapping <- data.frame(
-    state = character(),
-    aspect = factor()
-  )
-  # Check the structure
-  stopifnot(vetr::alike(tpl_state_mapping, state_mapping))
 
   # Identify signal IDs and states
   signal_events <- raw_signal_events %>%

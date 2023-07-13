@@ -71,40 +71,9 @@ test_that("preprocess_signal_events() errors if raw_signal_events has incorrect
               period = numeric()
             )
 
-            dummy <- data.frame(
-              state = character(),
-              aspect = factor()
-            )
-
-            expect_error(preprocess_signal_events(test1, dummy))
-            expect_error(preprocess_signal_events(test2, dummy))
-            expect_error(preprocess_signal_events(test3, dummy))
-          })
-
-test_that("preprocess_signal_events() errors if state_mapping has incorrect
-          structure", {
-            dummy <- data.frame(
-              asset = character(),
-              dt = lubridate::POSIXct(),
-              transition = character(),
-              period = numeric()
-            )
-
-            test1 <- data.frame(
-              state = character(),
-              aspect = character()
-            )
-            test2 <- data.frame(
-              state = character()
-            )
-            test3 <- data.frame(
-              status = character(),
-              aspect = factor()
-            )
-
-            expect_error(preprocess_signal_events(dummy, test1))
-            expect_error(preprocess_signal_events(dummy, test2))
-            expect_error(preprocess_signal_events(dummy, test3))
+            expect_error(preprocess_signal_events(test1))
+            expect_error(preprocess_signal_events(test2))
+            expect_error(preprocess_signal_events(test3))
           })
 
 test_that("preprocess_signal_events() completes if data structures are correct",
@@ -115,12 +84,8 @@ test_that("preprocess_signal_events() completes if data structures are correct",
               transition = character(),
               period = numeric()
             )
-            sm <- data.frame(
-              state = character(),
-              aspect = factor()
-            )
 
-            expect_no_error(preprocess_signal_events(rse, sm))
+            expect_no_error(preprocess_signal_events(rse))
           })
 
 

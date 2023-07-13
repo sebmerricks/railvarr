@@ -70,14 +70,6 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   )
   set_map(map)
 
-  sm <- data.frame(
-    state = c("RGE", "HGE", "HHGE", "DGE"),
-    aspect = factor(
-      c("R", "Y", "YY", "G"),
-      levels = c("R", "Y", "YY", "G")
-    )
-  )
-
   out <- dplyr::tibble(data.frame(
     period = c(1, 1, 1, 1),
     signal = c("S1", "S2", "S3", "S4"),
@@ -93,7 +85,7 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
     )
   ))
 
-  expect_equal(preprocess_signal_events(rse, sm), out)
+  expect_equal(preprocess_signal_events(rse), out)
 })
 
 
