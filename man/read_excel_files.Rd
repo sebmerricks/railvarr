@@ -7,12 +7,21 @@
 read_excel_files(path, progress = TRUE, ...)
 }
 \arguments{
-\item{path}{A string pointing to the directory containing excel files}
+\item{path}{A character string specifying the path to the directory
+containing the excel files.}
 
-\item{progress}{Whether to show a progress bar, see \code{\link{map}}}
+\item{progress}{Whether to show a progress bar, see \code{\link[purrr:map]{purrr::map()}}.}
 
-\item{...}{Additional arguments to be passed to \code{\link{read_excel}}}
+\item{...}{Additional arguments to be passed to \code{\link[readxl:read_excel]{readxl::read_excel()}}.}
+}
+\value{
+A single data frame.
 }
 \description{
-Read raw excel data from multiple files
+Reads all the excel files contained in the directory specified by \code{path} and
+combines them into a single data frame. Errors will be thrown if either
+the directory does not exist or is empty.
+}
+\seealso{
+\code{\link[readxl:read_excel]{readxl::read_excel()}} which this function wraps.
 }

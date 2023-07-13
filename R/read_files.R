@@ -1,11 +1,14 @@
 #' Read raw CSV data from multiple files
 #'
 #' Reads all the CSV files contained in the directory specified  by `path` and
-#' combines them into a single data frame.
+#' combines them into a single data frame. Errors will be thrown if either
+#' the directory does not exist or is empty.
 #'
 #' @param path A character string specifying the path to the directory
-#'  containing the CSV files
-#' @param ... Additional arguments to be passed to \link[readr]{read_csv}
+#'  containing the CSV files.
+#' @param ... Additional arguments to be passed to [readr::read_csv].
+#' @return A single data frame.
+#' @seealso [readr::read_csv()] which this function wraps.
 #'
 #' @export
 #'
@@ -34,8 +37,8 @@
 #' "y" = readr::col_integer()
 #' )
 #'
-#' # Read the data using read_centrix()
-#' read_csv_files(tempdir, names, types)
+#' # Read the data
+#' read_csv_files(tempdir, names, types, skip = 1L)
 #'
 #' # Delete the temporary directory
 #' unlink(tempdir, recursive = TRUE)
@@ -57,9 +60,16 @@ read_csv_files <- function(path, ...) {
 
 #' Read raw excel data from multiple files
 #'
-#' @param path A string pointing to the directory containing excel files
-#' @param progress Whether to show a progress bar, see \code{\link{map}}
-#' @param ... Additional arguments to be passed to \code{\link{read_excel}}
+#' Reads all the excel files contained in the directory specified by `path` and
+#' combines them into a single data frame. Errors will be thrown if either
+#' the directory does not exist or is empty.
+#'
+#' @param path A character string specifying the path to the directory
+#'  containing the excel files.
+#' @param progress Whether to show a progress bar, see [purrr::map()].
+#' @param ... Additional arguments to be passed to [readxl::read_excel()].
+#' @returns A single data frame.
+#' @seealso [readxl::read_excel()] which this function wraps.
 #'
 #' @export
 #'

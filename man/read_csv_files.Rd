@@ -8,13 +8,17 @@ read_csv_files(path, ...)
 }
 \arguments{
 \item{path}{A character string specifying the path to the directory
-containing the CSV files}
+containing the CSV files.}
 
-\item{...}{Additional arguments to be passed to \link[readr]{read_csv}}
+\item{...}{Additional arguments to be passed to \link[readr:read_delim]{readr::read_csv}.}
+}
+\value{
+A single data frame.
 }
 \description{
 Reads all the CSV files contained in the directory specified  by \code{path} and
-combines them into a single data frame.
+combines them into a single data frame. Errors will be thrown if either
+the directory does not exist or is empty.
 }
 \examples{
 # Create a temporary directory for the example
@@ -41,10 +45,13 @@ types <- readr::cols(
 "y" = readr::col_integer()
 )
 
-# Read the data using read_centrix()
-read_csv_files(tempdir, names, types)
+# Read the data
+read_csv_files(tempdir, names, types, skip = 1L)
 
 # Delete the temporary directory
 unlink(tempdir, recursive = TRUE)
 
+}
+\seealso{
+\code{\link[readr:read_delim]{readr::read_csv()}} which this function wraps.
 }
