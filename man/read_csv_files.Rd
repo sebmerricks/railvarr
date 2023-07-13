@@ -2,20 +2,19 @@
 % Please edit documentation in R/read_files.R
 \name{read_csv_files}
 \alias{read_csv_files}
-\title{Read raw csv data from multiple files}
+\title{Read raw CSV data from multiple files}
 \usage{
-read_csv_files(path, names = NULL, types = NULL)
+read_csv_files(path, ...)
 }
 \arguments{
-\item{path}{A string pointing to the directory pointing to the relevant files.}
+\item{path}{A character string specifying the path to the directory
+containing the CSV files}
 
-\item{names}{A character vector containing the column names.}
-
-\item{types}{A column specification created with \code{\link[readr]{cols}}.}
+\item{...}{Additional arguments to be passed to \link[readr]{read_csv}}
 }
 \description{
-Reads all the files contained in the directory pointed to by \code{path} into a
-single data frame.
+Reads all the CSV files contained in the directory specified  by \code{path} and
+combines them into a single data frame.
 }
 \examples{
 # Create a temporary directory for the example

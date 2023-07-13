@@ -28,7 +28,8 @@ test_that("read_csv_files() reads a single file", {
     "x" = readr::col_character(),
     "y" = readr::col_integer()
   )
-  expect_equal(nrow(read_csv_files(tempdir, names, types)), 3)
+
+  expect_equal(nrow(read_csv_files(tempdir, names, types, skip = 1L)), 3)
   unlink(tempdir, recursive = TRUE)
 })
 
@@ -39,5 +40,5 @@ test_that("read_csv_files() reads multiple files", {
     "x" = readr::col_character(),
     "y" = readr::col_integer()
   )
-  expect_equal(nrow(read_csv_files(tempdir, names, types)), 15)
+  expect_equal(nrow(read_csv_files(tempdir, names, types, skip = 1L)), 15)
 })

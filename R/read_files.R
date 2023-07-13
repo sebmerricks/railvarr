@@ -1,11 +1,11 @@
-#' Read raw csv data from multiple files
+#' Read raw CSV data from multiple files
 #'
-#' Reads all the files contained in the directory pointed to by `path` into a
-#' single data frame.
+#' Reads all the CSV files contained in the directory specified  by `path` and
+#' combines them into a single data frame.
 #'
-#' @param path A string pointing to the directory pointing to the relevant files.
-#' @param names A character vector containing the column names.
-#' @param types A column specification created with \code{\link[readr]{cols}}.
+#' @param path A character string specifying the path to the directory
+#'  containing the CSV files
+#' @param ... Additional arguments to be passed to \link[readr]{read_csv}
 #'
 #' @export
 #'
@@ -40,18 +40,17 @@
 #' # Delete the temporary directory
 #' unlink(tempdir, recursive = TRUE)
 #'
-read_csv_files <- function(path, names = NULL, types = NULL) {
+read_csv_files <- function(path, ...) {
+  # Validate the directory
+  stop_if_not(dir.exists(path),
+              msg = glue::glue("Directory does not exist: {path}"))
   # find all the files inside the directory at `path`
   filenames <- glue::glue("{path}/{list.files(path)}")
   # throw an error if the directory is empty
-  stopifnot("`path` must not be an empty directory" = length(filenames) > 0)
+  stop_if_not(length(filenames) > 0,
+              msg = glue::glue("No files found in the directory: {path}"))
 
-  raw_data <- readr::read_csv(
-    filenames,
-    col_names = names,
-    col_types = types,
-    skip = 1L
-  )
+  raw_data <- readr::read_csv(filenames, ...)
 
   return(raw_data)
 }
@@ -65,8 +64,13 @@ read_csv_files <- function(path, names = NULL, types = NULL) {
 #' @export
 #'
 read_excel_files <- function(path, progress = TRUE, ...) {
+  stop_if_not(dir.exists(path),
+              msg = glue::glue("Directory does not exist: {path}"))
+
   filenames <- glue::glue("{path}/{list.files(path)}")
-  stopifnot("`path` must not be an empty directory" = length(filenames) > 0)
+
+  stop_if_not(length(filenames) > 0,
+              msg = glue::glue("No files found in the directory: {path}"))
 
   raw_data <- purrr::map(filenames,
                   readxl::read_excel,
