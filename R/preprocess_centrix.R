@@ -167,7 +167,6 @@ preprocess_track_events <- function(raw_track_events) {
     select(period, track, dt, occupied) %>%
     arrange(track, dt) %>%
     mutate(event = if_else(occupied, "enters", "vacates")) %>%
-    mutate(date = lubridate::as_date(dt)) %>%
     semi_join(tracks, by = "track")
 
   return(track_activations)
