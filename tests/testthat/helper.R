@@ -15,6 +15,10 @@ setup_csv_test <- function(name, n) {
   return(tempdir)
 }
 
-read_rds_test <- function(path) {
-  readr::read_rds(test_path("fixtures", path))
+read_rds_test <- function(filename) {
+  readr::read_rds(test_path("fixtures", filename))
+}
+
+read_excel_test <- function(filename) {
+  readxl::read_excel(test_path("fixtures", filename))
 }
