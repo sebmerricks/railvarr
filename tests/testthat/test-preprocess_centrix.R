@@ -111,10 +111,10 @@ test_that("preprocess_track_events() correctly processes track data", {
   set_map(map)
 
   out <- dplyr::tribble(
-    ~period, ~track, ~dt, ~occupied, ~event, ~date,
-    1, "TA-1", dt, F, "vacates", lubridate::as_date(dt),
-    1, "TB-1", dt, F, "vacates", lubridate::as_date(dt),
-    1, "TC", dt, F, "vacates", lubridate::as_date(dt)
+    ~period, ~track, ~dt, ~occupied, ~event,
+    1, "TA-1", dt, F, "vacates",
+    1, "TB-1", dt, F, "vacates",
+    1, "TC", dt, F, "vacates",
   )
 
   expect_equal(preprocess_track_events(rte), out)

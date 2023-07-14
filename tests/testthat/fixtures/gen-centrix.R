@@ -13,7 +13,7 @@ gen_train <- function(n_tracks, start_dt, train_id) {
   for (i in 0:n_tracks) {
     signal = paste0("S", i+1)
     track = paste0("T", LETTERS[i+1], i+1)
-    berth = as.character(i+1)
+    berth = LETTERS[i+1]
 
     t_enters = start_dt + i*minute
     t_red_on = t_enters + second
@@ -35,23 +35,34 @@ gen_train <- function(n_tracks, start_dt, train_id) {
 
     events <- dplyr::bind_rows(events, df)
 
-    TSAR = t_red_off - t_red_on
-    T_onset = t_red_on - t_enters
-    T_clear = t_vacates - t_enters
-    T_offset = t_red_off - t_vacates
-    T_travel = t_enters_next - t_enters
-    T_coach = t_vacates - t_enters_next
+    if (i != n_tracks) {
+      t_enters = lubridate::as_datetime(t_enters)
+      t_red_on = lubridate::as_datetime(t_red_on)
+      t_enters_next = lubridate::as_datetime(t_enters_next)
+      if (i == n_tracks - 1) t_enters_next = NA
+      t_vacates = lubridate::as_datetime(t_vacates)
+      t_red_off = lubridate::as_datetime(t_red_off)
 
-    berth_df <- dplyr::tribble(
-      ~signal, ~berth, ~train_id, ~aspect, ~t_enters, ~t_red_on, ~t_enters_next,
-      ~t_vacates, ~t_red_off, ~TSAR, ~T_onset, ~T_clear, ~T_offset, ~T_travel,
-      ~T_coach,
-      signal, berth, train_id, "Y", t_enters, t_red_on, t_enters_next,
-      t_vacates, t_red_off, TSAR, T_onset, T_clear, T_offset, T_travel,
-      T_coach
-    )
+      TSAR = lubridate::as.duration(t_red_off - t_red_on)
+      T_onset = lubridate::as.duration(t_red_on - t_enters)
+      T_clear = lubridate::as.duration(t_vacates - t_enters)
+      T_offset = lubridate::as.duration(t_red_off - t_vacates)
+      if (i < n_tracks - 1) {
+        T_travel = lubridate::as.duration(t_enters_next - t_enters)
+        T_coach = lubridate::as.duration(t_vacates - t_enters_next)
+      }
 
-    berth_events <- dplyr::bind_rows(berth_events, berth_df)
+      berth_df <- dplyr::tribble(
+        ~signal, ~berth, ~train_id, ~aspect, ~t_enters, ~t_red_on, ~t_enters_next,
+        ~t_vacates, ~t_red_off, ~TSAR, ~T_onset, ~T_clear, ~T_offset, ~T_travel,
+        ~T_coach,
+        signal, berth, train_id, "Y", t_enters, t_red_on, t_enters_next,
+        t_vacates, t_red_off, TSAR, T_onset, T_clear, T_offset, T_travel,
+        T_coach
+      )
+
+      berth_events <- dplyr::bind_rows(berth_events, berth_df)
+    }
   }
 
   return(list(events, berth_events))
@@ -69,7 +80,7 @@ gen_map <- function(n_tracks) {
 
   for (i in 1:n_tracks) {
     signal = paste0("S", i)
-    berth = as.character(i)
+    berth = LETTERS[i]
     track = paste0("T", LETTERS[i])
 
     row <- dplyr::tribble(
@@ -104,11 +115,12 @@ gen_centrix <- function() {
 
   for (i in 1:n_trains) {
     dt = start_dt + 20*(i-1)*minute
-    data <- gen_train(n_tracks, dt, i)
+    data <- gen_train(n_tracks, dt, i-1)
     events <- data[[1]]
     berths <- data[[2]]
     centrix <- dplyr::bind_rows(centrix, events)
-    berth_events <- dplyr::bind_rows(berth_events, berths)
+    if (i > 1)
+      berth_events <- dplyr::bind_rows(berth_events, berths)
   }
 
   map <- gen_map(n_tracks)
