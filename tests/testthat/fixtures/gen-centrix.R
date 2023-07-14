@@ -1,17 +1,23 @@
 minute = 60
 second = 1
 
-gen_train <- function(n_tracks, start_dt) {
+gen_train <- function(n_tracks, start_dt, train_id) {
   start_dt <- as.double(lubridate::as_datetime(start_dt))
 
   events <- dplyr::tribble(~asset, ~dt, ~transition)
+  berth_events <- dplyr::tribble(~signal, ~berth, ~train_id, ~aspect, ~t_enters,
+                                 ~t_red_on, ~t_enters_next, ~t_vacates,
+                                 ~t_red_off, ~TSAR, ~T_onset, ~T_clear,
+                                 ~T_offset, ~T_travel, ~T_coach)
 
   for (i in 0:n_tracks) {
     signal = paste0("S", i+1)
     track = paste0("T", LETTERS[i+1], i+1)
+    berth = as.character(i+1)
 
     t_enters = start_dt + i*minute
     t_red_on = t_enters + second
+    t_enters_next = t_enters + minute
     t_vacates = t_enters + minute + 10*second
     t_red_off = t_vacates + 5*second
 
@@ -28,9 +34,27 @@ gen_train <- function(n_tracks, start_dt) {
     )
 
     events <- dplyr::bind_rows(events, df)
+
+    TSAR = t_red_off - t_red_on
+    T_onset = t_red_on - t_enters
+    T_clear = t_vacates - t_enters
+    T_offset = t_red_off - t_vacates
+    T_travel = t_enters_next - t_enters
+    T_coach = t_vacates - t_enters_next
+
+    berth_df <- dplyr::tribble(
+      ~signal, ~berth, ~train_id, ~aspect, ~t_enters, ~t_red_on, ~t_enters_next,
+      ~t_vacates, ~t_red_off, ~TSAR, ~T_onset, ~T_clear, ~T_offset, ~T_travel,
+      ~T_coach,
+      signal, berth, train_id, "Y", t_enters, t_red_on, t_enters_next,
+      t_vacates, t_red_off, TSAR, T_onset, T_clear, T_offset, T_travel,
+      T_coach
+    )
+
+    berth_events <- dplyr::bind_rows(berth_events, berth_df)
   }
 
-  return(events)
+  return(list(events, berth_events))
 }
 
 write_gen_data <- function(data, filename) {
@@ -54,7 +78,7 @@ gen_map <- function(n_tracks) {
       signal, berth, track, "vacates"
     )
 
-    map <- bind_rows(map, row)
+    map <- dplyr::bind_rows(map, row)
   }
 
   return(map)
@@ -64,25 +88,33 @@ gen_centrix <- function() {
   n_trains = as.integer(readline(prompt = "How many trains: "))
   n_tracks = as.integer(readline(prompt = "How many tracks: "))
   start_dt = readline(prompt = "Starting time: ")
-  filename = readline(prompt = "File name: ")
+  centrix_name = readline(prompt = "Raw data file name: ")
+  berth_name = readline(prompt = "Berth events file name: ")
 
-  if (!grepl(filename, ".csv")) {
-    filename = paste0(filename, ".csv")
-  }
+  if (!grepl(centrix_name, ".csv")) centrix_name = paste0(centrix_name, ".csv")
+  if (!grepl(berth_name, ".csv")) berth_name = paste0(berth_name, ".csv")
 
   centrix <- dplyr::tribble(~asset, ~dt, ~transition)
+  berth_events <- dplyr::tribble(~signal, ~berth, ~train_id, ~aspect, ~t_enters,
+                                 ~t_red_on, ~t_enters_next, ~t_vacates,
+                                 ~t_red_off, ~TSAR, ~T_onset, ~T_clear,
+                                 ~T_offset, ~T_travel, ~T_coach)
 
   start_dt <- as.double(lubridate::as_datetime(start_dt))
 
   for (i in 1:n_trains) {
     dt = start_dt + 20*(i-1)*minute
-    events <- gen_train(n_tracks, dt)
-    centrix <- bind_rows(centrix, events)
+    data <- gen_train(n_tracks, dt, i)
+    events <- data[[1]]
+    berths <- data[[2]]
+    centrix <- dplyr::bind_rows(centrix, events)
+    berth_events <- dplyr::bind_rows(berth_events, berths)
   }
 
   map <- gen_map(n_tracks)
 
-  write_gen_data(centrix, filename)
+  write_gen_data(centrix, centrix_name)
+  write_gen_data(berth_events, berth_name)
   write_gen_data(map, "test_map.csv")
 }
 
