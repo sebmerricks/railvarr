@@ -16,6 +16,5 @@ setup_csv_test <- function(name, n) {
 }
 
 read_rds_test <- function(path) {
-  readr::read_rds(system.file("extdata", path, package = "railvarr",
-                              mustWork = TRUE))
+  readr::read_rds(test_path("fixtures", path))
 }
