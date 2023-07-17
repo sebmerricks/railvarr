@@ -1,13 +1,4 @@
-#' Wrangle raw Centrix data
-#'
-#' @param aspect_events Data frame containing pre-processed signal data.
-#' @param track_events Data frame containing pre-processed track data.
-#'
-#' @export
-#'
-#' @import dplyr
-#'
-wrangle_centrix <- function(aspect_events, track_events) {
+check_inputs <- function(aspect_events, track_events) {
   aspect_template <- data.frame(
     period = numeric(),
     signal = character(),
@@ -26,11 +17,11 @@ wrangle_centrix <- function(aspect_events, track_events) {
 
   vetr::vet(aspect_template, aspect_events, stop = TRUE)
   vetr::vet(track_template, track_events, stop = TRUE)
+}
 
-  map <- get_map()
-
-  start_track <- (map %>% first())$track
-  end_track <- (map %>% last())$track
+find_intervals <- function(track_events, start_track, end_track) {
+  start_track <- (get_map() %>% first())$track
+  end_track <- (get_map() %>% last())$track
 
   track_activations_start_end <- track_events %>%
     filter((track == start_track & event == "enters") |
@@ -49,6 +40,10 @@ wrangle_centrix <- function(aspect_events, track_events) {
                                           end = next_dt - 1)) %>%
     select(period, interval)
 
+  return(track_activations_intervals)
+}
+
+find_time_windows <- function(track_activations_intervals, track_events) {
   has_no_activations <- track_activations_intervals %>%
     mutate(start = lubridate::int_start(interval),
            end = lubridate::int_end(interval)) %>%
@@ -75,7 +70,9 @@ wrangle_centrix <- function(aspect_events, track_events) {
     ungroup() %>%
     mutate(window = row_number()) %>%
     select(period, window, interval)
+}
 
+window_track_activations <- function(track_events, time_windows) {
   track_activations_windows <- inner_join(
     track_events,
     time_windows %>%
@@ -85,7 +82,10 @@ wrangle_centrix <- function(aspect_events, track_events) {
     join_by(between(dt, start_time, end_time))
   ) %>%
     select(period, window, track, dt, event)
+  return(track_activations_windows)
+}
 
+find_valid_track_activations <- function(track_activations_windows) {
   track_activation_counts <-
     track_activations_windows %>%
     arrange(period, window, track, dt) %>%
@@ -103,7 +103,7 @@ wrangle_centrix <- function(aspect_events, track_events) {
       .groups = "drop"
     )
 
-  track_count <- map %>%
+  track_count <- get_map() %>%
     distinct(track) %>%
     nrow()
 
@@ -124,17 +124,17 @@ wrangle_centrix <- function(aspect_events, track_events) {
     ) %>%
     ungroup()
 
-  valid_signals <- map %>%
+  return(valid_track_activations_windowed)
+}
+
+window_aspect_events <- function(aspect_events, time_windows) {
+  valid_signals <- get_map() %>%
     group_by(signal) %>%
     filter(n() == 2) %>%
     ungroup()
 
   signals <- valid_signals %>%
     distinct(signal)
-
-  signal_count <- valid_signals %>%
-    distinct(signal) %>%
-    nrow()
 
   aspect_events_windowed <- inner_join(
     aspect_events,
@@ -151,8 +151,11 @@ wrangle_centrix <- function(aspect_events, track_events) {
     filter(aspect == "R" | past_aspect == "R") %>%
     mutate(event = ifelse(aspect == "R", "red_on", "red_off"))
 
-  red_events_counts <-
-    red_events_windowed %>%
+  return(red_events_windowed)
+}
+
+find_valid_aspect_events <- function(red_events_windowed) {
+  red_events_counts <- red_events_windowed %>%
     group_by(window) %>%
     summarise(
       n_red_on = sum(aspect == "R"),
@@ -160,31 +163,42 @@ wrangle_centrix <- function(aspect_events, track_events) {
       .groups = "drop"
     )
 
-  valid_red_events_windowed <-
-    red_events_counts %>%
+  valid_signals <- get_map() %>%
+    group_by(signal) %>%
+    filter(n() == 2) %>%
+    ungroup()
+
+  signal_count <- valid_signals %>%
+    distinct(signal) %>%
+    nrow()
+
+  valid_red_events_windowed <- red_events_counts %>%
     filter((n_red_on == n_red_off) &  (n_red_on %% signal_count == 0)) %>%
     mutate(ntrains = as.integer(n_red_on / signal_count)) %>%
     select(window, ntrains)
 
+  return(valid_red_events_windowed)
+}
+
+find_good_windows <- function(track_activations_windows, red_events_windowed) {
   good_windows <- left_join(
-    valid_track_activations_windowed,
-    valid_red_events_windowed,
+    track_activations_windows %>%
+      find_valid_track_activations(),
+    red_events_windowed %>%
+      find_valid_aspect_events(),
     by = "window"
   ) %>%
-    filter(
-      !is.na(ntrains) &
-        ntrains_track == ntrains
-    )
+    filter(!is.na(ntrains) & ntrains_track == ntrains)
+}
 
-  bad_windows <- anti_join(
-    time_windows,
-    good_windows,
-    by = "window"
-  )
-
+validate_track_activations <- function(track_activations_windows,
+                                       good_windows) {
   valid_track_activations <- track_activations_windows %>%
     semi_join(good_windows, by = c("period", "window"))
+  return(valid_track_activations)
+}
 
+validate_red_events <- function(red_events_windowed, good_windows) {
   valid_red_events <- red_events_windowed %>%
     semi_join(good_windows, by = c("window")) %>%
     group_by(window, signal) %>%
@@ -203,44 +217,88 @@ wrangle_centrix <- function(aspect_events, track_events) {
       t_red_off = dt_dt_red_off
     ) %>%
     mutate(TSAR = lubridate::as.duration(t_red_off - t_red_on))
+  return(valid_red_events)
+}
 
-  berth_events <-
-    valid_track_activations %>%
+combine_track_aspect_events <- function(valid_track_activations,
+                                        valid_red_events) {
+  add_signal_berth <- valid_track_activations %>%
     inner_join(
-      map, by = c("track", "event")
+      get_map(), by = c("track", "event")
     ) %>%
-    select(window, signal, berth, dt, event) %>%
+    select(window, signal, berth, dt, event)
+
+  windowed_train_ids <- add_signal_berth %>%
     arrange(window, signal, dt) %>%
     group_by(window, signal) %>%
     mutate(window_train_id = cumsum(event == "enters")) %>%
-    ungroup() %>%
+    ungroup()
+
+  calculate_timings <- windowed_train_ids %>%
     tidyr::pivot_wider(
       id_cols = c(window,signal,berth,window_train_id),
       values_from = dt,
       names_from = event,
       names_glue = "t_{.name}"
     ) %>%
-    mutate(T_clear = lubridate::as.duration(t_vacates - t_enters)) %>%
     group_by(window, window_train_id) %>%
     mutate(t_enters_next = lead(t_enters)) %>%
-    ungroup() %>%
+    ungroup()
+
+  add_red_events <- calculate_timings %>%
     inner_join(
       valid_red_events, by = c("window", "signal", "window_train_id")
-    ) %>%
+    )
+
+  train_ids <- add_red_events %>%
     group_by(window, window_train_id) %>%
     mutate(train_id = cur_group_id()) %>%
-    ungroup() %>%
+    ungroup()
+
+  calculate_durations <- train_ids %>%
     mutate(
       T_onset  = t_red_on - t_enters,
       T_offset = t_red_off - t_vacates,
       T_travel = t_enters_next - t_enters,
       T_coach  = t_vacates - t_enters_next,
-    ) %>%
+      T_clear = t_vacates - t_enters,
+    )
+
+  berth_events <- calculate_durations %>%
     select(signal, berth, train_id, aspect, t_enters, t_red_on, t_enters_next,
            t_vacates, t_red_off, TSAR, T_onset, T_clear, T_offset, T_travel,
            T_coach) %>%
     mutate(across(TSAR:last_col(), lubridate::as.duration),
            across(TSAR:last_col(), as.double))
+
+  return(berth_events)
+}
+
+
+wrangle_centrix <- function(aspect_events, track_events) {
+  check_inputs(aspect_events, track_events)
+
+  time_windows <- track_events %>%
+    find_intervals() %>%
+    find_time_windows(track_events)
+
+  track_activations_windowed <- track_events %>%
+    window_track_activations(time_windows)
+
+  red_events_windowed <- aspect_events %>%
+    window_aspect_events(time_windows)
+
+  good_windows <- find_good_windows(track_activations_windowed,
+                                    red_events_windowed)
+
+  valid_track_activations <- track_activations_windowed %>%
+    validate_track_activations(good_windows)
+
+  valid_red_events <- red_events_windowed %>%
+    validate_red_events(good_windows)
+
+  berth_events <- combine_track_aspect_events(valid_track_activations,
+                                              valid_red_events)
 
   return(berth_events)
 }
