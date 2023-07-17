@@ -132,26 +132,21 @@ preprocess_signal_events <- function(raw_signal_events) {
 #' @importFrom dplyr %>% mutate if_else select rename arrange semi_join
 #'
 preprocess_track_events <- function(raw_track_events) {
-  tpl_track_events <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-  )
-
-  vetr::vet(tpl_track_events, raw_track_events, stop = TRUE)
+  names <- c("asset", "dt", "transition", "period")
+  types <- list(character(), lubridate::POSIXct(), character(), numeric())
+  check_df(raw_track_events, names, types)
 
   tracks <- get_map() %>%
-    select(track)
+    select("track")
 
   track_activations <- raw_track_events %>%
-    mutate(occupied = if_else(transition == "UP to DN", T, F)) %>%
-    select(-transition) %>%
-    rename(track = asset) %>%
-    mutate(track = stringr::str_extract(track, "^([A-z])+(-[0-9])?")) %>%
-    select(period, track, dt, occupied) %>%
-    arrange(track, dt) %>%
-    mutate(event = if_else(occupied, "enters", "vacates")) %>%
+    mutate(occupied = if_else(.data$transition == "UP to DN", T, F)) %>%
+    select(-"transition") %>%
+    rename(track = "asset") %>%
+    mutate(track = stringr::str_extract(.data$track, "^([A-z])+(-[0-9])?")) %>%
+    select("period", "track", "dt", "occupied") %>%
+    arrange(.data$track, .data$dt) %>%
+    mutate(event = if_else(.data$occupied, "enters", "vacates")) %>%
     semi_join(tracks, by = "track")
 
   return(track_activations)

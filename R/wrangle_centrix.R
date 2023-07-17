@@ -279,8 +279,10 @@ combine_track_aspect_events <- function(valid_track_activations,
 #' Signal At Red) and its sub-components. The data produced by this function is
 #' suitable for analysis.
 #'
-#' @param aspect_events A data frame representing aspect events data.
-#' @param track_events A data frame representing track events data.
+#' @param aspect_events A data frame representing aspect events data. Please
+#'    describe expected data structure.
+#' @param track_events A data frame representing track events data. Please
+#'    describe expected data structure.
 #'
 #' @return A data frame containing information about train berths, signals, and
 #'   times.

@@ -7,9 +7,11 @@
 wrangle_centrix(aspect_events, track_events)
 }
 \arguments{
-\item{aspect_events}{A data frame representing aspect events data.}
+\item{aspect_events}{A data frame representing aspect events data. Please
+describe expected data structure.}
 
-\item{track_events}{A data frame representing track events data.}
+\item{track_events}{A data frame representing track events data. Please
+describe expected data structure.}
 }
 \value{
 A data frame containing information about train berths, signals, and
