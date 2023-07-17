@@ -66,21 +66,23 @@ find_time_windows <- function(track_activations_intervals, track_events) {
 }
 
 window_track_activations <- function(track_events, time_windows) {
+  windows_times <- time_windows %>%
+    mutate(start_time = lubridate::int_start(interval),
+           end_time = lubridate::int_end(interval)) %>%
+    select(-period)
+
   track_activations_windows <- inner_join(
     track_events,
-    time_windows %>%
-      mutate(start_time = lubridate::int_start(interval),
-             end_time = lubridate::int_end(interval)) %>%
-      select(-period),
+    windows_times,
     join_by(between(dt, start_time, end_time))
   ) %>%
     select(period, window, track, dt, event)
+
   return(track_activations_windows)
 }
 
 find_valid_track_activations <- function(track_activations_windows) {
-  track_activation_counts <-
-    track_activations_windows %>%
+  track_activation_counts <- track_activations_windows %>%
     arrange(period, window, track, dt) %>%
     group_by(period,window,track) %>%
     mutate(past_event = lag(event)) %>%
@@ -100,7 +102,7 @@ find_valid_track_activations <- function(track_activations_windows) {
     distinct(track) %>%
     nrow()
 
-  valid_track_activations_windowed <- track_activation_counts %>%
+  track_activations_summarised <- track_activation_counts %>%
     group_by(period, window) %>%
     summarise(
       ntrains_track = first(n_enters),
@@ -108,7 +110,9 @@ find_valid_track_activations <- function(track_activations_windows) {
       distinct_track_counts = n_distinct(n),
       any_different_enters_vacates = any((n_enters - n_vacates) != 0),
       any_not_interlaced = any(n_same_as_prior > 0)
-    ) %>%
+    )
+
+  valid_track_activations_windowed <- track_activations_summarised %>%
     filter(
       ntracks == track_count &
         distinct_track_counts == 1 &
@@ -210,6 +214,7 @@ validate_red_events <- function(red_events_windowed, good_windows) {
       t_red_off = dt_dt_red_off
     ) %>%
     mutate(TSAR = lubridate::as.duration(t_red_off - t_red_on))
+
   return(valid_red_events)
 }
 
