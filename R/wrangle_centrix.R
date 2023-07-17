@@ -1,22 +1,13 @@
 check_inputs <- function(aspect_events, track_events) {
-  aspect_template <- data.frame(
-    period = numeric(),
-    signal = character(),
-    dt = lubridate::POSIXct(),
-    aspect = factor(),
-    past_aspect = factor()
-  )
+  aspect_names <- c("period", "signal", "dt", "aspect", "past_aspect")
+  aspect_types <- list(numeric(), character(), lubridate::POSIXct(),
+                       character(), character())
+  check_df(aspect_events, aspect_names, aspect_types)
 
-  track_template <- data.frame(
-    period = numeric(),
-    track = character(),
-    dt = lubridate::POSIXct(),
-    occupied = logical(),
-    event = character()
-  )
-
-  vetr::vet(aspect_template, aspect_events, stop = TRUE)
-  vetr::vet(track_template, track_events, stop = TRUE)
+  track_names <- c("period", "track", "dt", "occupied", "event")
+  track_types <- list(numeric(), character(), lubridate::POSIXct(), logical(),
+                      character())
+  check_df(track_events, track_names, track_types)
 }
 
 find_intervals <- function(track_events, start_track, end_track) {
@@ -274,7 +265,30 @@ combine_track_aspect_events <- function(valid_track_activations,
   return(berth_events)
 }
 
-
+#' Wrangle Centrix Data
+#'
+#' This function performs data wrangling on aspect and track events data to
+#' create a data frame containing berth level information including TSAR (Time
+#' Signal At Red) and its sub-components. The data produced by this function is
+#' suitable for analysis.
+#'
+#' @param aspect_events A data frame representing aspect events data.
+#' @param track_events A data frame representing track events data.
+#'
+#' @return A data frame containing information about train berths, signals, and
+#'   times.
+#'
+#' @details The function performs data wrangling on the aspect and track events
+#'   data to create a data frame with comprehensive information about train
+#'   berths, signals, and various time durations, including TSAR and its
+#'   sub-components. The process involves several steps of data manipulation,
+#'   filtering, and validation to obtain the relevant information. The resulting
+#'   data frame includes columns related to signals, berths, train IDs, aspects,
+#'   times of signal changes, and various durations.
+#'
+#' @importFrom dplyr %>%
+#'
+#' @export
 wrangle_centrix <- function(aspect_events, track_events) {
   check_inputs(aspect_events, track_events)
 

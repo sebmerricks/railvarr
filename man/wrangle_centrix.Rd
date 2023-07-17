@@ -2,15 +2,31 @@
 % Please edit documentation in R/wrangle_centrix.R
 \name{wrangle_centrix}
 \alias{wrangle_centrix}
-\title{Wrangle raw Centrix data}
+\title{Wrangle Centrix Data}
 \usage{
 wrangle_centrix(aspect_events, track_events)
 }
 \arguments{
-\item{aspect_events}{Data frame containing pre-processed signal data.}
+\item{aspect_events}{A data frame representing aspect events data.}
 
-\item{track_events}{Data frame containing pre-processed track data.}
+\item{track_events}{A data frame representing track events data.}
+}
+\value{
+A data frame containing information about train berths, signals, and
+times.
 }
 \description{
-Wrangle raw Centrix data
+This function performs data wrangling on aspect and track events data to
+create a data frame containing berth level information including TSAR (Time
+Signal At Red) and its sub-components. The data produced by this function is
+suitable for analysis.
+}
+\details{
+The function performs data wrangling on the aspect and track events
+data to create a data frame with comprehensive information about train
+berths, signals, and various time durations, including TSAR and its
+sub-components. The process involves several steps of data manipulation,
+filtering, and validation to obtain the relevant information. The resulting
+data frame includes columns related to signals, berths, train IDs, aspects,
+times of signal changes, and various durations.
 }
