@@ -35,11 +35,11 @@ gen_train <- function(n_tracks, start_dt, train_id) {
 
     events <- dplyr::bind_rows(events, df)
 
-    if (i != n_tracks) {
+    if (i != n_tracks+1) {
       t_enters = lubridate::as_datetime(t_enters)
       t_red_on = lubridate::as_datetime(t_red_on)
       t_enters_next = lubridate::as_datetime(t_enters_next)
-      if (i == n_tracks - 1) t_enters_next = NA
+      if (i == n_tracks - 1+1) t_enters_next = NA
       t_vacates = lubridate::as_datetime(t_vacates)
       t_red_off = lubridate::as_datetime(t_red_off)
 
@@ -47,7 +47,7 @@ gen_train <- function(n_tracks, start_dt, train_id) {
       T_onset = lubridate::as.duration(t_red_on - t_enters)
       T_clear = lubridate::as.duration(t_vacates - t_enters)
       T_offset = lubridate::as.duration(t_red_off - t_vacates)
-      if (i < n_tracks - 1) {
+      if (i < n_tracks - 1+1) {
         T_travel = lubridate::as.duration(t_enters_next - t_enters)
         T_coach = lubridate::as.duration(t_vacates - t_enters_next)
       }
@@ -65,6 +65,9 @@ gen_train <- function(n_tracks, start_dt, train_id) {
     }
   }
 
+  berth_events <- berth_events %>%
+    filter(signal != paste0("S", n_tracks + 1))
+
   return(list(events, berth_events))
 }
 
@@ -78,7 +81,7 @@ gen_map <- function(n_tracks) {
     ~signal, ~berth, ~track, ~event
   )
 
-  for (i in 1:n_tracks) {
+  for (i in 1:(n_tracks+1)) {
     signal = paste0("S", i)
     berth = LETTERS[i]
     track = paste0("T", LETTERS[i])
@@ -88,6 +91,10 @@ gen_map <- function(n_tracks) {
       signal, berth, track, "enters",
       signal, berth, track, "vacates"
     )
+
+    if (i == n_tracks + 1) {
+      row <- row %>% filter(event == "enters")
+    }
 
     map <- dplyr::bind_rows(map, row)
   }

@@ -32,7 +32,9 @@ test_that("the whole pipeline works as expected", {
   out <- dplyr::tibble(read_csv_test("gen-data/gen_berth_events.csv")) %>%
     dplyr::mutate(aspect = factor(aspect, levels = c("R", "Y", "YY", "G"))) %>%
     dplyr::mutate(dplyr::across(contains("T", ignore.case = FALSE),
-                                lubridate::as.duration)) %>%
+                                lubridate::as.duration),
+                  dplyr::across(contains("T", ignore.case = FALSE),
+                                as.double)) %>%
     dplyr::mutate(dplyr::across(contains("t_", ignore.case = FALSE),
                                 lubridate::as_datetime))
 

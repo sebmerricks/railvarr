@@ -239,9 +239,8 @@ wrangle_centrix <- function(aspect_events, track_events) {
     select(signal, berth, train_id, aspect, t_enters, t_red_on, t_enters_next,
            t_vacates, t_red_off, TSAR, T_onset, T_clear, T_offset, T_travel,
            T_coach) %>%
-    mutate(across(TSAR:last_col(), as.double))
+    mutate(across(TSAR:last_col(), lubridate::as.duration),
+           across(TSAR:last_col(), as.double))
 
   return(berth_events)
 }
-
-
