@@ -3,7 +3,7 @@ gen_train <- function(stations, start_dt, stopping_pattern, travel_times,
   train_header = sprintf(stringi::stri_rand_strings(1, 5, "[A-Z0-9]"))
 
   start_dt = lubridate::as_datetime(start_dt)
-  dt_origin = start_dt - lubridate::duration(15, units = "minutes")
+  dt_origin = start_dt - lubridate::duration(21, units = "minutes")
 
   timetable <- dplyr::tribble(
     ~train_header, ~geo, ~dt_origin, ~event, ~wtt, ~t, ~delay, ~allow
@@ -61,9 +61,9 @@ gen_timetable <- function(n_trains, start_dt, t_between, stations, t_travels) {
 }
 
 stations <- c("station1", "station2", "station3")
-start_dt <- "2023-07-17 08:57:00"
+start_dt <- "2022-06-05 09:15:00"
 stopping_pattern <- c(TRUE, TRUE, TRUE)
-travel_times <- c(60, 240, 120)
+travel_times <- c(0, 90, 330)
 dwell_times <- c(30, 30, 30)
 gen_train(stations, start_dt, stopping_pattern, travel_times, dwell_times)
 t_between <- 30
