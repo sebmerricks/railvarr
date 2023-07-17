@@ -31,7 +31,7 @@ get_map <- function() {
 #'  track section while the last row defines the end of the section.
 #'
 #' @examples
-#' map <- tribble(
+#' map <- dplyr::tribble(
 #'   ~signal, ~berth, ~track, ~event,
 #'   "S1", "B1", "T1", "enters",
 #'   "S1", "B1", "T2", "vacates",

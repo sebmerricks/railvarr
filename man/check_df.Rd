@@ -56,7 +56,7 @@ names <- c("a", "b", "c")
 types <- list(integer(), character(), numeric())
 
 # Check data
-check_data(data, names, types)
+check_df(data, names, types)
 
 }
 \seealso{

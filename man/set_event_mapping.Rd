@@ -16,7 +16,7 @@ This function sets the event mapping table in the environment.
 }
 \examples{
 # Set a custom event mapping
-custom_mapping <- tribble(
+custom_mapping <- dplyr::tribble(
   ~event, ~name,
   "A", "Arrive",
   "D", "Depart"

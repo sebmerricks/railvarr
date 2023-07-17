@@ -61,6 +61,8 @@ find_time_windows <- function(track_activations_intervals, track_events) {
     ungroup() %>%
     mutate(window = row_number()) %>%
     select(period, window, interval)
+
+  return(time_windows)
 }
 
 window_track_activations <- function(track_events, time_windows) {

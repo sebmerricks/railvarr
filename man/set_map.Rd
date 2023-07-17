@@ -21,7 +21,7 @@ to process the data. Use \code{\link[=get_map]{get_map()}} to access the map onc
 stored.
 }
 \examples{
-map <- tribble(
+map <- dplyr::tribble(
   ~signal, ~berth, ~track, ~event,
   "S1", "B1", "T1", "enters",
   "S1", "B1", "T2", "vacates",

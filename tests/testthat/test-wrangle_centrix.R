@@ -17,8 +17,7 @@ test_that("the whole pipeline works as expected", {
   map <- read_csv_test("data/test_map.csv")
   set_map(map)
 
-  path <- system.file("tests/testthat/fixtures/data/centrix",
-                      package = "railvarr")
+  path <- test_path("fixtures/data/centrix")
   raw_data <- read_csv_files(path, show_col_types = FALSE) %>%
     dplyr::mutate(period = 1L,
                   dt = lubridate::as_datetime(dt))

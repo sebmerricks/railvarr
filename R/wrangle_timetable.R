@@ -33,7 +33,7 @@ get_event_mapping <- function() {
 #'
 #' @examples
 #' # Set a custom event mapping
-#' custom_mapping <- tribble(
+#' custom_mapping <- dplyr::tribble(
 #'   ~event, ~name,
 #'   "A", "Arrive",
 #'   "D", "Depart"
@@ -87,7 +87,7 @@ get_stations <- function() {
 #'
 #' @examples
 #' # Set stations using the function
-#' set_stations(c('Station A', 'Station B', 'Station C'))
+#' set_stations(list('Station A', 'Station B', 'Station C'))
 #'
 #' @importFrom vetr vet
 #'

@@ -60,7 +60,7 @@ stop_if_not <- function(..., msg = NULL) {
 #' types <- list(integer(), character(), numeric())
 #'
 #' # Check data
-#' check_data(data, names, types)
+#' check_df(data, names, types)
 #'
 #' @export
 check_df <- function(data, names, types, allow_extra = TRUE) {

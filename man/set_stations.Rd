@@ -21,7 +21,7 @@ function will raise an error.
 }
 \examples{
 # Set stations using the function
-set_stations(c('Station A', 'Station B', 'Station C'))
+set_stations(list('Station A', 'Station B', 'Station C'))
 
 }
 \seealso{
