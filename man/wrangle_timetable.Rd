@@ -2,13 +2,34 @@
 % Please edit documentation in R/wrangle_timetable.R
 \name{wrangle_timetable}
 \alias{wrangle_timetable}
-\title{Identifies the services that travel through the stations from start to end}
+\title{Wrangle Timetable}
 \usage{
 wrangle_timetable(timetable)
 }
 \arguments{
-\item{timetable}{Pre-processed timetable data}
+\item{timetable}{A data frame representing the timetable data.}
+}
+\value{
+A data frame containing the wrangled timetable subset.
 }
 \description{
-Identifies the services that travel through the stations from start to end
+This function performs data wrangling on the given timetable and returns a
+subset containing relevant information for specific stations and directions.
+}
+\details{
+The function performs the following steps to wrangle the timetable
+data: \itemize{\item{1. Checks if the stations have been set using
+\link{set_stations} and stops with an error if not.} \item{2. Identifies the start
+and end stations based on the currently set stations.} \item{3. Determines
+forward and backward directions based on the start and end stations.}
+\item{4. Filters and selects services that pass through both the start and
+end stations.} \item{5. Filters the services' direction (forward) and
+relevant event types.} \item{6. Orders the services based on time, defines
+their direction, and removes any edge cases.} \item{7. Selects the subset of
+the timetable with relevant columns for the output.} \item{8. Converts
+datetime columns to the "Europe/London" timezone using \link[lubridate:with_tz]{lubridate::with_tz}}
+}
+}
+\seealso{
+\link{set_stations}
 }
