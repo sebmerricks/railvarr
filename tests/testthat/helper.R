@@ -16,11 +16,11 @@ setup_csv_test <- function(name, n) {
 }
 
 read_rds_test <- function(filename) {
-  readr::read_rds(test_path("fixtures", filename))
+  readr::read_rds(testthat::test_path("fixtures", filename))
 }
 
 read_csv_test <- function(filename) {
-  read.csv(test_path("fixtures", filename))
+  read.csv(testthat::test_path("fixtures", filename))
 }
 
 read_excel_test <- function(filename) {

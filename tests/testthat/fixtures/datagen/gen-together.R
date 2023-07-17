@@ -1,5 +1,6 @@
-source(test_path("fixtures/datagen/gen-centrix.R"))
-source(test_path("fixtures/datagen/gen-timetable.R"))
+library(dplyr)
+source(testthat::test_path("fixtures/datagen/gen-centrix.R"))
+source(testthat::test_path("fixtures/datagen/gen-timetable.R"))
 
 gen_station_map <- function() {
   station_map <- dplyr::tribble(

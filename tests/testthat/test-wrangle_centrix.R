@@ -14,10 +14,10 @@ test_that("wrangle_centrix() produces expected output", {
 })
 
 test_that("the whole pipeline works as expected", {
-  map <- read_csv_test("gen-data/test_map.csv")
+  map <- read_csv_test("data/test_map.csv")
   set_map(map)
 
-  path <- system.file("tests/testthat/fixtures/gen-data/centrix",
+  path <- system.file("tests/testthat/fixtures/data/centrix",
                       package = "railvarr")
   raw_data <- read_csv_files(path, show_col_types = FALSE) %>%
     dplyr::mutate(period = 1L,
@@ -29,7 +29,7 @@ test_that("the whole pipeline works as expected", {
 
   berth_events <- wrangle_centrix(aspect_events, track_events)
 
-  out <- dplyr::tibble(read_csv_test("gen-data/gen_berth_events.csv")) %>%
+  out <- dplyr::tibble(read_csv_test("data/gen_berth_events.csv")) %>%
     dplyr::mutate(aspect = factor(aspect, levels = c("R", "Y", "YY", "G"))) %>%
     dplyr::mutate(dplyr::across(contains("T", ignore.case = FALSE),
                                 lubridate::as.duration),

@@ -105,8 +105,10 @@ gen_map <- function(n_tracks) {
 gen_centrix <- function(n_trains, t_between, n_tracks, start_dt,
                         centrix_name = "centrix/gen_centrix.csv",
                         berth_name = "gen_berth_events.csv") {
-  if (!grepl(centrix_name, ".csv")) centrix_name = paste0(centrix_name, ".csv")
-  if (!grepl(berth_name, ".csv")) berth_name = paste0(berth_name, ".csv")
+  if (!endsWith(centrix_name, ".csv"))
+    centrix_name = paste0(centrix_name, ".csv")
+  if (!endsWith(berth_name, ".csv"))
+    berth_name = paste0(berth_name, ".csv")
 
   centrix <- dplyr::tribble(~asset, ~dt, ~transition)
   berth_events <- dplyr::tribble(~signal, ~berth, ~train_id, ~aspect, ~t_enters,

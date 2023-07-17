@@ -18,3 +18,22 @@ test_that("set_stations() sets stations correctly", {
   set_stations(test2)
   expect_equal(get_stations(), test2)
 })
+
+test_that("wrangle_timetable() wrangles timetables correctly", {
+  timetable <- read_csv_test("data/timetable/timetable.csv") %>%
+    mutate(across(c(dt_origin, wtt, t),
+                  ~lubridate::with_tz(.x, tzone = "Europe/London")))
+  set_stations(as.list(unique(timetable$geo)))
+
+  tts <- wrangle_timetable(timetable)
+
+  out <- timetable %>%
+    mutate(allow = 0) %>%
+    select(-allow_perf, -allow_path, -allow_eng) %>%
+    rename(train_header = train_id) %>%
+    mutate(dt_origin = lubridate::as_datetime(dt_origin),
+           wtt = lubridate::as_datetime(wtt),
+           t = lubridate::as_datetime(t))
+
+  expect_equal(tts, out)
+})
