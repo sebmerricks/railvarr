@@ -103,6 +103,10 @@ check_df <- function(data, names, types, allow_extra = TRUE) {
     stop("Error in function definition.")
   }
 
-  vetr::vet(names, names(cols_to_check))
-  vetr::vet(types, cols_to_check)
+  names_equal = names == names(cols_to_check)
+  idx <- match(FALSE, names_equal)
+  if (!all(names_equal)) {
+    stop(glue::glue("Column {cols_to_check[idx]} should be named names[idx]"))
+  }
+  vetr::vet(types, cols_to_check, stop = TRUE)
 }

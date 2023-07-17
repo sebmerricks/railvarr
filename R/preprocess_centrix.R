@@ -43,14 +43,10 @@ get_map <- function() {
 #'
 #' @export
 set_map <- function(map) {
-  template <- data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character()
-  )
+  names <- c("signal", "berth", "track", "event")
+  types <- list(character(), character(), character(), character())
 
-  vetr::vet(template, map, stop = TRUE)
+  check_df(map, names, types)
 
   old <- env$map
   env$map <- map
@@ -75,17 +71,14 @@ split_signal_track_events <- function(raw_events,
                                       is_track =
                                         quote(stringr::str_starts(asset, "T"))
 ) {
-  tpl_raw_events <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-  )
-  vetr::vet(tpl_raw_events, raw_events, stop = TRUE)
+  names <- c("asset", "dt", "transition", "period")
+  types <- list(character(), lubridate::POSIXct(), character(), numeric())
+  check_df(raw_events, names, types)
 
   events <- raw_events %>%
+    select(all_of(names)) %>%
     mutate(is_track = eval(is_track)) %>%
-    group_by(is_track) %>%
+    group_by(.data$is_track) %>%
     group_split(.keep = F)
 
   return(events)
@@ -100,39 +93,31 @@ split_signal_track_events <- function(raw_events,
 #' @import dplyr
 #'
 preprocess_signal_events <- function(raw_signal_events) {
-  # Define the expected data structure
-  tpl_signal_events <- data.frame(
-    asset = character(),
-    dt = lubridate::POSIXct(),
-    transition = character(),
-    period = numeric()
-  )
-  # Check whether the raw data matches the expected structure
-  vetr::vet(tpl_signal_events, raw_signal_events, stop = TRUE)
+  names <- c("asset", "dt", "transition", "period")
+  types <- list(character(), lubridate::POSIXct(), character(), numeric())
+  check_df(raw_signal_events, names, types)
 
-  # Identify signal IDs and states
   signal_events <- raw_signal_events %>%
     mutate(
-      signal = stringr::str_split_i(asset, " ", i = 1),
-      state = stringr::str_split_i(asset, " ", i = 2)
+      signal = stringr::str_split_i(.data$asset, " ", i = 1),
+      state = stringr::str_split_i(.data$asset, " ", i = 2)
     ) %>%
-    filter(transition == "DN to UP") %>%
-    select(signal, dt, state, period)
+    filter(.data$transition == "DN to UP") %>%
+    select("signal", "dt", "state", "period")
 
   signals <- get_map() %>%
-    select(signal)
+    select("signal")
 
-  # Convert states to aspects
   aspect_events <- signal_events %>%
     semi_join(signals, by = "signal") %>%
     inner_join(
       env$state_mapping,
       by = "state"
     ) %>%
-    arrange(signal, dt) %>%
-    select(period, signal, dt, aspect) %>%
-    group_by(signal) %>%
-    mutate(past_aspect = lag(aspect)) %>%
+    arrange(.data$signal, .data$dt) %>%
+    select("period", "signal", "dt", "aspect") %>%
+    group_by(.data$signal) %>%
+    mutate(past_aspect = lag(.data$aspect)) %>%
     ungroup()
 
   return(aspect_events)

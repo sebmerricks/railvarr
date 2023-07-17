@@ -1,22 +1,15 @@
 test_that("set_map() errors with incorrect map structure", {
-  test1 <- data.frame(
-    signal = factor(),
-    berth = character(),
-    track = character(),
-    event = character()
+  test1 <- dplyr::tribble(
+    ~signal, ~berth, ~track, ~event,
+    1, "A", "TA", "hi"
   )
-  test2 <- data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    mileage = numeric()
+  test2 <- dplyr::tribble(
+    ~signal, ~berth, ~tracks,
+    "1", "A", "TA",
   )
-  test3 <- data.frame(
-    signal = character(),
-    berth = character(),
-    tracks = character(),
-    event = character()
+  test3 <- dplyr::tribble(
+    ~signal, ~berth, ~tracks, ~event,
+    "1", "A", "TA", "hi"
   )
 
   expect_error(set_map(test1))

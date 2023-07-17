@@ -1,7 +1,7 @@
 check_inputs <- function(aspect_events, track_events) {
   aspect_names <- c("period", "signal", "dt", "aspect", "past_aspect")
   aspect_types <- list(numeric(), character(), lubridate::POSIXct(),
-                       character(), character())
+                       factor(), factor())
   check_df(aspect_events, aspect_names, aspect_types)
 
   track_names <- c("period", "track", "dt", "occupied", "event")
