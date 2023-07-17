@@ -102,13 +102,9 @@ gen_map <- function(n_tracks) {
   return(map)
 }
 
-gen_centrix <- function() {
-  n_trains = as.integer(readline(prompt = "How many trains: "))
-  n_tracks = as.integer(readline(prompt = "How many tracks: "))
-  start_dt = readline(prompt = "Starting time: ")
-  centrix_name = readline(prompt = "Raw data file name: ")
-  berth_name = readline(prompt = "Berth events file name: ")
-
+gen_centrix <- function(n_trains, t_between, n_tracks, start_dt,
+                        centrix_name = "centrix/gen_centrix.csv",
+                        berth_name = "gen_berth_events.csv") {
   if (!grepl(centrix_name, ".csv")) centrix_name = paste0(centrix_name, ".csv")
   if (!grepl(berth_name, ".csv")) berth_name = paste0(berth_name, ".csv")
 
@@ -121,7 +117,7 @@ gen_centrix <- function() {
   start_dt <- as.double(lubridate::as_datetime(start_dt))
 
   for (i in 1:n_trains) {
-    dt = start_dt + 20*(i-1)*minute
+    dt = start_dt + t_between*(i-1)*minute
     data <- gen_train(n_tracks, dt, i-1)
     events <- data[[1]]
     berths <- data[[2]]

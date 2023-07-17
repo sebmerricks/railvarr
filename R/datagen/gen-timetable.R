@@ -39,7 +39,8 @@ gen_train <- function(stations, start_dt, stopping_pattern, travel_times,
   return(timetable)
 }
 
-gen_timetable <- function(n_trains, start_dt, t_between, stations, t_travels) {
+gen_timetable <- function(n_trains, t_between, start_dt, stations, t_travels,
+                          timetable_name = "timetable/timetable.csv") {
   # I will do only fast trains for now
   start_dt = lubridate::as_datetime(start_dt)
   t_between = lubridate::duration(t_between, units = "minutes")
@@ -57,14 +58,5 @@ gen_timetable <- function(n_trains, start_dt, t_between, stations, t_travels) {
     start_dt = start_dt + t_between
   }
 
-  return(timetable)
+  write_gen_data(timetable, timetable_name)
 }
-
-stations <- c("station1", "station2", "station3")
-start_dt <- "2022-06-05 09:15:00"
-stopping_pattern <- c(TRUE, TRUE, TRUE)
-travel_times <- c(0, 90, 330)
-dwell_times <- c(30, 30, 30)
-gen_train(stations, start_dt, stopping_pattern, travel_times, dwell_times)
-t_between <- 30
-gen_timetable(3, start_dt, t_between, stations, travel_times)
