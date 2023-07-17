@@ -1,3 +1,6 @@
+source(test_path("fixtures/datagen/gen-centrix.R"))
+source(test_path("fixtures/datagen/gen-timetable.R"))
+
 gen_station_map <- function() {
   station_map <- dplyr::tribble(
     ~signal, ~station, ~T_journey, ~T_dwell,
@@ -7,12 +10,10 @@ gen_station_map <- function() {
   )
 }
 
-#' Generate test data
-#' @export
 gen_test_data <- function(n_trains = 10, t_between = 30,
-                     n_tracks = 8, n_stations = 3,
-                     start_dt = "2023-07-17 09:21:00",
-                     station_map = gen_station_map()) {
+                          n_tracks = 8, n_stations = 3,
+                          start_dt = "2023-07-17 09:21:00",
+                          station_map = gen_station_map()) {
   network_map <- gen_map(n_tracks)
   station_map <- station_map
 

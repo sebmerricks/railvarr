@@ -1,7 +1,7 @@
 minute = 60
 second = 1
 
-gen_train <- function(n_tracks, start_dt, train_id) {
+gen_centrix_train <- function(n_tracks, start_dt, train_id) {
   start_dt <- as.double(lubridate::as_datetime(start_dt))
 
   events <- dplyr::tribble(~asset, ~dt, ~transition)
@@ -72,7 +72,7 @@ gen_train <- function(n_tracks, start_dt, train_id) {
 }
 
 write_gen_data <- function(data, filename) {
-  path = testthat::test_path("fixtures/gen-data", filename)
+  path = testthat::test_path("fixtures/data", filename)
   write.csv(data, path, row.names = FALSE)
 }
 
@@ -118,7 +118,7 @@ gen_centrix <- function(n_trains, t_between, n_tracks, start_dt,
 
   for (i in 1:n_trains) {
     dt = start_dt + t_between*(i-1)*minute
-    data <- gen_train(n_tracks, dt, i-1)
+    data <- gen_centrix_train(n_tracks, dt, i-1)
     events <- data[[1]]
     berths <- data[[2]]
     centrix <- dplyr::bind_rows(centrix, events)
@@ -132,5 +132,3 @@ gen_centrix <- function(n_trains, t_between, n_tracks, start_dt,
   write_gen_data(berth_events, berth_name)
   write_gen_data(map, "test_map.csv")
 }
-
-gen_centrix()

@@ -1,4 +1,4 @@
-gen_train <- function(stations, start_dt, stopping_pattern, travel_times,
+gen_tt_train <- function(stations, start_dt, stopping_pattern, travel_times,
                       dwell_times) {
   train_header = sprintf(stringi::stri_rand_strings(1, 5, "[A-Z0-9]"))
 
@@ -52,7 +52,7 @@ gen_timetable <- function(n_trains, t_between, start_dt, stations, t_travels,
   )
 
   for (i in 1:n_trains) {
-    tt <- gen_train(stations, start_dt, stopping_pattern,
+    tt <- gen_tt_train(stations, start_dt, stopping_pattern,
                     t_travels, NA)
     timetable <- dplyr::bind_rows(timetable, tt)
     start_dt = start_dt + t_between
