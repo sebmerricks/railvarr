@@ -15,9 +15,9 @@ find_intervals <- function(track_events, start_track, end_track) {
   end_track <- (get_map() %>% last())$track
 
   track_activations_start_end <- track_events %>%
-    filter((track == start_track & event == "enters") |
-             (track == end_track & event == "vacates")) %>%
-    select(period, track, dt) %>%
+    filter((.data$track == start_track & event == "enters") |
+             (.data$track == end_track & event == "vacates")) %>%
+    select("period", "track", "dt") %>%
     arrange(period, dt)
 
   track_activations_intervals <- track_activations_start_end %>%
@@ -25,11 +25,11 @@ find_intervals <- function(track_events, start_track, end_track) {
     filter(track != lead(track) &
              track == end_track &
              period == lead(period)) %>%
-    mutate(diff = as.integer(lubridate::as.duration(next_dt - dt))) %>%
+    mutate(diff = as.integer(lubridate::as.duration(.data$next_dt - dt))) %>%
     filter(diff > 0) %>%
     mutate(interval = lubridate::interval(start = dt + 1,
-                                          end = next_dt - 1)) %>%
-    select(period, interval)
+                                          end = .data$next_dt - 1)) %>%
+    select("period", "interval")
 
   return(track_activations_intervals)
 }
@@ -185,7 +185,7 @@ find_good_windows <- function(track_activations_windows, red_events_windowed) {
       find_valid_aspect_events(),
     by = "window"
   ) %>%
-    filter(!is.na(ntrains) & ntrains_track == ntrains)
+    filter(!is.na(.data$ntrains) & .data$ntrains_track == .data$ntrains)
 }
 
 validate_track_activations <- function(track_activations_windows,
@@ -224,7 +224,7 @@ combine_track_aspect_events <- function(valid_track_activations,
     inner_join(
       get_map(), by = c("track", "event")
     ) %>%
-    select(window, signal, berth, dt, event)
+    select("window", "signal", "berth", "dt", "event")
 
   windowed_train_ids <- add_signal_berth %>%
     arrange(window, signal, dt) %>%
@@ -234,13 +234,13 @@ combine_track_aspect_events <- function(valid_track_activations,
 
   calculate_timings <- windowed_train_ids %>%
     tidyr::pivot_wider(
-      id_cols = c(window,signal,berth,window_train_id),
-      values_from = dt,
-      names_from = event,
+      id_cols = c("window", "signal", "berth", "window_train_id"),
+      values_from = "dt",
+      names_from = "event",
       names_glue = "t_{.name}"
     ) %>%
     group_by(window, window_train_id) %>%
-    mutate(t_enters_next = lead(t_enters)) %>%
+    mutate(t_enters_next = lead(.data$t_enters)) %>%
     ungroup()
 
   add_red_events <- calculate_timings %>%
@@ -255,17 +255,17 @@ combine_track_aspect_events <- function(valid_track_activations,
 
   calculate_durations <- train_ids %>%
     mutate(
-      T_onset  = t_red_on - t_enters,
-      T_offset = t_red_off - t_vacates,
-      T_travel = t_enters_next - t_enters,
-      T_coach  = t_vacates - t_enters_next,
-      T_clear = t_vacates - t_enters,
+      T_onset  = .data$t_red_on - .data$t_enters,
+      T_offset = .data$t_red_off - .data$t_vacates,
+      T_travel = .data$t_enters_next - .data$t_enters,
+      T_coach  = .data$t_vacates - .data$t_enters_next,
+      T_clear = .data$t_vacates - .data$t_enters,
     )
 
   berth_events <- calculate_durations %>%
-    select(signal, berth, train_id, aspect, t_enters, t_red_on, t_enters_next,
-           t_vacates, t_red_off, TSAR, T_onset, T_clear, T_offset, T_travel,
-           T_coach) %>%
+    select("signal", "berth", "train_id", "aspect", "t_enters", "t_red_on",
+           "t_enters_next", "t_vacates", "t_red_off", "TSAR", "T_onset",
+           "T_clear", "T_offset", "T_travel", "T_coach") %>%
     mutate(across(TSAR:last_col(), lubridate::as.duration),
            across(TSAR:last_col(), as.double))
 

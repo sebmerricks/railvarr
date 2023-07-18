@@ -191,16 +191,16 @@ match_ids <- function(berth_groups,
 
 combine_ids <- function(ids, observed, timetable) {
   duplicates <- timetable %>%
-    group_by(train_header, geo, event) %>%
+    group_by(.data$train_header, .data$geo, .data$event) %>%
     summarise(n = n(), .groups = "drop") %>%
     filter(n > 1)
 
   ids_together <- timetable %>%
-    select(train_header, geo, t, event) %>%
+    select("train_header", "geo", "t", "event", "group") %>%
     anti_join(duplicates, by = c("train_header", "geo", "event")) %>%
     filter(event %in% c("Pass", "Arrive", "Depart")) %>%
-    pivot_wider(
-      id_cols = c("train_header", "geo"),
+    tidyr::pivot_wider(
+      id_cols = c("train_header", "geo", "group"),
       values_from = "t",
       names_from = "event",
       names_glue = "t_{.name}"
@@ -209,17 +209,15 @@ combine_ids <- function(ids, observed, timetable) {
                  select("train_id", "train_header"),
                by = "train_header") %>%
     inner_join(observed %>%
-                 select(train_id, signal, t_enters) %>%
-                 inner_join(get_station_mapping(),
+                 select("train_id", "signal", "t_enters") %>%
+                 inner_join(get_network_map() %>%
+                              select("signal", "geo"),
                             by = "signal",
                             relationship = "many-to-many"),
                by = c("geo", "train_id")) %>%
     arrange(train_id) %>%
-    mutate(t = if_else(is.na(t_Pass), t_Arrive, t_Pass)) %>%
-    select(train_id, train_header, geo, t_enters, t) %>%
-    left_join(train_classes %>%
-                select(train_id, group),
-              by = "train_id")
+    mutate(t = if_else(is.na(.data$t_Pass), .data$t_Arrive, t_Pass)) %>%
+    select("train_id", "train_header", "geo", "t_enters", "t", "group")
   return(ids_together)
 }
 
