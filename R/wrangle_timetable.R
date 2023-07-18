@@ -1,4 +1,4 @@
-env$event_mapping <- tribble(
+env$event_mapping <- dplyr::tribble(
   ~event, ~name,
   "O", "Originate",
   "P", "Pass",
