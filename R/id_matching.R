@@ -1,31 +1,32 @@
-env$station_mapping <- dplyr::tribble(
-  ~signal, ~geo
-)
+preprocess_berths <- function(berth_events, train_classes) {
+  berth_groups <- berth_events %>%
+    inner_join(
+      train_classes %>%
+        select(train_id, group),
+      by = "train_id"
+    )
 
-get_station_mapping <- function() {
-  return(env$station_mapping)
+  berth_groups <- berth_groups %>%
+    group_by(.data$train_id) %>%
+    mutate(day = lubridate::date(first(.data$t_enters)),
+           start_hour = lubridate::hour(first(.data$t_enters)),
+           end_hour = lubridate::hour(last(.data$t_enters))) %>%
+    ungroup()
+
+  return(berth_groups)
 }
 
-set_station_mapping <- function(station_mapping) {
-  names <- c("signal", "geo")
-  types <- list(character(), character())
-  check_df(station_mapping, names, types, allow_extra = FALSE)
-  env$station_mapping <- station_mapping
-}
+preprocess_timetable <- function(timetable) {
+  timetable_groups <- timetable %>%
+    filter(!is.na(.data$t)) %>%
+    group_by(.data$train_header) %>%
+    mutate(day = lubridate::date(first(.data$t))) %>%
+    mutate(start_hour = lubridate::hour(first(.data$t)),
+           end_hour = lubridate::hour(last(.data$t))) %>%
+    ungroup() %>%
+    arrange(.data$dt_origin)
 
-env$group_details <- dplyr::tribble(
-  ~group, ~n_stops
-)
-
-get_group_details <- function() {
-  return(env$group_details)
-}
-
-set_group_details <- function(group_details) {
-  names <- c("group", "n_stops")
-  types <- list(character(), integer())
-  check_df(group_details, names, types)
-  env$group_details <- group_details
+  return(timetable_groups)
 }
 
 fuzzy_less_than <- function(observed, rounded, tolerance = 1) {
@@ -47,11 +48,12 @@ fuzzy_equals <- function(observed, rounded, tolerance = 1) {
 pair_observations <- function(observed, timetable) {
   #is.null(get_station_mapping())?
 
+  # Identify Duplicates
   duplicates <- timetable %>%
     group_by(.data$train_header, .data$geo, .data$event) %>%
     summarise(n = n(), .groups = "drop") %>%
     filter(.data$n > 1)
-
+  # Remove Duplicates
   timetable <- timetable %>%
     anti_join(duplicates, by = "train_header")
 
@@ -76,7 +78,8 @@ pair_observations <- function(observed, timetable) {
               by = c("day", "start_hour")) %>%
     semi_join(timetable,
               by = c("day", "end_hour")) %>%
-    inner_join(get_station_mapping(),
+    inner_join(get_network_map() %>%
+                 select("signal", "geo"),
                by = "signal",
                relationship = "many-to-many") %>%
     left_join(timetable_wider %>%
@@ -101,31 +104,56 @@ pair_observations <- function(observed, timetable) {
     filter(row_number() == 1) %>%
     ungroup()
 
-  paired_observations <- aligned_observations %>%
-    group_by(.data$train_id, .data$train_header, .data$geo) %>%
-    mutate(geo = str_split_fixed(.data$geo, " |-", n = 3)[[1]])
+  paired_observations <- aligned_observations
+  #    group_by(.data$train_id, .data$train_header, .data$geo) %>%
+  #    mutate(geo = str_split_fixed(.data$geo, " |-", n = 3)[[1]])
 
   return(paired_observations)
 }
 
-match_fast <- function(observed, timetable, pass, operators, fuzzy_tolerance,
-                       tolerance) {
-  paired_observations <- pair_observations(observed, timetable) %>%
-    filter(.data$geo == str_split_fixed(pass, " |-", n = 3)[[1]])
-
+match_pass <- function(t_enters, t_vacates, t_Pass, lb, ub,
+                       operators, fuzzy_tolerance, tolerance) {
   if (operators == "fuzzy") {
-    filtered_observations <- paired_observations %>%
-      filter(fuzzy_less_than(.data$t_enters - tolerance*240, .data$t_Pass,
-                             fuzzy_tolerance) &
-               fuzzy_greater_than(.data$t_enters + tolerance*60, .data$t_Pass,
-                                  fuzzy_tolerance))
+    return(fuzzy_less_than(t_enters + tolerance*lb, t_Pass, fuzzy_tolerance) &
+             fuzzy_greater_than(t_vacates + tolerance*ub, t_Pass, fuzzy_tolerance))
   } else {
-    filtered_observations <- paired_observations %>%
-      filter((.data$t_enters - tolerance*240 < .data$t_Pass) &
-               (.data$t_enters + tolerance*60 < .data$t_Pass))
+    return(t_enters + tolerance*lb < t_Pass & t_vacates + tolerance*ub > t_Pass)
   }
+}
 
-  matched <- filtered_observations %>%
+match_stop <- function(t_enters, t_vacates, t_Arrive, t_Depart, lb, ub,
+                       operators, fuzzy_tolerance, tolerance) {
+  if (operators == "fuzzy") {
+    return(fuzzy_less_than(t_enters + tolerance*lb, t_Arrive, fuzzy_tolerance) &
+             fuzzy_greater_than(t_vacates + tolerance*ub, t_Depart,
+                                fuzzy_tolerance))
+  } else {
+    return(t_enters + tolerance*lb < t_Arrive &
+             t_vacates + tolerance*ub > t_Depart)
+  }
+}
+
+match_group <- function(observed, timetable, match_map,
+                        operators, fuzzy_tolerance, tolerance) {
+  paired_observations <- pair_observations(observed, timetable)
+
+  match_at <- paired_observations %>%
+    inner_join(match_map, by = "geo")
+
+  is_matched <- match_at %>%
+    mutate(is_match = if_else(
+      .data$event == "Pass",
+      match_pass(.data$t_enters, .data$t_vacates, .data$t_Pass, .data$lb,
+                 .data$ub, operators, fuzzy_tolerance, tolerance),
+      match_stop(.data$t_enters, .data$t_vacates, .data$t_Arrive,
+                 .data$t_Depart, .data$lb, .data$ub, operators, fuzzy_tolerance,
+                 tolerance)
+    )) %>%
+    select(train_id, train_header, t_enters, t_vacates, t_Pass, t_Arrive,
+           t_Depart, is_match, group)
+
+  matched <- is_matched %>%
+    filter(is_match) %>%
     group_by(.data$train_id) %>%
     mutate(tdiff = .data$t_Pass - .data$t_enters) %>%
     slice_min(order_by = .data$tdiff) %>%
@@ -134,40 +162,33 @@ match_fast <- function(observed, timetable, pass, operators, fuzzy_tolerance,
     group_by(.data$train_id) %>%
     slice_min(order_by = .data$train_header) %>%
     arrange(.data$train_id) %>%
-    select("train_id", "train_header")
+    select(-"is_match", -"tdiff") %>%
+    distinct(train_id, train_header, .keep_all = TRUE)
 
   return(matched)
 }
 
-match_stopping <- function(observed, timetable, operators, match_at, expected_n,
-                           fuzzy_tolerance) {
-  paired_observations <- pair_observations(observed, timetable)
+match_ids <- function(berth_groups,
+                      timetable_groups,
+                      group_map,
+                      operators = "fuzzy",
+                      fuzzy_tolerance = 1,
+                      tolerance = 1) {
+  matched_ids <- dplyr::tribble(~train_id, ~train_header)
 
-  if (operators == "fuzzy") {
-    filtered_observations <- paired_observations %>%
-      filter(fuzzy_less_than(.data$t_enters, .data$t_Arrive, fuzzy_tolerance) &
-               fuzzy_greater_than(.data$t_vacates, .data$t_Depart,
-                                  fuzzy_tolerance))
-  } else {
-    filtered_observations <- paired_observations %>%
-      filter(.data$t_enters < .data$t_Arrive &
-               .data$t_vacates > .data$t_Depart)
+  for (g in names(group_map)) {
+    observed_group <- berth_groups %>%
+      filter(.data$group == g)
+    timetable_group <- timetable_groups %>%
+      filter(.data$group == g)
+
+    matched <- match_group(observed_group, timetable_group, group_map[[g]],
+                           operators, fuzzy_tolerance, tolerance)
+
+    matched_ids <- dplyr::bind_rows(matched_ids, matched)
   }
 
-  summarised <- filtered_observations %>%
-    group_by(.data$train_id, .data$train_header) %>%
-    summarise(n = n(),
-              .groups = "drop")
-
-  if (match_at == "all") {
-    summarised <- summarised %>%
-      filter(.data$n == expected_n)
-  }
-
-  matched <- summarised %>%
-    select("train_id", "train_header")
-
-  return(matched)
+  return(matched_ids %>% arrange(train_id))
 }
 
 combine_ids <- function(ids, observed, timetable) {
@@ -178,7 +199,7 @@ combine_ids <- function(ids, observed, timetable) {
 
   ids_together <- timetable %>%
     select(train_header, geo, t, event) %>%
-    anti_join(duplicates) %>%
+    anti_join(duplicates, by = c("train_header", "geo", "event")) %>%
     filter(event %in% c("Pass", "Arrive", "Depart")) %>%
     pivot_wider(
       id_cols = c("train_header", "geo"),
@@ -186,71 +207,22 @@ combine_ids <- function(ids, observed, timetable) {
       names_from = "event",
       names_glue = "t_{.name}"
     ) %>%
-    inner_join(ids,
+    inner_join(ids %>%
+                 select("train_id", "train_header"),
                by = "train_header") %>%
     inner_join(observed %>%
                  select(train_id, signal, t_enters) %>%
-                 inner_join(get_station_mapping())) %>%
+                 inner_join(get_station_mapping(),
+                            by = "signal",
+                            relationship = "many-to-many"),
+               by = c("geo", "train_id")) %>%
     arrange(train_id) %>%
     mutate(t = if_else(is.na(t_Pass), t_Arrive, t_Pass)) %>%
     select(train_id, train_header, geo, t_enters, t) %>%
     left_join(train_classes %>%
-                select(train_id, group))
+                select(train_id, group),
+              by = "train_id")
   return(ids_together)
-}
-
-match_ids <- function(berth_groups,
-                      timetable_groups,
-                      operators = "fuzzy",
-                      match_at = "any",
-                      fuzzy_tolerance = 1,
-                      fast_tolerance = 1) {
-  berth_groups <- berth_groups %>%
-    group_by(.data$train_id) %>%
-    mutate(day = lubridate::date(first(.data$t_enters)),
-           start_hour = lubridate::hour(first(.data$t_enters)),
-           end_hour = lubridate::hour(last(.data$t_enters))) %>%
-    ungroup()
-
-  timetable_groups <- timetable_groups %>%
-    filter(!is.na(.data$t)) %>%
-    group_by(.data$train_header) %>%
-    mutate(day = lubridate::date(first(.data$t))) %>%
-    mutate(start_hour = lubridate::hour(first(.data$t)),
-           end_hour = lubridate::hour(last(.data$t))) %>%
-    ungroup() %>%
-    arrange(.data$dt_origin)
-
-  groups <- inner_join(
-    timetable_groups %>% distinct(.data$group),
-    berth_groups %>% distinct(.data$group),
-    by = "group"
-  )
-
-  matched_ids <- dplyr::tribble(~train_id, ~train_header)
-
-  for (i in 1:nrow(groups)) {
-    g <- groups[[i,1]]
-    observed_group <- berth_groups %>%
-      filter(.data$group == g)
-    timetable_group <- timetable_groups %>%
-      filter(.data$group == g)
-
-    if (grepl("fast", g)) {
-      pass <- (get_group_details() %>% filter(.data$group == g))$pass_at
-      matched <- match_fast(observed_group, timetable_group,
-                            pass, operators, fuzzy_tolerance, fast_tolerance)
-    } else {
-      expected_n <- (get_group_details() %>% filter(.data$group == g))$n_stops
-      matched <- match_stopping(observed_group, timetable_group,
-                                operators, match_at, expected_n,
-                                fuzzy_tolerance)
-    }
-
-    matched_ids <- dplyr::bind_rows(matched_ids, matched)
-  }
-
-  return(combine_ids(matched_ids, berth_groups, timetable_groups))
 }
 
 accuracy <- function(ids) {

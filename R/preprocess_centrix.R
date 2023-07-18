@@ -3,7 +3,8 @@ env$map <- data.frame(
   signal = character(),
   berth = character(),
   track = character(),
-  event = character()
+  event = character(),
+  geo = character()
 )
 
 #' Retrieve network map
