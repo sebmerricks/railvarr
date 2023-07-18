@@ -3,7 +3,8 @@ test_that("get_map() works", {
     signal = character(),
     berth = character(),
     track = character(),
-    event = character()
+    event = character(),
+    geo = character()
   ))
 })
 
@@ -12,7 +13,8 @@ test_that("set_map() works", {
     signal = character(),
     berth = character(),
     track = character(),
-    event = character()
+    event = character(),
+    geo = character()
   )
 
   set_map(map)

@@ -46,8 +46,6 @@ fuzzy_equals <- function(observed, rounded, tolerance = 1) {
 }
 
 pair_observations <- function(observed, timetable) {
-  #is.null(get_station_mapping())?
-
   # Identify Duplicates
   duplicates <- timetable %>%
     group_by(.data$train_header, .data$geo, .data$event) %>%
