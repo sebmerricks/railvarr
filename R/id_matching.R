@@ -397,7 +397,12 @@ combine_data <- function(ids, observed, timetable) {
                by = c("geo", "train_id")) %>%
     arrange(.data$train_id) %>%
     select("train_id", "train_header", "group", "geo", "t_enters", "t_vacates",
-           "t_Pass", "t_Arrive", "t_Depart")
+           "t_Pass", "t_Arrive", "t_Depart") %>%
+    mutate(t = if_else(
+      is.na(.data$t_Pass),
+      .data$t_Arrive,
+      .data$t_Pass
+    ))
 
   return(combined_data)
 }
@@ -416,15 +421,19 @@ combine_data <- function(ids, observed, timetable) {
 #' @importFrom glue glue
 #'
 #' @export
-accuracy <- function(ids) {
+accuracy <- function(ids, group_map) {
   ids <- ids %>%
-    mutate(tdiff = as.integer(.data$t_enters - .data$t),
-           tdiff2 = .data$tdiff * .data$tdiff)
+    left_join(group_map %>%
+                select(group, lb, ub),
+              by = "group",
+              relationship = "many-to-many") %>%
+    mutate(acc = as.integer(.data$t_enters + .data$lb - .data$t),
+           acc2 = .data$acc * .data$acc)
 
-  ma = summary(ids$tdiff)[["Mean"]]
-  msa = summary(ids$tdiff2)[["Mean"]]
+  ma = summary(ids$acc)
+  m2a = summary(ids$acc2)
 
-  print(glue::glue(
-    "Mean Accuracy: {ma}s      Mean Squared Accuracy: {msa}s^2"
-  ))
+  print(glue::glue("Mean Accuracy: {ma[['Mean']]}s       Mean Squared Accuracy: {m2a[['Mean']]}s^2"))
+
+  return(ids)
 }
