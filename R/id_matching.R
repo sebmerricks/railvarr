@@ -43,7 +43,7 @@ pair_observations <- function(observed, timetable) {
   observed_geos <- observed %>%
     inner_join(get_map() %>%
                  select("signal", "geo") %>%
-                 distinct(signal, geo),
+                 distinct(.data$signal, .data$geo),
                by = "signal",
                relationship = "many-to-many")
 
@@ -105,12 +105,14 @@ match_group <- function(observed, timetable, match_map,
                    .data$t_Depart, .data$lb, .data$ub, operators, fuzzy_tolerance,
                    tolerance)
       )) %>%
-      select(train_id, train_header, t_enters, t_vacates, t_Pass, t_Arrive,
-             t_Depart, is_match, group)
+      select("train_id", "train_header", "t_enters", "t_vacates", "t_Pass",
+             "t_Arrive", "t_Depart", "is_match", "group")
 
     matched <- is_matched %>%
-      filter(is_match) %>%
-      mutate(t = if_else(is.na(t_Pass), t_Arrive, t_Pass)) %>%
+      filter(.data$is_match) %>%
+      mutate(t = if_else(is.na(.data$t_Pass),
+                         .data$t_Arrive,
+                         .data$t_Pass)) %>%
       group_by(.data$train_id) %>%
       mutate(tdiff = .data$t - .data$t_enters) %>%
       slice_min(order_by = .data$tdiff) %>%
@@ -120,7 +122,7 @@ match_group <- function(observed, timetable, match_map,
       slice_min(order_by = .data$train_header) %>%
       arrange(.data$train_id) %>%
       select(-"is_match", -"t", -"tdiff") %>%
-      distinct(train_id, train_header, .keep_all = TRUE)
+      distinct(.data$train_id, .data$train_header, .keep_all = TRUE)
   } else {
     matched <- match_at %>% select("train_id", "train_header")
   }
@@ -148,7 +150,7 @@ preprocess_berths <- function(berth_events, train_classes) {
     select("signal", "train_id", "t_enters", "t_vacates") %>%
     inner_join(
       train_classes %>%
-        select(train_id, group),
+        select("train_id", "group"),
       by = "train_id"
     )
 
@@ -315,7 +317,7 @@ match_ids <- function(berth_groups,
     matched_ids <- dplyr::bind_rows(matched_ids, matched)
   }
 
-  return(matched_ids %>% arrange(train_id))
+  return(matched_ids %>% arrange(.data$train_id))
 }
 
 #' Combine Observed and Timetable Data based on ID Matching
@@ -371,7 +373,7 @@ combine_data <- function(ids, observed, timetable) {
   timetable_wider <- timetable %>%
     select("train_header", "geo", "t", "event", "group") %>%
     anti_join(duplicates, by = c("train_header", "geo", "event")) %>%
-    filter(event %in% c("Pass", "Arrive", "Depart")) %>%
+    filter(.data$event %in% c("Pass", "Arrive", "Depart")) %>%
     tidyr::pivot_wider(
       id_cols = c("train_header", "geo", "group"),
       values_from = "t",
@@ -383,7 +385,7 @@ combine_data <- function(ids, observed, timetable) {
     select("train_id", "signal", "t_enters", "t_vacates") %>%
     inner_join(get_map() %>%
                  select("signal", "geo") %>%
-                 distinct(signal, geo),
+                 distinct(.data$signal, .data$geo),
                by = "signal",
                relationship = "many-to-many")
 
@@ -393,7 +395,7 @@ combine_data <- function(ids, observed, timetable) {
                by = "train_header") %>%
     inner_join(observed_geos,
                by = c("geo", "train_id")) %>%
-    arrange(train_id) %>%
+    arrange(.data$train_id) %>%
     select("train_id", "train_header", "group", "geo", "t_enters", "t_vacates",
            "t_Pass", "t_Arrive", "t_Depart")
 

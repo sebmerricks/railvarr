@@ -15,19 +15,19 @@ find_intervals <- function(track_events, start_track, end_track) {
   end_track <- (get_map() %>% last())$track
 
   track_activations_start_end <- track_events %>%
-    filter((.data$track == start_track & event == "enters") |
-             (.data$track == end_track & event == "vacates")) %>%
+    filter((.data$track == start_track & .data$event == "enters") |
+             (.data$track == end_track & .data$event == "vacates")) %>%
     select("period", "track", "dt") %>%
-    arrange(period, dt)
+    arrange(.data$period, .data$dt)
 
   track_activations_intervals <- track_activations_start_end %>%
-    mutate(next_dt = lead(dt)) %>%
-    filter(track != lead(track) &
-             track == end_track &
-             period == lead(period)) %>%
-    mutate(diff = as.integer(lubridate::as.duration(.data$next_dt - dt))) %>%
-    filter(diff > 0) %>%
-    mutate(interval = lubridate::interval(start = dt + 1,
+    mutate(next_dt = lead(.data$dt)) %>%
+    filter(.data$track != lead(.data$track) &
+             .data$track == end_track &
+             .data$period == lead(.data$period)) %>%
+    mutate(diff = as.integer(lubridate::as.duration(.data$next_dt - .data$dt))) %>%
+    filter(.data$diff > 0) %>%
+    mutate(interval = lubridate::interval(start = .data$dt + 1,
                                           end = .data$next_dt - 1)) %>%
     select("period", "interval")
 
@@ -36,31 +36,32 @@ find_intervals <- function(track_events, start_track, end_track) {
 
 find_time_windows <- function(track_activations_intervals, track_events) {
   has_no_activations <- track_activations_intervals %>%
-    mutate(start = lubridate::int_start(interval),
-           end = lubridate::int_end(interval)) %>%
+    mutate(start = lubridate::int_start(.data$interval),
+           end = lubridate::int_end(.data$interval)) %>%
     full_join(track_events,
               by = join_by(between(y$dt, x$start, x$end))) %>%
-    mutate(has_activations = !is.na(dt),
-           period = period.x) %>%
-    select(period, interval, has_activations) %>%
-    filter(!has_activations)
+    mutate(has_activations = !is.na(.data$dt),
+           period = .data$period.x) %>%
+    select("period", "interval", "has_activations") %>%
+    filter(!.data$has_activations)
 
   time_windows <- has_no_activations %>%
-    group_by(period) %>%
+    group_by(.data$period) %>%
     mutate(
-      left = lubridate::int_end(interval) + 1,
-      right = lubridate::int_start(lead(interval)) - 1
+      left = lubridate::int_end(.data$interval) + 1,
+      right = lubridate::int_start(lead(.data$interval)) - 1
     ) %>%
     mutate(right = if_else(
-      is.na(right),
-      left + lubridate::days(1),
-      right
+      is.na(.data$right),
+      .data$left + lubridate::days(1),
+      .data$right
     )) %>%
-    select(period, left, right) %>%
-    mutate(interval = lubridate::interval(start = left, end = right)) %>%
+    select("period", "left", "right") %>%
+    mutate(interval = lubridate::interval(start = .data$left,
+                                          end = .data$right)) %>%
     ungroup() %>%
     mutate(window = row_number()) %>%
-    select(period, window, interval)
+    select("period", "window", "interval")
 
   return(time_windows)
 }
@@ -83,41 +84,42 @@ window_track_activations <- function(track_events, time_windows) {
 
 find_valid_track_activations <- function(track_activations_windows) {
   track_activation_counts <- track_activations_windows %>%
-    arrange(period, window, track, dt) %>%
-    group_by(period,window,track) %>%
-    mutate(past_event = lag(event)) %>%
+    arrange(.data$period, .data$window, .data$track, .data$dt) %>%
+    group_by(.data$period, .data$window, .data$track) %>%
+    mutate(past_event = lag(.data$event)) %>%
     ungroup() %>%
     # the next statement is too slow if done per grouping
-    mutate(past_event = tidyr::replace_na(past_event, "first")) %>%
-    group_by(period,window,track) %>%
+    mutate(past_event = tidyr::replace_na(.data$past_event, "first")) %>%
+    group_by(.data$period, .data$window, .data$track) %>%
     summarise(
       n = n(),
-      n_enters = sum(event == "enters"),
-      n_vacates = sum(event == "vacates"),
-      n_same_as_prior = sum(event == past_event),
+      n_enters = sum(.data$event == "enters"),
+      n_vacates = sum(.data$event == "vacates"),
+      n_same_as_prior = sum(.data$event == .data$past_event),
       .groups = "drop"
     )
 
   track_count <- get_map() %>%
-    distinct(track) %>%
+    distinct(.data$track) %>%
     nrow()
 
   track_activations_summarised <- track_activation_counts %>%
-    group_by(period, window) %>%
+    group_by(.data$period, .data$window) %>%
     summarise(
-      ntrains_track = first(n_enters),
-      ntracks = n_distinct(track),
-      distinct_track_counts = n_distinct(n),
-      any_different_enters_vacates = any((n_enters - n_vacates) != 0),
-      any_not_interlaced = any(n_same_as_prior > 0)
+      ntrains_track = first(.data$n_enters),
+      ntracks = n_distinct(.data$track),
+      distinct_track_counts = n_distinct(.data$n),
+      any_different_enters_vacates = any(
+        (.data$n_enters - .data$n_vacates) != 0),
+      any_not_interlaced = any(.data$n_same_as_prior > 0)
     )
 
   valid_track_activations_windowed <- track_activations_summarised %>%
     filter(
-      ntracks == track_count &
-        distinct_track_counts == 1 &
-        !any_not_interlaced &
-        !any_different_enters_vacates
+      .data$ntracks == track_count &
+        .data$distinct_track_counts == 1 &
+        !.data$any_not_interlaced &
+        !.data$any_different_enters_vacates
     ) %>%
     ungroup()
 
@@ -153,26 +155,27 @@ window_aspect_events <- function(aspect_events, time_windows) {
 
 find_valid_aspect_events <- function(red_events_windowed) {
   red_events_counts <- red_events_windowed %>%
-    group_by(window) %>%
+    group_by(.data$window) %>%
     summarise(
-      n_red_on = sum(aspect == "R"),
-      n_red_off = sum(aspect != "R"),
+      n_red_on = sum(.data$aspect == "R"),
+      n_red_off = sum(.data$aspect != "R"),
       .groups = "drop"
     )
 
   valid_signals <- get_map() %>%
-    group_by(signal) %>%
+    group_by(.data$signal) %>%
     filter(n() == 2) %>%
     ungroup()
 
   signal_count <- valid_signals %>%
-    distinct(signal) %>%
+    distinct(.data$signal) %>%
     nrow()
 
   valid_red_events_windowed <- red_events_counts %>%
-    filter((n_red_on == n_red_off) &  (n_red_on %% signal_count == 0)) %>%
-    mutate(ntrains = as.integer(n_red_on / signal_count)) %>%
-    select(window, ntrains)
+    filter((.data$n_red_on == .data$n_red_off) &
+             (.data$n_red_on %% signal_count == 0)) %>%
+    mutate(ntrains = as.integer(.data$n_red_on / signal_count)) %>%
+    select("window", "ntrains")
 
   return(valid_red_events_windowed)
 }
@@ -227,9 +230,9 @@ combine_track_aspect_events <- function(valid_track_activations,
     select("window", "signal", "berth", "dt", "event")
 
   windowed_train_ids <- add_signal_berth %>%
-    arrange(window, signal, dt) %>%
-    group_by(window, signal) %>%
-    mutate(window_train_id = cumsum(event == "enters")) %>%
+    arrange(.data$window, .data$signal, .data$dt) %>%
+    group_by(.data$window, .data$signal) %>%
+    mutate(window_train_id = cumsum(.data$event == "enters")) %>%
     ungroup()
 
   calculate_timings <- windowed_train_ids %>%
@@ -239,7 +242,7 @@ combine_track_aspect_events <- function(valid_track_activations,
       names_from = "event",
       names_glue = "t_{.name}"
     ) %>%
-    group_by(window, window_train_id) %>%
+    group_by(.data$window, .data$window_train_id) %>%
     mutate(t_enters_next = lead(.data$t_enters)) %>%
     ungroup()
 
@@ -249,7 +252,7 @@ combine_track_aspect_events <- function(valid_track_activations,
     )
 
   train_ids <- add_red_events %>%
-    group_by(window, window_train_id) %>%
+    group_by(.data$window, .data$window_train_id) %>%
     mutate(train_id = cur_group_id()) %>%
     ungroup()
 
@@ -266,8 +269,8 @@ combine_track_aspect_events <- function(valid_track_activations,
     select("signal", "berth", "train_id", "aspect", "t_enters", "t_red_on",
            "t_enters_next", "t_vacates", "t_red_off", "TSAR", "T_onset",
            "T_clear", "T_offset", "T_travel", "T_coach") %>%
-    mutate(across(TSAR:last_col(), lubridate::as.duration),
-           across(TSAR:last_col(), as.double))
+    mutate(across(.data$TSAR:last_col(), lubridate::as.duration),
+           across(.data$TSAR:last_col(), as.double))
 
   return(berth_events)
 }

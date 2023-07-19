@@ -86,7 +86,7 @@ read_excel_files <- function(path, progress = TRUE, ...) {
                   readxl::read_excel,
                   .progress = progress,
                   ...) %>%
-    list_rbind()
+    purrr::list_rbind()
 
   return(raw_data)
 }
