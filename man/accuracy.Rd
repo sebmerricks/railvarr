@@ -4,10 +4,12 @@
 \alias{accuracy}
 \title{Calculate Mean Accuracy and Mean Squared Accuracy of ID Matching}
 \usage{
-accuracy(ids)
+accuracy(ids, group_map)
 }
 \arguments{
 \item{ids}{A data frame with matched IDs.}
+
+\item{group_map}{A data frame containing matching information for each group}
 }
 \value{
 A message displaying the calculated mean accuracy and mean squared
