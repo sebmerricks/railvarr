@@ -1,4 +1,12 @@
 test_that("get_map() works", {
+  set_map(data.frame(
+    signal = character(),
+    berth = character(),
+    track = character(),
+    event = character(),
+    geo = character()
+  ))
+
   expect_equal(get_map(), data.frame(
     signal = character(),
     berth = character(),
