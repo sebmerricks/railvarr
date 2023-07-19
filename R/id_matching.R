@@ -156,10 +156,12 @@ preprocess_berths <- function(berth_events, train_classes) {
 
   berth_groups <- berth_groups %>%
     group_by(.data$train_id) %>%
-    mutate(day = lubridate::date(first(.data$t_enters)),
-           start_hour = lubridate::hour(first(.data$t_enters)),
-           end_hour = lubridate::hour(last(.data$t_enters))) %>%
-    ungroup()
+    mutate(first = first(.data$t_enters)) %>%
+    ungroup() %>%
+    mutate(day = lubridate::date(.data$first),
+           start_hour = lubridate::hour(.data$first),
+           end_hour = lubridate::hour(.data$first)) %>%
+    select(-"first")
 
   return(berth_groups)
 }
@@ -187,10 +189,11 @@ preprocess_timetable <- function(timetable, train_classes) {
                by = "train_header") %>%
     filter(!is.na(.data$t)) %>%
     group_by(.data$train_header) %>%
-    mutate(day = lubridate::date(first(.data$t))) %>%
-    mutate(start_hour = lubridate::hour(first(.data$t)),
-           end_hour = lubridate::hour(last(.data$t))) %>%
+    mutate(first = first(.data$t)) %>%
     ungroup() %>%
+    mutate(day = lubridate::date(.data$first),
+           start_hour = lubridate::hour(.data$first),
+           end_hour = lubridate::hour(.data$first)) %>%
     arrange(.data$day, .data$t)
 
   return(timetable_groups)
