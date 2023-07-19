@@ -36,9 +36,21 @@ test_that("preprocess_timetable() produces expected output", {
                            allow_extra = F))
 })
 
-test_that("", {
-  berth_events <- read_rds_test("id-matching/berth_events_sample.rds")
-  timetable <- read_rds_test("id-matching/timetable_sample.rds")
+test_that("match_ids() produces expected output", {
+  map <- read_rds_test("id-matching/network_map.rds")
+  set_map(map)
+
   train_classes <- read_rds_test("id-matching/train_classes.rds")
+  berth_events <- read_rds_test("id-matching/berth_events_sample.rds") %>%
+    preprocess_berths(train_classes)
   calling_patterns <- read_rds_test("id-matching/calling_patterns_services.rds")
+  timetable <- read_rds_test("id-matching/timetable_sample.rds") %>%
+    preprocess_timetable(calling_patterns)
+  group_map <- read_rds_test("id-matching/group_map.rds")
+
+  matched_ids <- match_ids(berth_events, timetable, group_map)
+
+  expected <- read_rds_test("id-matching/matched_ids_sample.rds")
+
+  expect_equal(matched_ids %>% select(train_id, train_header), expected)
 })

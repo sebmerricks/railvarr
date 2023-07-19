@@ -40,42 +40,30 @@ pair_observations <- function(observed, timetable) {
                 ungroup(),
               by = c("train_header", "geo"))
 
-  aligned_observations <- observed %>%
-    semi_join(timetable,
-              by = c("day", "start_hour")) %>%
-    semi_join(timetable,
-              by = c("day", "end_hour")) %>%
+  observed_geos <- observed %>%
     inner_join(get_map() %>%
-                 select("signal", "geo"),
+                 select("signal", "geo") %>%
+                 distinct(signal, geo),
                by = "signal",
-               relationship = "many-to-many") %>%
-    left_join(timetable_wider %>%
-                select(-"end_hour", -"group"),
-              by = c("geo", "day", "start_hour"),
-              relationship = "many-to-many") %>%
-    left_join(timetable_wider %>%
-                select(-"start_hour", -"group"),
-              by = c("geo", "day", "end_hour"),
-              relationship = "many-to-many") %>%
-    tidyr::pivot_longer(
-      cols = matches("\\w\\W\\w"),
-      names_to = c(".value", "name"),
-      names_sep = -2L,
-      names_repair = "minimal",
-    ) %>%
-    select("signal", "geo", "train_id", "train_header", "t_enters", "t_vacates",
-           "t_Arrive", "t_Depart", "t_Pass", "group") %>%
-    filter(!is.na(.data$train_id) & !is.na(.data$train_header)) %>%
-    arrange(.data$train_id, .data$train_header, .data$t_enters) %>%
-    group_by(.data$train_id, .data$train_header, .data$geo) %>%
-    filter(row_number() == 1) %>%
-    ungroup()
+               relationship = "many-to-many")
 
-  paired_observations <- aligned_observations
-  #    group_by(.data$train_id, .data$train_header, .data$geo) %>%
-  #    mutate(geo = str_split_fixed(.data$geo, " |-", n = 3)[[1]])
+  start_hours <- observed_geos %>%
+    select(-"end_hour") %>%
+    inner_join(timetable_wider %>%
+                select(-"end_hour"),
+               by = c("group", "day", "start_hour", "geo"),
+               relationship = "many-to-many")
 
-  return(paired_observations)
+  end_hours <- observed_geos %>%
+    select(-"start_hour") %>%
+    inner_join(timetable_wider %>%
+                 select(-"start_hour"),
+               by = c("group", "day", "end_hour", "geo"),
+               relationship = "many-to-many")
+
+  aligned_observations <- bind_rows(start_hours, end_hours)
+
+  return(aligned_observations)
 }
 
 match_pass <- function(t_enters, t_vacates, t_Pass, lb, ub,
@@ -105,32 +93,37 @@ match_group <- function(observed, timetable, match_map,
   paired_observations <- pair_observations(observed, timetable)
 
   match_at <- paired_observations %>%
-    inner_join(match_map, by = "geo")
+    inner_join(match_map, by = c("group", "geo"))
 
-  is_matched <- match_at %>%
-    mutate(is_match = if_else(
-      .data$event == "Pass",
-      match_pass(.data$t_enters, .data$t_vacates, .data$t_Pass, .data$lb,
-                 .data$ub, operators, fuzzy_tolerance, tolerance),
-      match_stop(.data$t_enters, .data$t_vacates, .data$t_Arrive,
-                 .data$t_Depart, .data$lb, .data$ub, operators, fuzzy_tolerance,
-                 tolerance)
-    )) %>%
-    select(train_id, train_header, t_enters, t_vacates, t_Pass, t_Arrive,
-           t_Depart, is_match, group)
+  if (nrow(match_at) > 0) {
+    is_matched <- match_at %>%
+      mutate(is_match = if_else(
+        .data$event == "Pass",
+        match_pass(.data$t_enters, .data$t_vacates, .data$t_Pass, .data$lb,
+                   .data$ub, operators, fuzzy_tolerance, tolerance),
+        match_stop(.data$t_enters, .data$t_vacates, .data$t_Arrive,
+                   .data$t_Depart, .data$lb, .data$ub, operators, fuzzy_tolerance,
+                   tolerance)
+      )) %>%
+      select(train_id, train_header, t_enters, t_vacates, t_Pass, t_Arrive,
+             t_Depart, is_match, group)
 
-  matched <- is_matched %>%
-    filter(is_match) %>%
-    group_by(.data$train_id) %>%
-    mutate(tdiff = .data$t_Pass - .data$t_enters) %>%
-    slice_min(order_by = .data$tdiff) %>%
-    group_by(.data$train_header) %>%
-    slice_min(order_by = .data$tdiff) %>%
-    group_by(.data$train_id) %>%
-    slice_min(order_by = .data$train_header) %>%
-    arrange(.data$train_id) %>%
-    select(-"is_match", -"tdiff") %>%
-    distinct(train_id, train_header, .keep_all = TRUE)
+    matched <- is_matched %>%
+      filter(is_match) %>%
+      mutate(t = if_else(is.na(t_Pass), t_Arrive, t_Pass)) %>%
+      group_by(.data$train_id) %>%
+      mutate(tdiff = .data$t - .data$t_enters) %>%
+      slice_min(order_by = .data$tdiff) %>%
+      group_by(.data$train_header) %>%
+      slice_min(order_by = .data$tdiff) %>%
+      group_by(.data$train_id) %>%
+      slice_min(order_by = .data$train_header) %>%
+      arrange(.data$train_id) %>%
+      select(-"is_match", -"t", -"tdiff") %>%
+      distinct(train_id, train_header, .keep_all = TRUE)
+  } else {
+    matched <- match_at %>% select("train_id", "train_header")
+  }
 
   return(matched)
 }
@@ -332,14 +325,14 @@ match_ids <- function(berth_groups,
   names_berths <- c("signal", "train_id", "t_enters", "t_vacates", "group",
                     "day", "start_hour", "end_hour")
   types_berths <- list(character(), integer(), lubridate::POSIXct(),
-                       lubridate::POSIXct(), character(), lubridate::POSIXct(),
+                       lubridate::POSIXct(), character(), lubridate::Date(),
                        integer(), integer())
   check_df(berth_groups, names_berths, types_berths)
 
   names_tt <- c("train_header", "geo", "event", "wtt", "t", "group", "day",
                 "start_hour", "end_hour")
   types_tt <- list(character(), character(), character(), lubridate::POSIXct(),
-                   lubridate::POSIXct(), character(), lubridate::POSIXct(),
+                   lubridate::POSIXct(), character(), lubridate::Date(),
                    integer(), integer())
   check_df(timetable_groups, names_tt, types_tt)
 
@@ -387,9 +380,10 @@ combine_data <- function(ids, observed, timetable) {
     )
 
   observed_geos <- observed %>%
-    select("train_id", "signal", "t_enters") %>%
-    inner_join(get_network_map() %>%
-                 select("signal", "geo"),
+    select("train_id", "signal", "t_enters", "t_vacates") %>%
+    inner_join(get_map() %>%
+                 select("signal", "geo") %>%
+                 distinct(signal, geo),
                by = "signal",
                relationship = "many-to-many")
 
