@@ -128,6 +128,11 @@ match_group <- function(observed, timetable, match_map,
   return(matched)
 }
 
+#' Preprocess Berth Data for ID Matching
+#'
+#' @param berth_events Data frame containing berth data
+#' @param train_classes Data frame containing train classes
+#'
 #' @export
 preprocess_berths <- function(berth_events, train_classes) {
   names_berths <- c("signal", "train_id", "t_enters", "t_vacates")
@@ -157,6 +162,11 @@ preprocess_berths <- function(berth_events, train_classes) {
   return(berth_groups)
 }
 
+#' Preprocess Timetable Data for ID Matching
+#'
+#' @param timetable Data frame containing timetable data
+#' @param train_classes Data frame containing train classes
+#'
 #' @export
 preprocess_timetable <- function(timetable, train_classes) {
   names_tt <- c("train_header", "geo", "event", "wtt", "t")
@@ -191,7 +201,7 @@ preprocess_timetable <- function(timetable, train_classes) {
 #' the data.
 #'
 #' @param berth_groups A data frame containing observed Centrix data that has
-#'   been pre-processed for ID matching. See [preprocess_berths]. This data
+#'   been pre-processed for ID matching. See [preprocess_berths()]. This data
 #'   should contain the following columns:
 #'   \itemize{
 #'     \item \code{signal}: Character vector, signal ID.
@@ -201,13 +211,13 @@ preprocess_timetable <- function(timetable, train_classes) {
 #'     \item \code{t_vacates}: [POSIXct], the time when the train vacates the
 #'                      berth.
 #'     \item \code{group}: Character vector, the group name.
-#'     \item \code{day}: [POSIXct], the day of the journey.
+#'     \item \code{day}: [Date], the day of the journey.
 #'     \item \code{start_hour}: Integer, the start hour of the journey.
 #'     \item \code{end_hour}: Integer, the end hour of the journey.
 #'   }
 #'
 #' @param timetable_groups A data frame containing pre-processed timetable data
-#'   (see [preprocess_timetable]) with the following columns:
+#'   (see [preprocess_timetable()]) with the following columns:
 #'   \itemize{
 #'     \item \code{train_header}: Character vector, the train header.
 #'     \item \code{geo}: Character vector, the geographical location.
@@ -215,7 +225,7 @@ preprocess_timetable <- function(timetable, train_classes) {
 #'     \item \code{wtt}: [POSIXct], the time according to the working timetable.
 #'     \item \code{t}: [POSIXct], the actual time of the event.
 #'     \item \code{group}: Character vector, the group name.
-#'     \item \code{day}: [POSIXct], the day of the journey. Used to narrow down
+#'     \item \code{day}: [Date], the day of the journey. Used to narrow down
 #'                      the number of potential matches.
 #'     \item \code{start_hour}: Integer, the start hour of the journey. Used to
 #'                      narrow down the number of potential matches.
@@ -263,59 +273,6 @@ preprocess_timetable <- function(timetable, train_classes) {
 #' @importFrom dplyr bind_rows arrange filter
 #'
 #' @export
-#'
-#' @examples
-#' # First we have to set the network map
-#' network_map <- dplyr::tribble(
-#'   ~signal, ~berth, ~track, ~event, ~geo,
-#'   "A", "1", "1", "pass", "LocationX",
-#'   "B", "1", "1", "pass", "LocationY",
-#'   "C", "1", "1", "pass", "LocationZ"
-#' )
-#'
-#' set_map(network_map)
-#'
-#' # Example data frames for berth_groups, timetable_groups, and group_map
-#' berth_groups <- data.frame(signal = c("A", "B", "C"),
-#'                            train_id = c(1, 1, 1),
-#'                            t_enters = as.POSIXct(c("2023-07-19 12:00:00",
-#'                                                    "2023-07-19 13:00:00",
-#'                                                    "2023-07-19 14:00:00")),
-#'                            t_vacates = as.POSIXct(c("2023-07-19 12:01:00",
-#'                                                     "2023-07-19 13:01:00",
-#'                                                     "2023-07-19 14:01:00")),
-#'                            group = c("X", "X", "X"),
-#'                            day = as.POSIXct(c("2023-07-19",
-#'                                               "2023-07-19",
-#'                                               "2023-07-19")),
-#'                            start_hour = c(12, 13, 14),
-#'                            end_hour = c(12, 13, 14))
-#' timetable_groups <- data.frame(train_header = c("TrainA", "TrainA", "TrainA"),
-#'                                geo = c("LocationX", "LocationY", "LocationZ"),
-#'                                event = c("Pass", "Pass", "Pass"),
-#'                                wtt = as.POSIXct(c("2023-07-19 12:00:00",
-#'                                                   "2023-07-19 13:00:00",
-#'                                                   "2023-07-19 14:00:00")),
-#'                                t = as.POSIXct(c("2023-07-19 12:01:00",
-#'                                                 "2023-07-19 13:08:00",
-#'                                                 "2023-07-19 14:00:30")),
-#'                                group = c("X", "X", "X"),
-#'                                day = as.POSIXct(c("2023-07-19",
-#'                                                   "2023-07-19",
-#'                                                   "2023-07-19")),
-#'                                start_hour = c(12, 13, 14),
-#'                                end_hour = c(12, 13, 14))
-#' group_map <- data.frame(group = c("X", "X", "X"),
-#'                         geo = c("LocationX", "LocationY", "LocationZ"),
-#'                         event = c("Pass", "Pass", "Pass"),
-#'                         lb = c(30, 30, 30),
-#'                         ub = c(30, 30, 30))
-#'
-#' # Perform the matching
-#' matched_data <- match_ids(berth_groups, timetable_groups, group_map)
-#'
-#' # Print the matched data
-#' print(matched_data)
 match_ids <- function(berth_groups,
                       timetable_groups,
                       group_map,
@@ -361,6 +318,49 @@ match_ids <- function(berth_groups,
   return(matched_ids %>% arrange(train_id))
 }
 
+#' Combine Observed and Timetable Data based on ID Matching
+#'
+#' This function combines observed and timetable data based on the results of ID
+#' matching. It takes three data frames as input: `ids`, `observed`, and
+#' `timetable`, and returns a combined data frame with relevant information.
+#'
+#' @param ids A data frame containing the results of ID matching. It should have
+#'   the following columns:
+#'   \itemize{
+#'     \item \code{train_id}: Integer, the train ID obtained from ID matching.
+#'     \item \code{train_header}: Character, the corresponding train header
+#'           from the timetable data.
+#'   }
+#'
+#' @param observed A data frame containing observed Centrix data that has been
+#'   pre-processed for ID matching. It should contain the following columns:
+#'   \itemize{
+#'     \item \code{train_id}: Integer vector, train ID.
+#'     \item \code{signal}: Character vector, signal ID.
+#'     \item \code{t_enters}: [POSIXct], the time when the train enters the
+#'                      berth.
+#'     \item \code{t_vacates}: [POSIXct], the time when the train vacates the
+#'                      berth.
+#'     \item \code{group}: Character vector, the group name.
+#'   }
+#'
+#' @param timetable A data frame containing pre-processed timetable data with
+#'   the following columns:
+#'   \itemize{
+#'     \item \code{train_header}: Character vector, the train header.
+#'     \item \code{geo}: Character vector, the geographical location.
+#'     \item \code{t}: [POSIXct], the actual time of the event.
+#'     \item \code{event}: Character vector, the type of event.
+#'     \item \code{group}: Character vector, the group name.
+#'   }
+#'
+#' @return A data frame containing the combined information from the ID matching
+#'   results, observed data, and timetable data. The data frame is sorted by
+#'   train IDs in ascending order.
+#'
+#' @importFrom dplyr arrange inner_join select
+#' @importFrom tidyr pivot_wider
+#'
 #' @export
 combine_data <- function(ids, observed, timetable) {
   duplicates <- timetable %>%
@@ -400,6 +400,19 @@ combine_data <- function(ids, observed, timetable) {
   return(combined_data)
 }
 
+#' Calculate Mean Accuracy and Mean Squared Accuracy of ID Matching
+#'
+#' This function takes ID matching results produced by [match_ids()] and
+#' calculates the mean accuracy and mean squared accuracy of the matches.
+#'
+#' @param ids A data frame with matched IDs.
+#'
+#' @return A message displaying the calculated mean accuracy and mean squared
+#'   accuracy. The result is printed to the console.
+#'
+#' @importFrom dplyr mutate
+#' @importFrom glue glue
+#'
 #' @export
 accuracy <- function(ids) {
   ids <- ids %>%

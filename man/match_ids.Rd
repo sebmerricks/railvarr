@@ -15,7 +15,7 @@ match_ids(
 }
 \arguments{
 \item{berth_groups}{A data frame containing observed Centrix data that has
-been pre-processed for ID matching. See \link{preprocess_berths}. This data
+been pre-processed for ID matching. See \code{\link[=preprocess_berths]{preprocess_berths()}}. This data
 should contain the following columns:
 \itemize{
 \item \code{signal}: Character vector, signal ID.
@@ -25,13 +25,13 @@ berth.
 \item \code{t_vacates}: \link{POSIXct}, the time when the train vacates the
 berth.
 \item \code{group}: Character vector, the group name.
-\item \code{day}: \link{POSIXct}, the day of the journey.
+\item \code{day}: \link{Date}, the day of the journey.
 \item \code{start_hour}: Integer, the start hour of the journey.
 \item \code{end_hour}: Integer, the end hour of the journey.
 }}
 
 \item{timetable_groups}{A data frame containing pre-processed timetable data
-(see \link{preprocess_timetable}) with the following columns:
+(see \code{\link[=preprocess_timetable]{preprocess_timetable()}}) with the following columns:
 \itemize{
 \item \code{train_header}: Character vector, the train header.
 \item \code{geo}: Character vector, the geographical location.
@@ -39,7 +39,7 @@ berth.
 \item \code{wtt}: \link{POSIXct}, the time according to the working timetable.
 \item \code{t}: \link{POSIXct}, the actual time of the event.
 \item \code{group}: Character vector, the group name.
-\item \code{day}: \link{POSIXct}, the day of the journey. Used to narrow down
+\item \code{day}: \link{Date}, the day of the journey. Used to narrow down
 the number of potential matches.
 \item \code{start_hour}: Integer, the start hour of the journey. Used to
 narrow down the number of potential matches.
@@ -88,57 +88,4 @@ train headers. The data frame is sorted by train IDs in ascending order.
 This function matches train IDs dervied from Centrix data to corresponding
 timetable train headers. It performs the matching for each unique group in
 the data.
-}
-\examples{
-# First we have to set the network map
-network_map <- dplyr::tribble(
-  ~signal, ~berth, ~track, ~event, ~geo,
-  "A", "1", "1", "pass", "LocationX",
-  "B", "1", "1", "pass", "LocationY",
-  "C", "1", "1", "pass", "LocationZ"
-)
-
-set_map(network_map)
-
-# Example data frames for berth_groups, timetable_groups, and group_map
-berth_groups <- data.frame(signal = c("A", "B", "C"),
-                           train_id = c(1, 1, 1),
-                           t_enters = as.POSIXct(c("2023-07-19 12:00:00",
-                                                   "2023-07-19 13:00:00",
-                                                   "2023-07-19 14:00:00")),
-                           t_vacates = as.POSIXct(c("2023-07-19 12:01:00",
-                                                    "2023-07-19 13:01:00",
-                                                    "2023-07-19 14:01:00")),
-                           group = c("X", "X", "X"),
-                           day = as.POSIXct(c("2023-07-19",
-                                              "2023-07-19",
-                                              "2023-07-19")),
-                           start_hour = c(12, 13, 14),
-                           end_hour = c(12, 13, 14))
-timetable_groups <- data.frame(train_header = c("TrainA", "TrainA", "TrainA"),
-                               geo = c("LocationX", "LocationY", "LocationZ"),
-                               event = c("Pass", "Pass", "Pass"),
-                               wtt = as.POSIXct(c("2023-07-19 12:00:00",
-                                                  "2023-07-19 13:00:00",
-                                                  "2023-07-19 14:00:00")),
-                               t = as.POSIXct(c("2023-07-19 12:01:00",
-                                                "2023-07-19 13:08:00",
-                                                "2023-07-19 14:00:30")),
-                               group = c("X", "X", "X"),
-                               day = as.POSIXct(c("2023-07-19",
-                                                  "2023-07-19",
-                                                  "2023-07-19")),
-                               start_hour = c(12, 13, 14),
-                               end_hour = c(12, 13, 14))
-group_map <- data.frame(group = c("X", "X", "X"),
-                        geo = c("LocationX", "LocationY", "LocationZ"),
-                        event = c("Pass", "Pass", "Pass"),
-                        lb = c(30, 30, 30),
-                        ub = c(30, 30, 30))
-
-# Perform the matching
-matched_data <- match_ids(berth_groups, timetable_groups, group_map)
-
-# Print the matched data
-print(matched_data)
 }
