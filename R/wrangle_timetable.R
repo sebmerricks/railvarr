@@ -109,7 +109,7 @@ set_stations <- function(stations) {
   env$stations <- stations
 }
 
-#' Preprocess Timetable
+#' Read Timetable
 #'
 #' This function reads timetable data from Excel files, performs data
 #' preprocessing, and returns a processed timetable.
@@ -144,7 +144,7 @@ set_stations <- function(stations) {
 #' @seealso [read_excel_files], [get_event_mapping]
 #'
 #' @export
-preprocess_timetable <- function(path, names, ...) {
+read_timetable <- function(path, names, ...) {
   timetable <- read_excel_files(path, ...) %>%
     select(
       names(names) %>% stringr::str_subset(".+")

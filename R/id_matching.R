@@ -27,7 +27,7 @@ pair_observations <- function(observed, timetable) {
   timetable_wider <- timetable %>%
     select("train_header", "geo", "wtt", "t", "event") %>%
     filter(.data$event %in% c("Pass", "Arrive", "Depart")) %>%
-    pivot_wider(
+    tidyr::pivot_wider(
       id_cols = c("train_header", "geo"),
       values_from = c("wtt", "t"),
       names_from = "event"
@@ -45,7 +45,7 @@ pair_observations <- function(observed, timetable) {
               by = c("day", "start_hour")) %>%
     semi_join(timetable,
               by = c("day", "end_hour")) %>%
-    inner_join(get_network_map() %>%
+    inner_join(get_map() %>%
                  select("signal", "geo"),
                by = "signal",
                relationship = "many-to-many") %>%
@@ -57,7 +57,7 @@ pair_observations <- function(observed, timetable) {
                 select(-"start_hour", -"group"),
               by = c("geo", "day", "end_hour"),
               relationship = "many-to-many") %>%
-    pivot_longer(
+    tidyr::pivot_longer(
       cols = matches("\\w\\W\\w"),
       names_to = c(".value", "name"),
       names_sep = -2L,
@@ -147,6 +147,7 @@ preprocess_berths <- function(berth_events, train_classes) {
   check_df(train_classes, names_classes, types_classes)
 
   berth_groups <- berth_events %>%
+    select("signal", "train_id", "t_enters", "t_vacates") %>%
     inner_join(
       train_classes %>%
         select(train_id, group),
@@ -165,8 +166,9 @@ preprocess_berths <- function(berth_events, train_classes) {
 
 #' @export
 preprocess_timetable <- function(timetable, train_classes) {
-  names_tt <- c("train_header", "geo", "event", "t")
-  types_tt <- list(character(), character(), character(), lubridate::POSIXct())
+  names_tt <- c("train_header", "geo", "event", "wtt", "t")
+  types_tt <- list(character(), character(), character(), lubridate::POSIXct(),
+                   lubridate::POSIXct())
   check_df(timetable, names_tt, types_tt)
 
   names_classes <- c("train_header", "group")
@@ -174,16 +176,17 @@ preprocess_timetable <- function(timetable, train_classes) {
   check_df(train_classes, names_classes, types_classes)
 
   timetable_groups <- timetable %>%
+    select("train_header", "geo", "event", "wtt", "t") %>%
     inner_join(train_classes %>%
                  select("train_header", "group"),
-               by = "train_header")
+               by = "train_header") %>%
     filter(!is.na(.data$t)) %>%
     group_by(.data$train_header) %>%
     mutate(day = lubridate::date(first(.data$t))) %>%
     mutate(start_hour = lubridate::hour(first(.data$t)),
            end_hour = lubridate::hour(last(.data$t))) %>%
     ungroup() %>%
-    arrange(.data$dt_origin)
+    arrange(.data$day, .data$t)
 
   return(timetable_groups)
 }
@@ -269,7 +272,7 @@ preprocess_timetable <- function(timetable, train_classes) {
 #' @export
 #'
 #' @examples
-#' #' # First we have to set the network map
+#' # First we have to set the network map
 #' network_map <- dplyr::tribble(
 #'   ~signal, ~berth, ~track, ~event, ~geo,
 #'   "A", "1", "1", "pass", "LocationX",
@@ -277,7 +280,7 @@ preprocess_timetable <- function(timetable, train_classes) {
 #'   "C", "1", "1", "pass", "LocationZ"
 #' )
 #'
-#' set_network_map(network_map)
+#' set_map(network_map)
 #'
 #' # Example data frames for berth_groups, timetable_groups, and group_map
 #' berth_groups <- data.frame(signal = c("A", "B", "C"),

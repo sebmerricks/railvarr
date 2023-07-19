@@ -44,10 +44,10 @@ get_map <- function() {
 #'
 #' @export
 set_map <- function(map) {
-  names <- c("signal", "berth", "track", "event")
-  types <- list(character(), character(), character(), character())
+  names <- c("signal", "berth", "track", "event", "geo")
+  types <- list(character(), character(), character(), character(), character())
 
-  check_df(map, names, types)
+  check_df(map, names, types, allow_extra = FALSE)
 
   old <- env$map
   env$map <- map

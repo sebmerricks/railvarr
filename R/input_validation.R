@@ -72,7 +72,14 @@ check_df <- function(data, names, types, allow_extra = TRUE) {
             for expected behaviour.")
   }
 
-  cols_to_check <- data
+  if (allow_extra) {
+    names_present <- which((names %in% colnames(data)) %in% TRUE)
+    names <- names[names_present]
+    cols_to_check <- data[,names]
+  } else {
+    cols_to_check <- data
+  }
+
   ndata <- length(cols_to_check)
 
   if (ncols < ndata) {
@@ -106,7 +113,8 @@ check_df <- function(data, names, types, allow_extra = TRUE) {
   names_equal = names == names(cols_to_check)
   idx <- match(FALSE, names_equal)
   if (!all(names_equal)) {
-    stop(glue::glue("Column {cols_to_check[idx]} should be named names[idx]"))
+    stop(glue::glue("Column {names(cols_to_check[idx])} should be named
+                    {names[idx]}"))
   }
   vetr::vet(types, cols_to_check, stop = TRUE)
 }
