@@ -21,6 +21,10 @@ calling_patterns <- read_rds_demo("calling_patterns")
 timetable <- read_rds_demo("timetable") %>%
   preprocess_timetable(calling_patterns)
 
+<<<<<<< HEAD
+=======
+# Changing the bounds set in the group_map
+>>>>>>> 87ce1b0ff5199102a9b2f71ef1e7f2c580f2648e
 group_map <- read_rds_demo("group_map")
 group_map
 
