@@ -16,7 +16,7 @@ setup_csv_test <- function(name, n) {
 }
 
 read_rds_test <- function(filename) {
-  readr::read_rds(testthat::test_path("fixtures", filename))
+  dplyr::tibble(readr::read_rds(testthat::test_path("fixtures", filename)))
 }
 
 read_csv_test <- function(filename) {

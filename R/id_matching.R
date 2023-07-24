@@ -187,7 +187,8 @@ preprocess_timetable <- function(timetable, train_classes) {
     select("train_header", "geo", "event", "wtt", "t") %>%
     inner_join(train_classes %>%
                  select("train_header", "group"),
-               by = "train_header") %>%
+               by = "train_header",
+               relationship = "many-to-many") %>%
     filter(!is.na(.data$t)) %>%
     group_by(.data$train_header) %>%
     mutate(first = first(.data$t),

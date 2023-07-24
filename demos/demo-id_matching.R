@@ -1,14 +1,6 @@
 load_all()
 library(tidyverse)
-
-read_rds_demo <- function(file) {
-  return(read_rds(
-    system.file(
-      glue::glue("demos/data/id-matching/{file}.rds"),
-      package = "railvarr"
-      )
-    ))
-}
+source("helper.R")
 
 map <- read_rds_demo("network_map")
 set_map(map)
