@@ -24,6 +24,23 @@ timetable <- read_rds_demo("timetable") %>%
 group_map <- read_rds_demo("group_map")
 group_map
 
+sample <- read_rds_demo("sample")
+berth_events <- berth_events %>% semi_join(sample)
+timetable <- timetable %>% semi_join(sample)
+
+matched_low <- match_ids(berth_events, timetable, group_map,
+                         operators = "fuzzy", fuzzy_tolerance = 0.25,
+                         tolerance = 0.25)
+
+matched_mid <- match_ids(berth_events, timetable, group_map,
+                         operators = "fuzzy", fuzzy_tolerance = 1,
+                         tolerance = 1)
+
+matched_high <- match_ids(berth_events, timetable, group_map,
+                          operators = "fuzzy", fuzzy_tolerance = 4,
+                          tolerance = 4)
+
+
 matched_ids_default <- match_ids(berth_events, timetable, group_map,
                                  operators = "fuzzy", fuzzy_tolerance = 1,
                                  tolerance = 1) %>%
