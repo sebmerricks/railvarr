@@ -7,7 +7,7 @@ new_asset_map <- function(map = data.frame(), class = character()) {
 
 validate_asset_map <- function(asset_map) {
   stopifnot(is_asset_map(asset_map))
-  stopifnot(c("signal", "berth", "track", "event") %in% names(asset_map))
+  stopifnot(c("signal", "berth", "track", "event", "geo") %in% names(asset_map))
 
   stopifnot(is.character(asset_map$signal))
   stopifnot(stringr::str_like(asset_map$signal, "S[0-9]+"))
@@ -20,6 +20,9 @@ validate_asset_map <- function(asset_map) {
 
   stopifnot(is.character(asset_map$event))
   stopifnot(all(asset_map$event %in% c("enters", "vacates")))
+
+  stopifnot(is.character(asset_map$geo))
+  stopifnot(stringr::str_like(asset_map$geo, "([A-z]+( |-)?)+"))
 
   return(asset_map)
 }
