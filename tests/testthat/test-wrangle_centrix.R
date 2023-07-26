@@ -1,8 +1,5 @@
 test_that("wrangle_centrix() produces expected output", {
-  map <- as_asset_map(read_rds_test("sample_map.rds") %>%
-    mutate(berth = LETTERS[as.integer(berth)],
-           track = paste0("T", berth),
-           geo = "a"))
+  map <- read_rds_test("sample_map.rds")
   set_map(map)
 
   se <- read_rds_test("sample_aspect_events.rds") %>%
@@ -17,15 +14,13 @@ test_that("wrangle_centrix() produces expected output", {
 })
 
 test_that("the whole pipeline works as expected", {
-  map <- as_asset_map(read_csv_test("data/test_map.csv") %>%
-                        mutate(geo = "a"))
+  map <- read_csv_test("data/test_map.csv")
   set_map(map)
 
   path <- test_path("fixtures/data/centrix")
   raw_data <- read_csv_files(path, show_col_types = FALSE) %>%
     dplyr::mutate(period = 1L,
-                  dt = lubridate::as_datetime(dt)) %>%
-    as_centrix()
+                  dt = lubridate::as_datetime(dt))
 
   events <- split_signal_track_events(raw_data)
   aspect_events <- preprocess_signal_events(events[[1]])
