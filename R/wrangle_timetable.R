@@ -1,4 +1,4 @@
-env$event_mapping <- dplyr::tribble(
+internal$event_mapping <- dplyr::tribble(
   ~event, ~name,
   "O", "Originate",
   "P", "Pass",
@@ -20,7 +20,7 @@ env$event_mapping <- dplyr::tribble(
 #'
 #' @export
 get_event_mapping <- function() {
-  return(env$event_mapping)
+  return(internal$event_mapping)
 }
 
 #' Set Event Mapping
@@ -45,10 +45,10 @@ set_event_mapping <- function(mapping) {
   stopifnot(is.data.frame(mapping))
   stopifnot(all(c("event", "name") %in% names(mapping)))
 
-  env$event_mapping <- mapping
+  internal$event_mapping <- mapping
 }
 
-env$stations <- NULL
+internal$stations <- NULL
 
 #' Get Stations
 #'
@@ -69,7 +69,7 @@ env$stations <- NULL
 #'
 #' @export
 get_stations <- function() {
-  return(env$stations)
+  return(internal$stations)
 }
 
 #' Set Stations
@@ -106,7 +106,7 @@ set_stations <- function(stations) {
                 is.character(stations[[x]]))
   }
 
-  env$stations <- stations
+  internal$stations <- stations
 }
 
 #' Read Timetable
@@ -195,10 +195,10 @@ read_timetable <- function(path, names, ...) {
 wrangle_timetable <- function(timetable) {
   stopifnot("Please input stations using
             set_stations(c('station1', 'station2', 'station3'))" =
-              !is.null(env$stations))
+              !is.null(internal$stations))
 
-  start_station <- first(env$stations)
-  end_station <- last(env$stations)
+  start_station <- first(internal$stations)
+  end_station <- last(internal$stations)
 
   forwards <- glue::glue("{start_station[1]}-{end_station[1]}")
   backwards <- glue::glue("{end_station[1]}-{start_station[1]}")
@@ -243,7 +243,7 @@ wrangle_timetable <- function(timetable) {
     services_direction,
     by = c("train_id", "dt_origin")
   ) %>%
-    filter(geo %in% env$stations) %>%
+    filter(geo %in% internal$stations) %>%
     filter(direction == forwards) %>%
     group_by(train_id, dt_origin) %>%
     filter(!first(geo) %in% start_station)
@@ -256,7 +256,7 @@ wrangle_timetable <- function(timetable) {
     services_direction,
     by = c("train_id", "dt_origin")
   ) %>%
-    filter(geo %in% env$stations) %>%
+    filter(geo %in% internal$stations) %>%
     filter(direction == forwards) %>%
     mutate(allow = allow_perf + allow_path + allow_eng) %>%
     select(train_id, geo, dt_origin, event, wtt, t, delay, allow) %>%

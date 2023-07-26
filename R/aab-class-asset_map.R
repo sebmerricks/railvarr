@@ -9,14 +9,12 @@ validate_asset_map <- function(asset_map) {
   stopifnot(is_asset_map(asset_map))
   stopifnot(c("signal", "berth", "track", "event", "geo") %in% names(asset_map))
 
-  stopifnot(is.character(asset_map$signal))
-  stopifnot(stringr::str_like(asset_map$signal, "S[0-9]+"))
+  stopifnot(is_signal(asset_map$signal))
 
   stopifnot(is.character(asset_map$berth))
   stopifnot(stringr::str_like(asset_map$berth, "[A-Z]+"))
 
-  stopifnot(is.character(asset_map$track))
-  stopifnot(stringr::str_like(asset_map$track, "T[A-Z]+(-[0-9])?"))
+  stopifnot(is_track(asset_map$track))
 
   stopifnot(is.character(asset_map$event))
   stopifnot(all(asset_map$event %in% c("enters", "vacates")))
@@ -25,4 +23,19 @@ validate_asset_map <- function(asset_map) {
   stopifnot(stringr::str_like(asset_map$geo, "([A-z]+( |-)?)+"))
 
   return(asset_map)
+}
+
+#' @export
+asset_map <- function(map = data.frame("signal" = signal(),
+                                       "berth" = character(),
+                                       "track" = track(),
+                                       "event" = character(),
+                                       "geo" = character())) {
+  class <- class(map)
+  return(validate_asset_map(new_asset_map(map, class)))
+}
+
+#' @export
+is_asset_map <- function(obj) {
+  inherits(obj, "asset_map")
 }

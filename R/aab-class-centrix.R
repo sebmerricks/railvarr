@@ -19,6 +19,26 @@ validate_centrix <- function(centrix) {
   return(centrix)
 }
 
+#' @export
+centrix <- function(data = data.frame("asset" = character(),
+                                      "dt" = lubridate::POSIXct(),
+                                      "transition" = character(),
+                                      "period" = integer())) {
+  data <- dplyr::tibble(data)
+  class <- class(data)
+  return(validate_centrix(new_centrix(data, class)))
+}
+
+#' @export
+is_centrix <- function(obj) {
+  inherits(obj, "centrix")
+}
+
+#' @export
+as_centrix <- function(x) {
+  return(centrix(x))
+}
+
 # Aspect Events ----------------------------------------------------------------
 new_aspect_event <- function(data = data.frame(), class = class(data.frame)) {
   stopifnot(is.data.frame(data))
@@ -38,6 +58,18 @@ validate_aspect_event <- function(aspect_event) {
   stopifnot(is.integer(aspect_event$period))
 
   return(aspect_event)
+}
+
+#' @export
+aspect_event <- function(data = data.frame()) {
+  data <- dplyr::tibble(data)
+  class <- class(data)
+  return(validate_aspect_event(new_aspect_event(data, class)))
+}
+
+#' @export
+is_aspect_event <- function(obj) {
+  inherits(obj, "aspect_event")
 }
 
 # Track Events -----------------------------------------------------------------
@@ -60,4 +92,16 @@ validate_track_event <- function(track_event) {
   stopifnot(is.integer(track_event$period))
 
   return(track_event)
+}
+
+#' @export
+track_event <- function(data = data.frame()) {
+  data <- dplyr::tibble(data)
+  class <- class(data)
+  return(validate_track_event(new_track_event(data, class)))
+}
+
+#' @export
+is_track_event <- function(obj) {
+  inherits(obj, "track_event")
 }
