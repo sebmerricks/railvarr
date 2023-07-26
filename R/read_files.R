@@ -83,9 +83,9 @@ read_excel_files <- function(path, progress = TRUE, ...) {
               msg = glue::glue("No files found in the directory: {path}"))
 
   raw_data <- purrr::map(filenames,
-                  readxl::read_excel,
-                  .progress = progress,
-                  ...) %>%
+                         readxl::read_excel,
+                         .progress = progress,
+                         ...) %>%
     purrr::list_rbind()
 
   return(raw_data)

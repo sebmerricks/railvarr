@@ -50,7 +50,7 @@ pair_observations <- function(observed, timetable) {
   start_hours <- observed_geos %>%
     select(-"end_hour") %>%
     inner_join(timetable_wider %>%
-                select(-"end_hour"),
+                 select(-"end_hour"),
                by = c("group", "day", "start_hour", "geo"),
                relationship = "many-to-many")
 

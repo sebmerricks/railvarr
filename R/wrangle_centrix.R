@@ -302,6 +302,8 @@ combine_track_aspect_events <- function(valid_track_activations,
 #'
 #' @export
 wrangle_centrix <- function(aspect_events, track_events) {
+  check_inputs(aspect_events, track_events)
+
   time_windows <- track_events %>%
     find_intervals() %>%
     find_time_windows(track_events)
