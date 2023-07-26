@@ -4,10 +4,7 @@
 \alias{split_signal_track_events}
 \title{Split raw events into separate signal and track events}
 \usage{
-split_signal_track_events(
-  raw_events,
-  is_track = quote(stringr::str_starts(asset, "T"))
-)
+split_signal_track_events(raw_events)
 }
 \arguments{
 \item{raw_events}{Data frame containing raw data.}

@@ -72,12 +72,11 @@ split_signal_track_events <- function(raw_events) {
   stopifnot(is_centrix(raw_events))
 
   events <- raw_events %>%
-    select(all_of(names)) %>%
-    mutate(is_track = eval(is_track)) %>%
+    mutate(is_track = startsWith(.data$asset, "T")) %>%
     group_by(.data$is_track) %>%
     group_split(.keep = F)
 
-  return(events)
+  return(list(as_centrix(events[[1]]), as_centrix(events[[2]])))
 }
 
 #' Preprocess raw signal events
@@ -113,10 +112,12 @@ preprocess_signal_events <- function(raw_signal_events) {
     group_by(.data$signal) %>%
     mutate(past_aspect = lag(.data$aspect)) %>%
     ungroup() %>%
-    mutate(aspect = as_aspect4(.data$aspect),
-           past_aspect = as_aspect4(.data$past_aspect))
+    mutate(signal = as_signal(.data$signal),
+           aspect = as_aspect4(.data$aspect),
+           past_aspect = as_aspect4(.data$past_aspect)) %>%
+    select("signal", "aspect", "past_aspect", "dt", "period")
 
-  return(aspect_events)
+  return(aspect_event(aspect_events))
 }
 
 #' Preprocess raw track data
@@ -141,7 +142,9 @@ preprocess_track_events <- function(raw_track_events) {
     select("period", "track", "dt", "occupied") %>%
     arrange(.data$track, .data$dt) %>%
     mutate(event = if_else(.data$occupied, "enters", "vacates")) %>%
-    semi_join(tracks, by = "track")
+    semi_join(tracks, by = "track") %>%
+    mutate(track = as_track(track)) %>%
+    select("track", "occupied", "dt", "event", "period")
 
-  return(track_activations)
+  return(track_event(track_activations))
 }

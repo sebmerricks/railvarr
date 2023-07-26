@@ -11,6 +11,6 @@ new_signal <- function(signal_id = character()) {
 validate_signal <- function(signal) {
   stopifnot(inherits(signal, "signal"))
   signal_id <- unclass(signal)
-  stopifnot(!is.na(stringr::str_extract(signal_id, "S[0-9]+")))
+  stopifnot(stringr::str_like(signal_id, "S[0-9]+"))
   return(signal)
 }

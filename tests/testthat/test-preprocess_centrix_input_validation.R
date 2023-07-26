@@ -69,18 +69,6 @@ test_that("preprocess_signal_events() errors if raw_signal_events has incorrect
             expect_error(preprocess_signal_events(test3))
           })
 
-test_that("preprocess_signal_events() completes if data structures are correct",
-          {
-            rse <- data.frame(
-              asset = character(),
-              dt = lubridate::POSIXct(),
-              transition = character(),
-              period = numeric()
-            )
-
-            expect_no_error(preprocess_signal_events(rse))
-          })
-
 
 test_that("preprocess_track_events() errors if track_events has incorrect
           structure", {

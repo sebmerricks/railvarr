@@ -18,7 +18,11 @@ source(get_class("centrix"))
 # Centrix ------------------------------------------
 
 #' @export
-centrix <- function(data = data.frame()) {
+centrix <- function(data = data.frame("asset" = character(),
+                                      "dt" = lubridate::POSIXct(),
+                                      "transition" = character(),
+                                      "period" = integer())) {
+  data <- dplyr::tibble(data)
   class <- class(data)
   return(validate_centrix(new_centrix(data, class)))
 }
@@ -28,10 +32,16 @@ is_centrix <- function(obj) {
   inherits(obj, "centrix")
 }
 
+#' @export
+as_centrix <- function(x) {
+  return(centrix(x))
+}
+
 # Aspect Event -----------------------------------------------
 
 #' @export
 aspect_event <- function(data = data.frame()) {
+  data <- dplyr::tibble(data)
   class <- class(data)
   return(validate_aspect_event(new_aspect_event(data, class)))
 }
@@ -45,6 +55,7 @@ is_aspect_event <- function(obj) {
 
 #' @export
 track_event <- function(data = data.frame()) {
+  data <- dplyr::tibble(data)
   class <- class(data)
   return(validate_track_event(new_track_event(data, class)))
 }

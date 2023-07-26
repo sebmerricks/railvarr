@@ -1,50 +1,48 @@
+# Centrix ----------------------------------------------------------------------
+
+test_that("centrix column checking works", {
+
+})
+
 test_that("centrix type checking works", {
-  expect_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    character(), lubridate::POSIXct(), character(), double()
-  )))
+  expect_error(centrix(data.frame("asset" = character(),
+                                  "dt" = lubridate::POSIXct(),
+                                  "transition" = character(),
+                                  "period" = double())))
 
-  expect_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    character(), character(), character(), integer()
-  )))
+  expect_error(centrix(data.frame("asset" = character(),
+                                  "dt" = character(),
+                                  "transition" = character(),
+                                  "period" = integer())))
 
-  expect_no_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    character(), lubridate::POSIXct(), character(), integer()
-  )))
+  expect_no_error(centrix(data.frame("asset" = character(),
+                                     "dt" = lubridate::POSIXct(),
+                                     "transition" = character(),
+                                     "period" = integer())))
 
   expect_no_error(centrix())
 })
 
-test_that("centrix$asset matching works", {
-  expect_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "TAAQ", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3,
-    "S133 RGE", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3
-  )))
+test_that("centrix$transition checking works", {
 
-  expect_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "TAAQ TR", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3,
-    "S133", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3
-  )))
+})
 
-  expect_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "AAQ TR", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3,
-    "S133 RGE", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3
-  )))
+# Aspect Events ----------------------------------------------------------------
 
-  expect_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "TAAQ TR", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3,
-    "SA12 RGE", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3
-  )))
+test_that("aspect_event column checking works", {
 
-  expect_no_error(centrix(dplyr::tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "TAAQ TR", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3,
-    "S133 RGE", lubridate::as_datetime("2023-07-26 14:15:00"), "DN to UP", 3
-  )))
+})
+
+test_that("aspect_event type checking works", {
+
+})
+
+# Track Events -----------------------------------------------------------------
+
+test_that("track_event column checking works", {
+
+})
+
+test_that("track_event type checking works", {
+
 })

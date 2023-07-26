@@ -49,11 +49,14 @@ new_track_event <- function(data = data.frame(), class = class(data.frame)) {
 
 validate_track_event <- function(track_event) {
   stopifnot(is_track_event(track_event))
-  stopifnot(c("track", "occupied", "dt", "period") %in% names(track_event))
+  stopifnot(c("track", "occupied", "dt", "event", "period") %in%
+              names(track_event))
 
   stopifnot(is_track(track_event$track))
   stopifnot(is.logical(track_event$occupied))
   stopifnot(lubridate::is.POSIXct(track_event$dt))
+  stopifnot(is.character(track_event$event))
+  stopifnot(all(track_event$event %in% c("enters", "vacates")))
   stopifnot(is.integer(track_event$period))
 
   return(track_event)

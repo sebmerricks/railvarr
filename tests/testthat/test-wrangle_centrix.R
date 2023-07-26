@@ -20,7 +20,8 @@ test_that("the whole pipeline works as expected", {
   path <- test_path("fixtures/data/centrix")
   raw_data <- read_csv_files(path, show_col_types = FALSE) %>%
     dplyr::mutate(period = 1L,
-                  dt = lubridate::as_datetime(dt))
+                  dt = lubridate::as_datetime(dt)) %>%
+    as_centrix()
 
   events <- split_signal_track_events(raw_data)
   aspect_events <- preprocess_signal_events(events[[1]])
