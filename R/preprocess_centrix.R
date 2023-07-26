@@ -68,13 +68,8 @@ env$state_mapping <- data.frame(
 #' @export
 #'
 #' @importFrom dplyr %>% mutate group_by group_split
-split_signal_track_events <- function(raw_events,
-                                      is_track =
-                                        quote(stringr::str_starts(asset, "T"))
-) {
-  names <- c("asset", "dt", "transition", "period")
-  types <- list(character(), lubridate::POSIXct(), character(), numeric())
-  check_df(raw_events, names, types)
+split_signal_track_events <- function(raw_events) {
+  stopifnot(is_centrix(raw_events))
 
   events <- raw_events %>%
     select(all_of(names)) %>%
@@ -94,9 +89,7 @@ split_signal_track_events <- function(raw_events,
 #' @import dplyr
 #'
 preprocess_signal_events <- function(raw_signal_events) {
-  names <- c("asset", "dt", "transition", "period")
-  types <- list(character(), lubridate::POSIXct(), character(), numeric())
-  check_df(raw_signal_events, names, types)
+  stopifnot(is_centrix(raw_signal_events))
 
   signal_events <- raw_signal_events %>%
     mutate(
@@ -104,7 +97,7 @@ preprocess_signal_events <- function(raw_signal_events) {
       state = stringr::str_split_i(.data$asset, " ", i = 2)
     ) %>%
     filter(.data$transition == "DN to UP") %>%
-    select("signal", "dt", "state", "period")
+    select("signal", "state", "dt", "period")
 
   signals <- get_map() %>%
     select("signal")
@@ -116,10 +109,12 @@ preprocess_signal_events <- function(raw_signal_events) {
       by = "state"
     ) %>%
     arrange(.data$signal, .data$dt) %>%
-    select("period", "signal", "dt", "aspect") %>%
+    select("signal", "aspect", "dt", "period") %>%
     group_by(.data$signal) %>%
     mutate(past_aspect = lag(.data$aspect)) %>%
-    ungroup()
+    ungroup() %>%
+    mutate(aspect = as_aspect4(.data$aspect),
+           past_aspect = as_aspect4(.data$past_aspect))
 
   return(aspect_events)
 }
@@ -133,9 +128,7 @@ preprocess_signal_events <- function(raw_signal_events) {
 #' @importFrom dplyr %>% mutate if_else select rename arrange semi_join
 #'
 preprocess_track_events <- function(raw_track_events) {
-  names <- c("asset", "dt", "transition", "period")
-  types <- list(character(), lubridate::POSIXct(), character(), numeric())
-  check_df(raw_track_events, names, types)
+  stopifnot(is_centrix(raw_track_events))
 
   tracks <- get_map() %>%
     select("track")

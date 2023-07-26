@@ -9,19 +9,13 @@ new_aspect4 <- function(aspect = integer(), levels = character()) {
 
 validate_aspect4 <- function(aspect4) {
   stopifnot(inherits(aspect4, "factor"))
-  aspect <- unclass(aspect4)
+
   levels <- attr(aspect4, "levels")
+  stopifnot(is.character(levels))
+  stopifnot(length(levels) == 4)
+
+  aspect <- vctrs::vec_data(aspect4)
+  stopifnot(!is.na(aspect))
+
   return(aspect4)
 }
-
-aspect4 <- function(aspect = character(), levels = c("R", "YY", "Y", "G")) {
-  idx <- as.integer(match(aspect, levels))
-  return(validate_aspect4(new_aspect4(idx, levels)))
-}
-
-is_aspect4 <- function(obj) {
-  inherits(obj, "factor")
-}
-
-aspect <- aspect4("YY")
-aspect

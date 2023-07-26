@@ -1,5 +1,5 @@
 # Asset Mapping ----------------------------------------------------------------
-new_asset_map <- function(map = data.frame(), class = character()) {
+new_asset_map <- function(map = data.frame(), class = class(data.frame)) {
   stopifnot(is.data.frame(map))
   structure(map,
             class = c("asset_map", class))
