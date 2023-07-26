@@ -39,3 +39,12 @@ asset_map <- function(map = data.frame("signal" = signal(),
 is_asset_map <- function(obj) {
   inherits(obj, "asset_map")
 }
+
+as_asset_map <- function(x) {
+  stopifnot(c("signal", "berth", "track", "event", "geo") %in% names(x))
+  x <- x %>%
+    mutate(signal = as_signal(signal),
+           berth = as.character(berth),
+           track = as_track(track))
+  return(asset_map(x))
+}

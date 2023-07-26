@@ -1,29 +1,11 @@
 test_that("get_map() works", {
-  set_map(data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    geo = character()
-  ))
+  set_map(asset_map())
 
-  expect_equal(get_map(), data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    geo = character()
-  ))
+  expect_equal(get_map(), asset_map())
 })
 
 test_that("set_map() works", {
-  map <- data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    geo = character()
-  )
+  map <- asset_map()
 
   set_map(map)
   expect_equal(get_map(), map)
@@ -55,12 +37,13 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
     "S4 HHGE", lubridate::as_datetime(400), "DN to UP", 1L
   ))
 
-  map <- data.frame(
-    signal = c("S1", "S2", "S3", "S4"),
-    berth = c("", "", "", ""),
-    track = c("", "", "", ""),
-    event = c("", "", "", "")
-  )
+  map <- asset_map(data.frame(
+    signal = signal(c("S1", "S2", "S3", "S4")),
+    berth = c("A", "A", "A", "A"),
+    track = track(c("TA", "TA", "TA", "TA")),
+    event = c("enters", "enters", "enters", "enters"),
+    geo = c("a", "a", "a", "a")
+  ))
   set_map(map)
 
   out <- aspect_event(dplyr::tibble(data.frame(
@@ -93,12 +76,13 @@ test_that("preprocess_track_events() correctly processes track data", {
   ))
 
 
-  map <- data.frame(
-    signal = c("", "", ""),
-    berth = c("", "", ""),
-    track = c("TA-1", "TB-1", "TC"),
-    event = c("", "", "")
-  )
+  map <- asset_map(data.frame(
+    signal = signal(c("S1", "S1", "S1")),
+    berth = c("A", "A", "A"),
+    track = track(c("TA-1", "TB-1", "TC")),
+    event = c("enters", "enters", "enters"),
+    geo = c("a", "a", "a")
+  ))
   set_map(map)
 
   out <- track_event(dplyr::tribble(

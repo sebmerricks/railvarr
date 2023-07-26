@@ -30,7 +30,7 @@ preprocess_signal_events <- function(raw_signal_events) {
 
   signal_events <- raw_signal_events %>%
     mutate(
-      signal = stringr::str_split_i(.data$asset, " ", i = 1),
+      signal = signal(stringr::str_split_i(.data$asset, " ", i = 1)),
       state = stringr::str_split_i(.data$asset, " ", i = 2)
     ) %>%
     filter(.data$transition == "DN to UP") %>%
@@ -42,7 +42,7 @@ preprocess_signal_events <- function(raw_signal_events) {
   aspect_events <- signal_events %>%
     semi_join(signals, by = "signal") %>%
     inner_join(
-      env$state_mapping,
+      internal$state_mapping,
       by = "state"
     ) %>%
     arrange(.data$signal, .data$dt) %>%
@@ -76,7 +76,8 @@ preprocess_track_events <- function(raw_track_events) {
     mutate(occupied = if_else(.data$transition == "UP to DN", T, F)) %>%
     select(-"transition") %>%
     rename(track = "asset") %>%
-    mutate(track = stringr::str_extract(.data$track, "^([A-z])+(-[0-9])?")) %>%
+    mutate(track = track(stringr::str_extract(
+      .data$track, "^([A-z])+(-[0-9])?"))) %>%
     select("period", "track", "dt", "occupied") %>%
     arrange(.data$track, .data$dt) %>%
     mutate(event = if_else(.data$occupied, "enters", "vacates")) %>%
