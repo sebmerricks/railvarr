@@ -7,7 +7,7 @@
 get_asset_mapping()
 }
 \value{
-A list containing the asset mapping.
+A data frame containing the asset mapping.
 }
 \description{
 This function retrieves the asset mapping from the current environment. The

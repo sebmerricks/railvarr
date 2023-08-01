@@ -10,42 +10,43 @@ check_inputs <- function(aspect_events, track_events) {
   check_df(track_events, track_names, track_types)
 }
 
-find_intervals <- function(track_events, start_track, end_track) {
-  start_track <- (get_map() %>% first())$track
-  end_track <- (get_map() %>% last())$track
+find_intervals <- function(track_events) {
+  start_track <- (get_asset_mapping() %>% first())$track
+  end_track <- (get_asset_mapping() %>% last())$track
 
-  track_activations_start_end <- track_events %>%
+  track_events_start_end <- track_events %>%
     filter((.data$track == start_track & .data$event == "enters") |
              (.data$track == end_track & .data$event == "vacates")) %>%
     select("period", "track", "dt") %>%
     arrange(.data$period, .data$dt)
 
-  track_activations_intervals <- track_activations_start_end %>%
+  track_events_intervals <- track_events_start_end %>%
     mutate(next_dt = lead(.data$dt)) %>%
     filter(.data$track != lead(.data$track) &
              .data$track == end_track &
              .data$period == lead(.data$period)) %>%
-    mutate(diff = as.integer(lubridate::as.duration(.data$next_dt - .data$dt))) %>%
+    mutate(diff = as.integer(
+      lubridate::as.duration(.data$next_dt - .data$dt))) %>%
     filter(.data$diff > 0) %>%
     mutate(interval = lubridate::interval(start = .data$dt + 1,
                                           end = .data$next_dt - 1)) %>%
     select("period", "interval")
 
-  return(track_activations_intervals)
+  return(track_events_intervals)
 }
 
-find_time_windows <- function(track_activations_intervals, track_events) {
-  has_no_activations <- track_activations_intervals %>%
+find_time_windows <- function(track_events_intervals, track_events) {
+  has_no_events <- track_events_intervals %>%
     mutate(start = lubridate::int_start(.data$interval),
            end = lubridate::int_end(.data$interval)) %>%
     full_join(track_events,
               by = join_by(between(y$dt, x$start, x$end))) %>%
-    mutate(has_activations = !is.na(.data$dt),
+    mutate(has_events = !is.na(.data$dt),
            period = .data$period.x) %>%
-    select("period", "interval", "has_activations") %>%
-    filter(!.data$has_activations)
+    select("period", "interval", "has_events") %>%
+    filter(!.data$has_events)
 
-  time_windows <- has_no_activations %>%
+  windows <- has_no_events %>%
     group_by(.data$period) %>%
     mutate(
       left = lubridate::int_end(.data$interval) + 1,
@@ -55,7 +56,23 @@ find_time_windows <- function(track_activations_intervals, track_events) {
       is.na(.data$right),
       .data$left + lubridate::days(1),
       .data$right
+    ))
+
+  first_window <- has_no_events %>%
+    group_by(.data$period) %>%
+    mutate(left = lubridate::int_end(lag(.data$interval)) + 1,
+           right = lubridate::int_start(.data$interval) - 1
+    ) %>%
+    mutate(left = if_else(
+      is.na(.data$left),
+      .data$right - lubridate::days(1),
+      .data$left
     )) %>%
+    anti_join(windows, by = c("period", "left", "right"))
+
+  all_windows <- bind_rows(first_window, windows)
+
+  time_windows <- all_windows %>%
     select("period", "left", "right") %>%
     mutate(interval = lubridate::interval(start = .data$left,
                                           end = .data$right)) %>%
@@ -66,24 +83,24 @@ find_time_windows <- function(track_activations_intervals, track_events) {
   return(time_windows)
 }
 
-window_track_activations <- function(track_events, time_windows) {
+window_track_events <- function(track_events, time_windows) {
   windows_times <- time_windows %>%
-    mutate(start_time = lubridate::int_start(interval),
-           end_time = lubridate::int_end(interval)) %>%
-    select(-period)
+    mutate(start_time = lubridate::int_start(.data$interval),
+           end_time = lubridate::int_end(.data$interval)) %>%
+    select(-"period")
 
-  track_activations_windows <- inner_join(
+  track_events_windowed <- inner_join(
     track_events,
     windows_times,
-    join_by(between(dt, start_time, end_time))
+    join_by(between(x$dt, y$start_time, y$end_time))
   ) %>%
-    select(period, window, track, dt, event)
+    select("period", "window", "track", "dt", "event")
 
-  return(track_activations_windows)
+  return(track_events_windowed)
 }
 
-find_valid_track_activations <- function(track_activations_windows) {
-  track_activation_counts <- track_activations_windows %>%
+find_valid_track_events <- function(track_events_windows) {
+  track_activation_counts <- track_events_windows %>%
     arrange(.data$period, .data$window, .data$track, .data$dt) %>%
     group_by(.data$period, .data$window, .data$track) %>%
     mutate(past_event = lag(.data$event)) %>%
@@ -103,7 +120,7 @@ find_valid_track_activations <- function(track_activations_windows) {
     distinct(.data$track) %>%
     nrow()
 
-  track_activations_summarised <- track_activation_counts %>%
+  track_events_summarised <- track_activation_counts %>%
     group_by(.data$period, .data$window) %>%
     summarise(
       ntrains_track = first(.data$n_enters),
@@ -114,7 +131,7 @@ find_valid_track_activations <- function(track_activations_windows) {
       any_not_interlaced = any(.data$n_same_as_prior > 0)
     )
 
-  valid_track_activations_windowed <- track_activations_summarised %>%
+  valid_track_events_windowed <- track_events_summarised %>%
     filter(
       .data$ntracks == track_count &
         .data$distinct_track_counts == 1 &
@@ -123,26 +140,38 @@ find_valid_track_activations <- function(track_activations_windows) {
     ) %>%
     ungroup()
 
-  return(valid_track_activations_windowed)
+  return(valid_track_events_windowed)
 }
 
 window_aspect_events <- function(aspect_events, time_windows) {
-  valid_signals <- get_map() %>%
-    group_by(signal) %>%
+  valid_signals <- get_asset_mapping() %>%
+    group_by(.data$signal) %>%
     filter(n() == 2) %>%
     ungroup()
 
   signals <- valid_signals %>%
-    distinct(signal)
+    distinct(.data$signal)
 
   aspect_events_windowed <- inner_join(
     aspect_events,
     time_windows %>%
-      mutate(start_time = lubridate::int_start(interval),
-             end_time = lubridate::int_end(interval) + 10), # + 10 to account for signal offset
-    join_by(between(dt, start_time, end_time))
+      mutate(start_time = lubridate::int_start(.data$interval),
+             end_time = lubridate::int_end(.data$interval) + 10), # + 10 to account for signal offset
+    join_by(between(x$dt, y$start_time, y$end_time))
   ) %>%
-    select(window, signal, dt, aspect, past_aspect)
+    select("window", "signal", "dt", "aspect", "past_aspect")
+
+  return(aspect_events_windowed)
+}
+
+filter_red_events <- function(aspect_events_windowed) {
+  valid_signals <- get_asset_mapping() %>%
+    group_by(.data$signal) %>%
+    filter(n() == 2) %>%
+    ungroup()
+
+  signals <- valid_signals %>%
+    distinct(.data$signal)
 
   red_events_windowed <- aspect_events_windowed %>%
     semi_join(signals, by = "signal") %>%
@@ -180,10 +209,10 @@ find_valid_aspect_events <- function(red_events_windowed) {
   return(valid_red_events_windowed)
 }
 
-find_good_windows <- function(track_activations_windows, red_events_windowed) {
+find_good_windows <- function(track_events_windows, red_events_windowed) {
   good_windows <- left_join(
-    track_activations_windows %>%
-      find_valid_track_activations(),
+    track_events_windows %>%
+      find_valid_track_events(),
     red_events_windowed %>%
       find_valid_aspect_events(),
     by = "window"
@@ -191,11 +220,11 @@ find_good_windows <- function(track_activations_windows, red_events_windowed) {
     filter(!is.na(.data$ntrains) & .data$ntrains_track == .data$ntrains)
 }
 
-validate_track_activations <- function(track_activations_windows,
+validate_track_events <- function(track_events_windows,
                                        good_windows) {
-  valid_track_activations <- track_activations_windows %>%
+  valid_track_events <- track_events_windows %>%
     semi_join(good_windows, by = c("period", "window"))
-  return(valid_track_activations)
+  return(valid_track_events)
 }
 
 validate_red_events <- function(red_events_windowed, good_windows) {
@@ -221,9 +250,9 @@ validate_red_events <- function(red_events_windowed, good_windows) {
   return(valid_red_events)
 }
 
-combine_track_aspect_events <- function(valid_track_activations,
+combine_track_aspect_events <- function(valid_track_events,
                                         valid_red_events) {
-  add_signal_berth <- valid_track_activations %>%
+  add_signal_berth <- valid_track_events %>%
     inner_join(
       get_map(), by = c("track", "event")
     ) %>%
@@ -308,22 +337,22 @@ wrangle_centrix <- function(aspect_events, track_events) {
     find_intervals() %>%
     find_time_windows(track_events)
 
-  track_activations_windowed <- track_events %>%
-    window_track_activations(time_windows)
+  track_events_windowed <- track_events %>%
+    window_track_events(time_windows)
 
   red_events_windowed <- aspect_events %>%
     window_aspect_events(time_windows)
 
-  good_windows <- find_good_windows(track_activations_windowed,
+  good_windows <- find_good_windows(track_events_windowed,
                                     red_events_windowed)
 
-  valid_track_activations <- track_activations_windowed %>%
-    validate_track_activations(good_windows)
+  valid_track_events <- track_events_windowed %>%
+    validate_track_events(good_windows)
 
   valid_red_events <- red_events_windowed %>%
     validate_red_events(good_windows)
 
-  berth_events <- combine_track_aspect_events(valid_track_activations,
+  berth_events <- combine_track_aspect_events(valid_track_events,
                                               valid_red_events)
 
   return(berth_events)

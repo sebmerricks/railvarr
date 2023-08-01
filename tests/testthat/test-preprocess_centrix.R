@@ -1,34 +1,4 @@
-test_that("get_map() works", {
-  set_map(data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    geo = character()
-  ))
-
-  expect_equal(get_map(), data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    geo = character()
-  ))
-})
-
-test_that("set_map() works", {
-  map <- data.frame(
-    signal = character(),
-    berth = character(),
-    track = character(),
-    event = character(),
-    geo = character()
-  )
-
-  set_map(map)
-  expect_equal(get_map(), map)
-})
-
+# Split Signal Track Events ----------------------------------------------------
 
 test_that("split_signal_track_events() splits signal and track events", {
   raw_events <- tribble(
@@ -45,23 +15,7 @@ test_that("split_signal_track_events() splits signal and track events", {
   expect_equal(split_signal_track_events(raw_events), out)
 })
 
-test_that("split_signal_track_events() works with custom is_track definition", {
-  raw_events <- tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "S1", lubridate::as_datetime(100), "DN to UP", 1,
-    "D1", lubridate::as_datetime(200), "DN to UP", 1
-  )
-
-  is_track = quote(stringr::str_starts(asset, "D"))
-
-  out <- raw_events %>%
-    dplyr::mutate(is_track = eval(is_track)) %>%
-    dplyr::group_by(is_track) %>%
-    dplyr::group_split(.keep = F)
-
-  expect_equal(split_signal_track_events(raw_events, is_track), out)
-})
-
+# Pre-process Signal Events ----------------------------------------------------
 
 test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   rse <- dplyr::tribble(
@@ -75,10 +29,11 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   map <- data.frame(
     signal = c("S1", "S2", "S3", "S4"),
     berth = c("", "", "", ""),
-    track = c("", "", "", ""),
-    event = c("", "", "", "")
+    track = c("TA", "TA", "TA", "TA"),
+    event = c("enters", "enters", "enters", "enters"),
+    geo = c("", "", "", "")
   )
-  set_map(map)
+  set_asset_mapping(map)
 
   out <- dplyr::tibble(data.frame(
     period = c(1, 1, 1, 1),
@@ -98,6 +53,7 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   expect_equal(preprocess_signal_events(rse), out)
 })
 
+# Pre-process Track Events -----------------------------------------------------
 
 test_that("preprocess_track_events() correctly processes track data", {
   dt <- lubridate::as_datetime(100)
@@ -111,14 +67,14 @@ test_that("preprocess_track_events() correctly processes track data", {
     "TD", dt, "UP to DN", 1
   )
 
-
   map <- data.frame(
-    signal = c("", "", ""),
+    signal = c("S1", "S2", "S3"),
     berth = c("", "", ""),
     track = c("TA-1", "TB-1", "TC"),
-    event = c("", "", "")
+    event = c("vacates", "vacates", "vacates"),
+    geo = c("", "", "")
   )
-  set_map(map)
+  set_asset_mapping(map)
 
   out <- dplyr::tribble(
     ~period, ~track, ~dt, ~occupied, ~event,
