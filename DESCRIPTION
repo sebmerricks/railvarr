@@ -21,7 +21,8 @@ Imports:
     vetr,
     tidyr,
     purrr,
-    readxl
+    readxl,
+    validate
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
