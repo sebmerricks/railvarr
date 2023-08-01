@@ -40,5 +40,12 @@ calculate_tsars <- function() {
   berth_events <- combine_track_aspect_events(valid_track_events,
                                               valid_red_events)
 
-  return(berth_events)
+  environment$berth_events <- berth_events
+
+  return(get_berth_events())
+}
+
+#' @export
+get_berth_events <- function() {
+  environment$berth_events
 }

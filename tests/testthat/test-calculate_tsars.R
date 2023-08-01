@@ -54,7 +54,9 @@ test_that("calculate_tsars correctly processes raw centrix data", {
   state_mapping <- dplyr::tribble(
     ~state, ~aspect,
     "RGE", factor("R", levels = c("R", "Y", "YY", "G")),
-    "HGE", factor("Y", levels = c("R", "Y", "YY", "G"))
+    "HGE", factor("Y", levels = c("R", "Y", "YY", "G")),
+    "HHGE", factor("YY", levels = c("R", "Y", "YY", "G")),
+    "DGE", factor("G", levels = c("R", "Y", "YY", "G"))
   )
   set_state_mapping(state_mapping)
 

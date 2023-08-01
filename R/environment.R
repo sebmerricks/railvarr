@@ -91,79 +91,6 @@ set_asset_mapping <- function(new_asset_mapping) {
   environment$asset_mapping <- new_asset_mapping
 }
 
-# Centrix ----------------------------------------------------------------------
-
-environment$centrix <- NULL
-
-#' Get Centrix Data from Environment
-#'
-#' This function retrieves the centrix data from the current environment. The
-#' centrix data is stored in the environment variable 'centrix'.
-#'
-#' @return A data frame containing the centrix data.
-#'
-#' @export
-#'
-#' @examples
-#' centrix <- get_centrix()
-#' print(centrix)
-#'
-#' @seealso Use [set_centrix] to set centrix data in the environment.
-get_centrix <- function() {
-  environment$centrix
-}
-
-#' Set Centrix in Environment with Validation
-#'
-#' This function allows you to set the Centrix data in the current environment
-#' after validating the format of the provided data. The data are stored in the
-#' environment variable 'centrix'.
-#'
-#' @param new_centrix A data frame representing the Centrix data containing
-#'   columns 'asset', 'dt', 'transition', and 'period'. The input Centrix must
-#'   adhere to the expected format and validation rules.
-#'
-#' @details This function performs strict validation on the input `new_centrix`
-#'   using predefined rules. The function checks if the provided data adhere
-#'   to the expected format and throws an error if any of the validation rules
-#'   are violated.
-#'
-#'   The input `new_centrix` must be a data frame with the following elements:
-#' \itemize{
-#'   \item \code{asset}: A character vector representing the asset ID in the
-#'     format "(S|T).+" (e.g., "S123" or "TABC").
-#'   \item \code{dt}: A POSIXct object representing the date and time of the
-#'     observation.
-#'   \item \code{transition}: A character vector representing the transition
-#'     type, which must be either "DN to UP" or "UP to DN".
-#'   \item \code{period}: A numeric value representing the time period of the
-#'     Centrix.
-#' }
-#'
-#' @importFrom validate validator field_format
-#' @importFrom lubridate is.POSIXct
-#'
-#' @export
-#'
-#' @examples
-set_centrix <- function(new_centrix) {
-  stopifnot(c("asset", "dt", "transition", "period") %in% names(new_centrix))
-
-  rules <- validate::validator(
-    is.character(asset),
-    field_format(asset, "(S|T).+", type = "regex"),
-    is.character(transition),
-    field_format(transition, "(DN to UP)|(UP to DN)", type = "regex"),
-    is.numeric(period)
-  )
-
-  validate(new_centrix, rules)
-  stopifnot(is.finite.POSIXlt(new_centrix$dt))
-
-  environment$centrix <- new_centrix %>%
-    mutate(dt = lubridate::as_datetime(.data$dt))
-}
-
 # State Mapping ----------------------------------------------------------------
 
 environment$state_mapping <- NULL
@@ -229,4 +156,221 @@ set_state_mapping <- function(new_state_mapping) {
   validate(new_state_mapping, rules)
 
   environment$state_mapping <- new_state_mapping
+}
+
+# Centrix ----------------------------------------------------------------------
+
+environment$centrix <- NULL
+
+#' Get Centrix Data from Environment
+#'
+#' This function retrieves the centrix data from the current environment. The
+#' centrix data is stored in the environment variable 'centrix'.
+#'
+#' @return A data frame containing the centrix data.
+#'
+#' @export
+#'
+#' @examples
+#' centrix <- get_centrix()
+#' print(centrix)
+#'
+#' @seealso Use [set_centrix] to set centrix data in the environment.
+get_centrix <- function() {
+  environment$centrix
+}
+
+#' Set Centrix in Environment with Validation
+#'
+#' This function allows you to set the Centrix data in the current environment
+#' after validating the format of the provided data. The data are stored in the
+#' environment variable 'centrix'.
+#'
+#' @param new_centrix A data frame representing the Centrix data containing
+#'   columns 'asset', 'dt', 'transition', and 'period'. The input Centrix must
+#'   adhere to the expected format and validation rules.
+#'
+#' @details This function performs strict validation on the input `new_centrix`
+#'   using predefined rules. The function checks if the provided data adhere
+#'   to the expected format and throws an error if any of the validation rules
+#'   are violated.
+#'
+#'   The input `new_centrix` must be a data frame with the following elements:
+#' \itemize{
+#'   \item \code{asset}: A character vector representing the asset ID in the
+#'     format "(S|T).+" (e.g., "S123" or "TABC").
+#'   \item \code{dt}: A POSIXct object representing the date and time of the
+#'     observation.
+#'   \item \code{transition}: A character vector representing the transition
+#'     type, which must be either "DN to UP" or "UP to DN".
+#'   \item \code{period}: A numeric value representing the time period of the
+#'     Centrix.
+#' }
+#'
+#' @importFrom validate validator field_format
+#'
+#' @export
+#'
+#' @examples
+set_centrix <- function(new_centrix) {
+  stopifnot(c("asset", "dt", "transition", "period") %in% names(new_centrix))
+
+  rules <- validate::validator(
+    is.character(asset),
+    field_format(asset, "(S|T).+", type = "regex"),
+    is.character(transition),
+    field_format(transition, "(DN to UP)|(UP to DN)", type = "regex"),
+    is.numeric(period)
+  )
+
+  validate(new_centrix, rules)
+  stopifnot(is.finite.POSIXlt(new_centrix$dt))
+
+  environment$centrix <- new_centrix %>%
+    mutate(dt = lubridate::as_datetime(.data$dt))
+}
+
+# Event Mapping ----------------------------------------------------------------
+
+environment$event_mapping <- dplyr::tribble(
+  ~event, ~name,
+  "O", "Originate",
+  "P", "Pass",
+  "A", "Arrive",
+  "D", "Depart",
+  "T", "Terminate"
+)
+
+#' Get Timetable Event Mapping from Environment
+#'
+#' This function retrieves the event mapping from the current environment. The
+#' event mapping defines the possible timetable events.
+#'
+#' @return A data frame containing a 1-1 mapping of timetable event codes to
+#'   readable names. These are as follows:
+#'    \itemize{
+#'      \item O = Originate
+#'      \item P = Pass
+#'      \item A = Arrive
+#'      \item D = Depart
+#'      \item T = Terminate
+#'    }
+#'
+#' @export
+get_event_mapping <- function() {
+  environment$event_mapping
+}
+
+# Stations ---------------------------------------------------------------------
+
+environment$stations <- NULL
+
+#' Get Stations from Environment
+#'
+#' This function retrieves the currently stored list of stations names from the
+#' environment.
+#'
+#' @seealso [set_stations()]
+#'
+#' @export
+get_stations <- function() {
+  environment$stations
+}
+
+#' Store Station Names in Environment
+#'
+#' This function sets the station names in the environment for use in timetable
+#' filtering.
+#'
+#' @param new_stations A list of character vectors containing the station names.
+#'
+#' @seealso [get_stations()]
+#'
+#' @export
+set_stations <- function(new_stations) {
+  stopifnot(is.list(new_stations))
+  environment$stations <- new_stations
+}
+
+# Timetable --------------------------------------------------------------------
+
+environment$timetable <- NULL
+
+#' Get Timetable Data from Environment
+#'
+#' This function retrieves the timetable data from the current environment. The
+#' timetable data is stored in the environment variable 'timetable'.
+#'
+#' @return A data frame containing the timetable data.
+#'
+#' @export
+#'
+#' @examples
+#' timetable <- get_timetable()
+#' print(timetable)
+#'
+#' @seealso Use [set_timetable] to set timetable data in the environment.
+get_timetable <- function() {
+  environment$timetable
+}
+
+#' Set Timetable in Environment with Validation
+#'
+#' This function allows you to set the timetable data in the current environment
+#' after validating the format of the provided data. The data are stored in the
+#' environment variable 'timetable'.
+#'
+#' @param new_Timetable A data frame representing the timetable data containing
+#'   columns 'train_header', 'dt_origin', 'geo', 'event', 'wtt', 't', and
+#'   'delay'. The input Timetable must adhere to the expected format and
+#'   validation rules.
+#'
+#' @details This function performs strict validation on the input
+#'   `new_timetable` using predefined rules. The function checks if the provided
+#'   data adhere to the expected format and throws an error if any of the
+#'   validation rules are violated.
+#'
+#'   The input `new_timetable` must be a data frame with the following elements:
+#' \itemize{
+#'   \item \code{train_header}: A character vector representing the train ID.
+#'   \item \code{dt_origin}: A POSIXct object representing the date and time at
+#'     which the train departed the origin.
+#'   \item \code{geo}: A character vector representing the location of the
+#'     timetable event.
+#'   \item \code{event}: A character vector representing the timetabling event.
+#'     See [get_event_mapping] for what these events can be.
+#'   \item \code{wtt}: A POSIXct object representing the scheduled time.
+#'   \item \code{t}: A POSIXct object representing the actual time.
+#'   \item \code{delay}: A numeric value representing the delay.
+#' }
+#'
+#' @importFrom validate validator field_format
+#'
+#' @export
+#'
+#' @examples
+set_timetable <- function(new_timetable) {
+  stopifnot(c("train_header", "dt_origin", "geo", "event", "wtt", "t", "delay")
+            %in% names(new_timetable))
+
+  rules <- validate::validator(
+    is.character(train_header),
+    is.character(geo),
+    is.character(event),
+    is.numeric(delay)
+  )
+
+  stopifnot(is.finite.POSIXlt(new_timetable$dt_origin))
+  stopifnot(is.finite.POSIXlt(new_timetable$wtt))
+  stopifnot(is.finite.POSIXlt(new_timetable$t))
+
+  validate(new_timetable, rules)
+
+  environment$timetable <- new_timetable %>%
+    mutate(dt_origin = lubridate::as_datetime(.data$dt_origin),
+           wtt = lubridate::as_datetime(.data$wtt),
+           t = lubridate::as_datetime(.data$t)) %>%
+    left_join(get_event_mapping(), by = "event") %>%
+    select(-"event") %>%
+    rename(event = "name")
 }

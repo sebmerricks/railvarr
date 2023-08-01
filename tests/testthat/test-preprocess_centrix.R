@@ -21,7 +21,9 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   state_mapping <- dplyr::tribble(
     ~state, ~aspect,
     "RGE", factor("R", levels = c("R", "Y", "YY", "G")),
-    "HGE", factor("Y", levels = c("R", "Y", "YY", "G"))
+    "HGE", factor("Y", levels = c("R", "Y", "YY", "G")),
+    "HHGE", factor("YY", levels = c("R", "Y", "YY", "G")),
+    "DGE", factor("G", levels = c("R", "Y", "YY", "G"))
   )
   set_state_mapping(state_mapping)
 
