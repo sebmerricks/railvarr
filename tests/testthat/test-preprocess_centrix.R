@@ -18,6 +18,13 @@ test_that("split_signal_track_events() splits signal and track events", {
 # Pre-process Signal Events ----------------------------------------------------
 
 test_that("preprocess_signal_events() successfully converts to signal/aspect", {
+  state_mapping <- dplyr::tribble(
+    ~state, ~aspect,
+    "RGE", factor("R", levels = c("R", "Y", "YY", "G")),
+    "HGE", factor("Y", levels = c("R", "Y", "YY", "G"))
+  )
+  set_state_mapping(state_mapping)
+
   rse <- dplyr::tribble(
     ~asset, ~dt, ~transition, ~period,
     "S1 RGE", lubridate::as_datetime(100), "DN to UP", 1,

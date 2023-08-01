@@ -1,3 +1,5 @@
+#' Calculate TSARs from Raw Centrix
+#'
 #' @export
 calculate_tsars <- function() {
   asset_map <- get_asset_mapping()
@@ -5,6 +7,8 @@ calculate_tsars <- function() {
 
   centrix <- get_centrix()
   stopifnot(!is.null(centrix))
+
+  stopifnot(!is.null(get_state_mapping()))
 
   split_events <- split_signal_track_events(centrix)
 
@@ -27,14 +31,14 @@ calculate_tsars <- function() {
   good_windows <- find_good_windows(track_events_windowed,
                                     red_events_windowed)
 
-  #valid_track_events <- track_events_windowed %>%
-  #  validate_track_events(good_windows)
+  valid_track_events <- track_events_windowed %>%
+    validate_track_events(good_windows)
 
-  #valid_red_events <- red_events_windowed %>%
-  #  validate_red_events(good_windows)
+  valid_red_events <- red_events_windowed %>%
+    validate_red_events(good_windows)
 
-  #berth_events <- combine_track_aspect_events(valid_track_events,
-  #                                            valid_red_events)
+  berth_events <- combine_track_aspect_events(valid_track_events,
+                                              valid_red_events)
 
-  #return(berth_events)
+  return(berth_events)
 }

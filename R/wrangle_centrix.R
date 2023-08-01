@@ -116,7 +116,7 @@ find_valid_track_events <- function(track_events_windows) {
       .groups = "drop"
     )
 
-  track_count <- get_map() %>%
+  track_count <- get_asset_mapping() %>%
     distinct(.data$track) %>%
     nrow()
 
@@ -191,7 +191,7 @@ find_valid_aspect_events <- function(red_events_windowed) {
       .groups = "drop"
     )
 
-  valid_signals <- get_map() %>%
+  valid_signals <- get_asset_mapping() %>%
     group_by(.data$signal) %>%
     filter(n() == 2) %>%
     ungroup()
@@ -209,20 +209,22 @@ find_valid_aspect_events <- function(red_events_windowed) {
   return(valid_red_events_windowed)
 }
 
-find_good_windows <- function(track_events_windows, red_events_windowed) {
+find_good_windows <- function(track_events_windowed, red_events_windowed) {
   good_windows <- left_join(
-    track_events_windows %>%
+    track_events_windowed %>%
       find_valid_track_events(),
     red_events_windowed %>%
       find_valid_aspect_events(),
     by = "window"
   ) %>%
     filter(!is.na(.data$ntrains) & .data$ntrains_track == .data$ntrains)
+
+  return(good_windows)
 }
 
-validate_track_events <- function(track_events_windows,
+validate_track_events <- function(track_events_windowed,
                                        good_windows) {
-  valid_track_events <- track_events_windows %>%
+  valid_track_events <- track_events_windowed %>%
     semi_join(good_windows, by = c("period", "window"))
   return(valid_track_events)
 }
@@ -254,7 +256,7 @@ combine_track_aspect_events <- function(valid_track_events,
                                         valid_red_events) {
   add_signal_berth <- valid_track_events %>%
     inner_join(
-      get_map(), by = c("track", "event")
+      get_asset_mapping(), by = c("track", "event")
     ) %>%
     select("window", "signal", "berth", "dt", "event")
 
@@ -300,60 +302,6 @@ combine_track_aspect_events <- function(valid_track_events,
            "T_clear", "T_offset", "T_travel", "T_coach") %>%
     mutate(across(TSAR:last_col(), lubridate::as.duration),
            across(TSAR:last_col(), as.double))
-
-  return(berth_events)
-}
-
-#' Wrangle Centrix Data
-#'
-#' This function performs data wrangling on aspect and track events data to
-#' create a data frame containing berth level information including TSAR (Time
-#' Signal At Red) and its sub-components. The data produced by this function is
-#' suitable for analysis.
-#'
-#' @param aspect_events A data frame representing aspect events data. Please
-#'    describe expected data structure.
-#' @param track_events A data frame representing track events data. Please
-#'    describe expected data structure.
-#'
-#' @return A data frame containing information about train berths, signals, and
-#'   times.
-#'
-#' @details The function performs data wrangling on the aspect and track events
-#'   data to create a data frame with comprehensive information about train
-#'   berths, signals, and various time durations, including TSAR and its
-#'   sub-components. The process involves several steps of data manipulation,
-#'   filtering, and validation to obtain the relevant information. The resulting
-#'   data frame includes columns related to signals, berths, train IDs, aspects,
-#'   times of signal changes, and various durations.
-#'
-#' @importFrom dplyr %>%
-#'
-#' @export
-wrangle_centrix <- function(aspect_events, track_events) {
-  check_inputs(aspect_events, track_events)
-
-  time_windows <- track_events %>%
-    find_intervals() %>%
-    find_time_windows(track_events)
-
-  track_events_windowed <- track_events %>%
-    window_track_events(time_windows)
-
-  red_events_windowed <- aspect_events %>%
-    window_aspect_events(time_windows)
-
-  good_windows <- find_good_windows(track_events_windowed,
-                                    red_events_windowed)
-
-  valid_track_events <- track_events_windowed %>%
-    validate_track_events(good_windows)
-
-  valid_red_events <- red_events_windowed %>%
-    validate_red_events(good_windows)
-
-  berth_events <- combine_track_aspect_events(valid_track_events,
-                                              valid_red_events)
 
   return(berth_events)
 }
