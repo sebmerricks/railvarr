@@ -380,13 +380,3 @@ set_timetable <- function(new_timetable) {
     rename(event = "name") %>%
     select("train_header", "dt_origin", "geo", "event", "wtt", "t", "delay")
 }
-
-
-temporary_delte_me <- function() {
-  set_timetable(timetable %>%
-                  rename(name = event) %>%
-                  left_join(get_event_mapping(), by = "name") %>%
-                  select(-name) %>%
-                  select(-x1, -x2, -allow_perf, -allow_path, -allow_eng) %>%
-                  rename(train_header = train_id))
-}

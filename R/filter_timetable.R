@@ -5,24 +5,19 @@ environment$backwards <- NULL
 
 find_relevant_services <- function(timetable) {
   services_either_direction <- timetable %>%
-    select("train_header", "dt_origin", "geo") %>%
     mutate(is_first = .data$geo %in% environment$start_station,
            is_last = .data$geo %in% environment$end_station) %>%
     group_by(.data$train_header, .data$dt_origin) %>%
     mutate(is_subset = any(is_first) & any(is_last)) %>%
     ungroup() %>%
     filter(.data$is_subset) %>%
-    distinct(.data$train_header, .data$dt_origin)
+    select(-"is_first", -"is_last", -"is_subset")
 
   return(services_either_direction)
 }
 
-filter_forward_services <- function(services_either_direction, timetable) {
-  services_direction <- timetable %>%
-    semi_join(
-      services_either_direction,
-      by = c("train_header", "dt_origin")
-      ) %>%
+filter_forward_services <- function(services_either_direction) {
+  services_direction <- services_either_direction %>%
     filter(geo %in% c(environment$start_station, environment$end_station)) %>%
     filter(event == "Pass" | event == "Arrive" | event == "Originate") %>%
     mutate(t_order = dplyr::if_else(
@@ -36,36 +31,29 @@ filter_forward_services <- function(services_either_direction, timetable) {
     ungroup() %>%
     filter(forwards) %>%
     mutate(direction = environment$forwards) %>%
-    distinct(train_header, dt_origin, direction)
+    distinct(train_header, dt_origin, direction) %>%
+    left_join(services_either_direction,
+              by = c("train_header", "dt_origin"))
 
   return(services_direction)
 }
 
-remove_edge_cases <- function(services_direction, timetable) {
-  edge_cases <- inner_join(
-    timetable,
-    services_direction,
-    by = c("train_header", "dt_origin")
-  ) %>%
-    filter(geo %in% get_stations()) %>%
-    filter(direction == environment$forwards) %>%
+remove_edge_cases <- function(services_direction) {
+  edge_cases <- services_direction %>%
+    filter(geo %in% unlist(get_stations())) %>%
     group_by(train_header, dt_origin) %>%
-    filter((!first(geo) %in% environment$start_station) |
-             (!last(geo) %in% environment$end_station))
+    filter(!(first(geo) %in% environment$start_station) |
+             !(last(geo) %in% environment$end_station))
 
   no_edges <- services_direction %>%
-    filter(!train_header %in% edge_cases$train_header)
+    anti_join(edge_cases, by = c("train_header", "dt_origin"))
 
   return(no_edges)
 }
 
-subset_timetable <- function(services_direction, timetable) {
-  timetable_subset <- inner_join(
-    timetable,
-    services_direction,
-    by = c("train_header", "dt_origin")
-  ) %>%
-    filter(geo %in% get_stations()) %>%
+subset_timetable <- function(services_direction) {
+  timetable_subset <- services_direction %>%
+    filter(geo %in% unlist(get_stations())) %>%
     filter(direction == environment$forwards) %>%
     select("train_header", "geo", "dt_origin", "event", "wtt", "t", "delay") %>%
     mutate(
@@ -94,9 +82,9 @@ filter_timetable <- function() {
 
   timetable_subset <- timetable %>%
     find_relevant_services() %>%
-    filter_forward_services(timetable) %>%
-    remove_edge_cases(timetable) %>%
-    subset_timetable(timetable)
+    filter_forward_services() %>%
+    remove_edge_cases() %>%
+    subset_timetable()
 
   return(timetable_subset)
 }
