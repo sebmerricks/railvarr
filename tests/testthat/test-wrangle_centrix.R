@@ -50,9 +50,7 @@ test_that("find_time_windows correctly identifies time windows", {
 
   windows <- dplyr::tribble(
     ~period, ~window, ~interval,
-    3, 1, lubridate::interval(start = lubridate::as_datetime(13910),
-                              end = lubridate::as_datetime(100310)),
-    3, 2, lubridate::interval(start = lubridate::as_datetime(100400),
+    3, 1, lubridate::interval(start = lubridate::as_datetime(100400),
                               end = lubridate::as_datetime(186800))
   )
 

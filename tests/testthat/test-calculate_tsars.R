@@ -61,20 +61,15 @@ test_that("calculate_tsars correctly processes raw centrix data", {
   set_state_mapping(state_mapping)
 
   berth_events <- dplyr::tibble(
-    signal = c("S1", "S2", "S1", "S2"),
-    berth = c("A", "B", "A", "B"),
-    train_id = c(1, 1, 2, 2),
-    aspect = c(NA_character_, NA_character_, "Y", "Y"),
-    t_enters = c(lubridate::as_datetime(100100), lubridate::as_datetime(100200),
-                 lubridate::as_datetime(100400), lubridate::as_datetime(100500)),
-    t_red_on = c(lubridate::as_datetime(100101), lubridate::as_datetime(100201),
-                 lubridate::as_datetime(100401), lubridate::as_datetime(100501)),
-    t_enters_next = c(lubridate::as_datetime(100200), NA,
-                      lubridate::as_datetime(100500), NA),
-    t_vacates = c(lubridate::as_datetime(100210), lubridate::as_datetime(100310),
-                  lubridate::as_datetime(100510), lubridate::as_datetime(100610)),
-    t_red_off = c(lubridate::as_datetime(100220), lubridate::as_datetime(100320),
-                  lubridate::as_datetime(100520), lubridate::as_datetime(100620))
+    signal = c("S1", "S2"),
+    berth = c("A", "B"),
+    train_id = c(1, 1),
+    aspect = c("Y", "Y"),
+    t_enters = c(lubridate::as_datetime(100400), lubridate::as_datetime(100500)),
+    t_red_on = c(lubridate::as_datetime(100401), lubridate::as_datetime(100501)),
+    t_enters_next = c(lubridate::as_datetime(100500), NA),
+    t_vacates = c(lubridate::as_datetime(100510), lubridate::as_datetime(100610)),
+    t_red_off = c(lubridate::as_datetime(100520), lubridate::as_datetime(100620))
   ) %>%
     mutate(TSAR = lubridate::as.duration(t_red_off - t_red_on),
            T_onset = lubridate::as.duration(t_red_on - t_enters),
