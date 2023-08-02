@@ -244,6 +244,20 @@ test_that("set_timetable correctly sets the timetable", {
                  mutate(event = paste0(event, "ass")))
 })
 
+test_that("set_timetable correctly sets timetable with missing data", {
+  environment$timetable <- NULL
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", "2023-08-02 09:05:00", "GEO1", "P", "2023-08-02 09:07:00", NA, 0
+  )
+  set_timetable(timetable)
+  expect_equal(environment$timetable, timetable %>%
+                 mutate(dt_origin = lubridate::as_datetime(dt_origin),
+                        wtt = lubridate::as_datetime(wtt),
+                        t = lubridate::as_datetime(t)) %>%
+                 mutate(event = paste0(event, "ass")))
+})
+
 test_that("set_timetable throws an error for invalid structure", {
   timetable <- dplyr::tribble(
     ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t,

@@ -38,7 +38,7 @@ test_that("preprocess_timetable() produces expected output", {
 
 test_that("match_ids() produces expected output", {
   map <- read_rds_test("id-matching/network_map.rds")
-  set_map(map)
+  set_asset_mapping(map)
 
   train_classes <- read_rds_test("id-matching/train_classes.rds")
   berth_events <- read_rds_test("id-matching/berth_events_sample.rds") %>%
@@ -57,7 +57,7 @@ test_that("match_ids() produces expected output", {
 
 test_that("match_ids() uses tolerance correctly", {
   map <- read_rds_test("tolerance/network_map.rds")
-  set_map(map)
+  set_asset_mapping(map)
 
   train_classes <- read_rds_test("tolerance/train_classes.rds")
   berth_events <- read_rds_test("tolerance/berth_events.rds") %>%

@@ -361,9 +361,12 @@ set_timetable <- function(new_timetable) {
     is.numeric(delay)
   )
 
-  stopifnot(is.finite.POSIXlt(new_timetable$dt_origin))
-  stopifnot(is.finite.POSIXlt(new_timetable$wtt))
-  stopifnot(is.finite.POSIXlt(new_timetable$t))
+  stopifnot(is.finite.POSIXlt(new_timetable$dt_origin) |
+              is.na(new_timetable$dt_origin))
+  stopifnot(is.finite.POSIXlt(new_timetable$wtt) |
+              is.na(new_timetable$wtt))
+  stopifnot(is.finite.POSIXlt(new_timetable$t) |
+              is.na(new_timetable$t))
   stopifnot(all(new_timetable$event %in% get_event_mapping()$event))
 
   validate(new_timetable, rules)
@@ -376,4 +379,14 @@ set_timetable <- function(new_timetable) {
     select(-"event") %>%
     rename(event = "name") %>%
     select("train_header", "dt_origin", "geo", "event", "wtt", "t", "delay")
+}
+
+
+temporary_delte_me <- function() {
+  set_timetable(timetable %>%
+                  rename(name = event) %>%
+                  left_join(get_event_mapping(), by = "name") %>%
+                  select(-name) %>%
+                  select(-x1, -x2, -allow_perf, -allow_path, -allow_eng) %>%
+                  rename(train_header = train_id))
 }
