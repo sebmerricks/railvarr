@@ -18,11 +18,11 @@ find_relevant_services <- function(timetable) {
 }
 
 filter_forward_services <- function(services_either_direction, timetable) {
-  services_direction <- inner_join(
-    timetable,
-    services_either_direction,
-    by = c("train_header", "dt_origin")
-  ) %>%
+  services_direction <- timetable %>%
+    semi_join(
+      services_either_direction,
+      by = c("train_header", "dt_origin")
+      ) %>%
     filter(geo %in% c(environment$start_station, environment$end_station)) %>%
     filter(event == "Pass" | event == "Arrive" | event == "Originate") %>%
     mutate(t_order = dplyr::if_else(
@@ -31,15 +31,12 @@ filter_forward_services <- function(services_either_direction, timetable) {
       t
     )) %>%
     group_by(train_header, dt_origin) %>%
-    arrange(t_order) %>%
-    mutate(direction = if_else(
-      first(geo) %in% environment$start_station,
-      environment$forwards,
-      environment$backwards
-    )) %>%
+    arrange(dt_origin, train_header, t_order) %>%
+    mutate(forwards = first(geo) %in% environment$start_station) %>%
     ungroup() %>%
-    distinct(train_header, dt_origin, direction) %>%
-    filter(direction == environment$forwards)
+    filter(forwards) %>%
+    mutate(direction = environment$forwards) %>%
+    distinct(train_header, dt_origin, direction)
 
   return(services_direction)
 }
