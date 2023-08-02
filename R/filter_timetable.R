@@ -6,16 +6,13 @@ environment$backwards <- NULL
 find_relevant_services <- function(timetable) {
   services_either_direction <- timetable %>%
     select("train_header", "dt_origin", "geo") %>%
+    mutate(is_first = .data$geo %in% environment$start_station,
+           is_last = .data$geo %in% environment$end_station) %>%
     group_by(.data$train_header, .data$dt_origin) %>%
-    tidyr::chop("geo") %>%
+    mutate(is_subset = any(is_first) & any(is_last)) %>%
     ungroup() %>%
-    mutate(is_subset = purrr::map_lgl(.data$geo, ~{
-      first <- any(.x %in% environment$start_station)
-      last <- any(.x %in% environment$end_station)
-      return(first & last)
-    })) %>%
     filter(.data$is_subset) %>%
-    select(-"geo", -"is_subset")
+    distinct(.data$train_header, .data$dt_origin)
 
   return(services_either_direction)
 }
@@ -28,10 +25,10 @@ filter_forward_services <- function(services_either_direction, timetable) {
   ) %>%
     filter(geo %in% c(environment$start_station, environment$end_station)) %>%
     filter(event == "Pass" | event == "Arrive" | event == "Originate") %>%
-    mutate(t_order = case_when(
-      is.na(wtt) ~ t,
-      is.na(t) ~ wtt,
-      T ~ t
+    mutate(t_order = dplyr::if_else(
+      is.na(t),
+      wtt,
+      t
     )) %>%
     group_by(train_header, dt_origin) %>%
     arrange(t_order) %>%
