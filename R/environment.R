@@ -51,19 +51,18 @@ get_asset_mapping <- function() {
 #'   elements:
 #' \itemize{
 #'   \item \code{signal}: A character vector representing the signal ID in the
-#'     format "S[0-9]+" (e.g., "S123").
+#'     format "S`[`0-9`]`+" (e.g., "S123").
 #'   \item \code{berth}: A character vector representing the berth information.
 #'   \item \code{track}: A character vector representing the track ID in the
-#'     format "T[A-Z]+(-[0-9]{1})?" (e.g., "TA-1").
+#'     format "T`[`A-Z`]`+(-`[`0-9`]`{1})?" (e.g., "TA-1").
 #'   \item \code{event}: A character vector representing the event type, which
 #'     must be either "enters" or "vacates".
 #'   \item \code{geo}: A character vector representing the geographic
 #'     information.
 #' }
 #'
-#' @seealso The validation rules and expected format for each element of the
-#'   asset mapping can be found in the function implementation.
-#' @seealso [get_asset_mapping]
+#' @seealso Use [get_asset_mapping] to retrieve the asset mapping
+#'   once set.
 #'
 #' @export
 #'

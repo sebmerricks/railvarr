@@ -91,12 +91,12 @@ test_that("filter_timetable successfully filters raw timetable data", {
   set_stations(list("START", "MIDDLE", "END"))
 
   subset <- dplyr::tribble(
-    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
-    "A123", lubridate::as_datetime(0), "START", "Pass", lubridate::as_datetime(100), lubridate::as_datetime(100), 0,
-    "A123", lubridate::as_datetime(0), "MIDDLE", "Pass", lubridate::as_datetime(200), lubridate::as_datetime(200), 0,
-    "A123", lubridate::as_datetime(0), "END", "Pass", lubridate::as_datetime(300), lubridate::as_datetime(300), 0
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay, ~pattern,
+    "A123", lubridate::as_datetime(0), "START", "Pass", lubridate::as_datetime(100), lubridate::as_datetime(100), 0, "None",
+    "A123", lubridate::as_datetime(0), "MIDDLE", "Pass", lubridate::as_datetime(200), lubridate::as_datetime(200), 0, "None",
+    "A123", lubridate::as_datetime(0), "END", "Pass", lubridate::as_datetime(300), lubridate::as_datetime(300), 0, "None"
   ) %>%
-    select(train_header, geo, dt_origin, event, wtt, t, delay) %>%
+    select(train_header, geo, dt_origin, event, wtt, t, delay, pattern) %>%
     mutate(across(c(dt_origin, wtt, t),
                   ~lubridate::with_tz(.x, tzone = "Europe/London")))
 

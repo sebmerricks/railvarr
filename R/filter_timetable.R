@@ -77,10 +77,10 @@ find_calling_patterns <- function(timetable) {
     distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
     bind_rows(dummy_geo) %>%
     summarise(
-      pattern = str_c(geo, collapse = ","),
+      pattern = stringr::str_c(geo, collapse = ","),
       .groups = "drop"
     ) %>%
-    mutate(pattern = str_replace(pattern, ",None", ""))
+    mutate(pattern = stringr::str_replace(pattern, ",None", ""))
 
   calling_patterns <- timetable %>%
     inner_join(train_patterns, by = c("train_header", "dt_origin"))
