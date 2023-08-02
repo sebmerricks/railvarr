@@ -42,5 +42,5 @@ information.
 The validation rules and expected format for each element of the
 asset mapping can be found in the function implementation.
 
-\code{\link[=get_asset_mapping]{get_asset_mapping()}}
+\link{get_asset_mapping}
 }

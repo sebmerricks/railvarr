@@ -7,7 +7,7 @@
 set_timetable(new_timetable)
 }
 \arguments{
-\item{new_Timetable}{A data frame representing the timetable data containing
+\item{new_timetable}{A data frame representing the timetable data containing
 columns 'train_header', 'dt_origin', 'geo', 'event', 'wtt', 't', and
 'delay'. The input Timetable must adhere to the expected format and
 validation rules.}

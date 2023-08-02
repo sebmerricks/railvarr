@@ -63,7 +63,7 @@ get_asset_mapping <- function() {
 #'
 #' @seealso The validation rules and expected format for each element of the
 #'   asset mapping can be found in the function implementation.
-#' @seealso [get_asset_mapping()]
+#' @seealso [get_asset_mapping]
 #'
 #' @export
 #'
@@ -320,7 +320,7 @@ get_timetable <- function() {
 #' after validating the format of the provided data. The data are stored in the
 #' environment variable 'timetable'.
 #'
-#' @param new_Timetable A data frame representing the timetable data containing
+#' @param new_timetable A data frame representing the timetable data containing
 #'   columns 'train_header', 'dt_origin', 'geo', 'event', 'wtt', 't', and
 #'   'delay'. The input Timetable must adhere to the expected format and
 #'   validation rules.
