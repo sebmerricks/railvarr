@@ -17,6 +17,7 @@ test_that("get_asset_mapping returns the correct asset mapping", {
 })
 
 test_that("set_asset_mapping correctly sets the asset mapping", {
+  environment$asset_mapping <- NULL
   mapping <- dplyr::tibble(signal = "S1",
                            berth = "A",
                            track = "TA",
@@ -99,6 +100,7 @@ test_that("get_centrix returns correct centrix data", {
 })
 
 test_that("set_centrix correctly sets centrix data", {
+  environment$centrix <- NULL
   centrix <- dplyr::tibble(
     asset = "S1",
     dt = lubridate::as_datetime("2023-08-01 11:13:00"),
@@ -176,6 +178,7 @@ test_that("get_state_mapping returns the correct state mapping", {
 })
 
 test_that("set_state_mapping correctly sets the state mapping", {
+  environment$state_mapping <- NULL
   mapping <- dplyr::tibble(
     state = c("RGE", "HGE", "HHGE", "DGE"),
     aspect = factor(c("R", "Y", "YY", "G"), levels = c("R", "Y", "YY", "G"))
@@ -206,4 +209,82 @@ test_that("set_state_mapping throws an error for invalid aspect", {
     aspect = c("R", "Y", "YY", "G")
   )
   expect_error(set_state_mapping(mapping))
+})
+
+# Timetable --------------------------------------------------------------------
+
+environment$timetable <- NULL
+
+test_that("get_timetable returns null when not set", {
+  expect_equal(get_timetable(), NULL)
+})
+
+test_that("get_timetable returns the correct timetable", {
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", "2023-08-02 09:05:00", "GEO1", "P", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00", 0
+  )
+  environment$timetable <- timetable
+  expect_equal(get_timetable(), timetable)
+})
+
+test_that("set_timetable correctly sets the timetable", {
+  environment$timetable <- NULL
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", "2023-08-02 09:05:00", "GEO1", "P", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00", 0
+  )
+  set_timetable(timetable)
+  expect_equal(environment$timetable, timetable %>%
+                 mutate(dt_origin = lubridate::as_datetime(dt_origin),
+                        wtt = lubridate::as_datetime(wtt),
+                        t = lubridate::as_datetime(t)) %>%
+                 mutate(event = paste0(event, "ass")))
+})
+
+test_that("set_timetable throws an error for invalid structure", {
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t,
+    "A123", "2023-08-02 09:05:00", "GEO1", "P", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00"
+  )
+  expect_error(set_timetable(timetable))
+})
+
+test_that("set_timetable throws an error for invalid train_header", {
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    1234, "2023-08-02 09:05:00", "GEO1", "P", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00", 0
+  )
+  expect_error(set_timetable(timetable))
+})
+
+test_that("set_timetable throws an error for invalid dt_origin", {
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", "2023-08 09:05:00", "GEO1", "P", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00", 0
+  )
+  expect_error(set_timetable(timetable))
+})
+
+test_that("set_timetable throws an error for invalid event", {
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", "2023-08-02 09:05:00", "GEO1", "U", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00", 0
+  )
+  expect_error(set_timetable(timetable))
+})
+
+test_that("set_timetable throws an error for invalid delay", {
+  timetable <- dplyr::tribble(
+    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", "2023-08-02 09:05:00", "GEO1", "P", "2023-08-02 09:07:00",
+    "2023-08-02 09:07:00", "0"
+  )
+  expect_error(set_timetable(timetable))
 })

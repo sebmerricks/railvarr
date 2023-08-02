@@ -352,6 +352,7 @@ get_timetable <- function() {
 set_timetable <- function(new_timetable) {
   stopifnot(c("train_header", "dt_origin", "geo", "event", "wtt", "t", "delay")
             %in% names(new_timetable))
+  stopifnot(!is.null(get_event_mapping()))
 
   rules <- validate::validator(
     is.character(train_header),
@@ -363,6 +364,7 @@ set_timetable <- function(new_timetable) {
   stopifnot(is.finite.POSIXlt(new_timetable$dt_origin))
   stopifnot(is.finite.POSIXlt(new_timetable$wtt))
   stopifnot(is.finite.POSIXlt(new_timetable$t))
+  stopifnot(all(new_timetable$event %in% get_event_mapping()$event))
 
   validate(new_timetable, rules)
 
@@ -372,5 +374,6 @@ set_timetable <- function(new_timetable) {
            t = lubridate::as_datetime(.data$t)) %>%
     left_join(get_event_mapping(), by = "event") %>%
     select(-"event") %>%
-    rename(event = "name")
+    rename(event = "name") %>%
+    select("train_header", "dt_origin", "geo", "event", "wtt", "t", "delay")
 }
