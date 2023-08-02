@@ -1,7 +1,6 @@
 #' Split raw events into separate signal and track events
 #'
 #' @param raw_events Data frame containing raw data.
-#' @param is_track Expression determining how to split tracks and signals.
 #'
 #' @export
 #'
