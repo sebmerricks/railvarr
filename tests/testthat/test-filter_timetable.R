@@ -13,8 +13,10 @@ test_that("find_relevant_services filters to relevant services", {
   )
 
   relevant <- dplyr::tribble(
-    ~train_header, ~dt_origin,
-    "A123", lubridate::as_datetime(0)
+    ~train_header, ~dt_origin, ~geo,
+    "A123", lubridate::as_datetime(0), "START",
+    "A123", lubridate::as_datetime(0), "MIDDLE",
+    "A123", lubridate::as_datetime(0), "END"
   )
 
   expect_equal(find_relevant_services(timetable), relevant)
@@ -25,12 +27,6 @@ test_that("filter_forward_services filters out backwards services", {
   environment$end_station <- "END"
   environment$forwards <- "START-END"
   environment$backwards <- "END-START"
-
-  relevant <- dplyr::tribble(
-    ~train_header, ~dt_origin,
-    "A123", lubridate::as_datetime(0),
-    "321A", lubridate::as_datetime(100)
-  )
 
   timetable <- dplyr::tribble(
     ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t,
@@ -43,11 +39,13 @@ test_that("filter_forward_services filters out backwards services", {
   )
 
   forward <- dplyr::tribble(
-    ~train_header, ~dt_origin, ~direction,
-    "A123", lubridate::as_datetime(0), "START-END"
+    ~train_header, ~dt_origin, ~direction, ~geo, ~event, ~wtt, ~t,
+    "A123", lubridate::as_datetime(0), "START-END", "START", "Pass", lubridate::as_datetime(100), lubridate::as_datetime(100),
+    "A123", lubridate::as_datetime(0), "START-END", "MIDDLE", "Pass", lubridate::as_datetime(200), lubridate::as_datetime(200),
+    "A123", lubridate::as_datetime(0), "START-END", "END", "Pass", lubridate::as_datetime(300), lubridate::as_datetime(300)
   )
 
-  expect_equal(filter_forward_services(relevant, timetable), forward)
+  expect_equal(filter_forward_services(timetable), forward)
 })
 
 test_that("subset_timetable returns a formatted timetable subset", {
@@ -58,18 +56,11 @@ test_that("subset_timetable returns a formatted timetable subset", {
   set_stations(list("START", "MIDDLE", "END"))
 
   timetable <- dplyr::tribble(
-    ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay,
-    "A123", lubridate::as_datetime(0), "START", "Pass", lubridate::as_datetime(100), lubridate::as_datetime(100), 0,
-    "A123", lubridate::as_datetime(0), "MIDDLE", "Pass", lubridate::as_datetime(200), lubridate::as_datetime(200), 0,
-    "A123", lubridate::as_datetime(0), "END", "Pass", lubridate::as_datetime(300), lubridate::as_datetime(300), 0,
-    "321A", lubridate::as_datetime(100), "END", "Pass", lubridate::as_datetime(200), lubridate::as_datetime(200), 0,
-    "321A", lubridate::as_datetime(100), "MIDDLE", "Pass", lubridate::as_datetime(300), lubridate::as_datetime(300), 0,
-    "321A", lubridate::as_datetime(100), "START", "Pass", lubridate::as_datetime(400), lubridate::as_datetime(400), 0
-  )
-
-  relevant <- dplyr::tribble(
-    ~train_header, ~dt_origin, ~direction,
-    "A123", lubridate::as_datetime(0), "START-END"
+    ~train_header, ~dt_origin, ~direction, ~geo, ~event, ~wtt, ~t, ~delay,
+    "A123", lubridate::as_datetime(0), "START-END", "START", "Pass", lubridate::as_datetime(100), lubridate::as_datetime(100), 0,
+    "A123", lubridate::as_datetime(0), "START-END", "MIDDLE", "Pass", lubridate::as_datetime(200), lubridate::as_datetime(200), 0,
+    "A123", lubridate::as_datetime(0), "START-END", "END", "Pass", lubridate::as_datetime(300), lubridate::as_datetime(300), 0,
+    "A123", lubridate::as_datetime(0), "START-END", "BEYOND", "Pass", lubridate::as_datetime(400), lubridate::as_datetime(400), 0
   )
 
   subset <- dplyr::tribble(
@@ -82,7 +73,7 @@ test_that("subset_timetable returns a formatted timetable subset", {
     mutate(across(c(dt_origin, wtt, t),
                   ~lubridate::with_tz(.x, tzone = "Europe/London")))
 
-  expect_equal(subset_timetable(relevant, timetable), subset)
+  expect_equal(subset_timetable(timetable), subset)
 })
 
 test_that("filter_timetable successfully filters raw timetable data", {
