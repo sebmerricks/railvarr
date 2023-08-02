@@ -64,6 +64,30 @@ subset_timetable <- function(services_direction) {
   return(timetable_subset)
 }
 
+find_calling_patterns <- function(timetable) {
+  dummy_geo <- timetable %>%
+    distinct(.data$train_header, .data$dt_origin) %>%
+    mutate(geo = "None", event = "Arrive")
+
+  train_patterns <- timetable %>%
+    group_by(.data$train_header, .data$geo) %>%
+    filter(geo %in% unlist(get_stations())) %>%
+    filter(event %in% c("Originate", "Arrive")) %>%
+    group_by(.data$train_header, .data$dt_origin) %>%
+    distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
+    bind_rows(dummy_geo) %>%
+    summarise(
+      pattern = str_c(geo, collapse = ","),
+      .groups = "drop"
+    ) %>%
+    mutate(pattern = str_replace(pattern, ",None", ""))
+
+  calling_patterns <- timetable %>%
+    inner_join(train_patterns, by = c("train_header", "dt_origin"))
+
+  return(calling_patterns)
+}
+
 filter_timetable <- function() {
   timetable <- get_timetable()
   stopifnot(!is.null(timetable))
@@ -84,7 +108,8 @@ filter_timetable <- function() {
     find_relevant_services() %>%
     filter_forward_services() %>%
     remove_edge_cases() %>%
-    subset_timetable()
+    subset_timetable() %>%
+    find_calling_patterns()
 
   return(timetable_subset)
 }
