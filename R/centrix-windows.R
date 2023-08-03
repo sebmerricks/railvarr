@@ -39,6 +39,96 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
   return(valid_windows_with_intervals)
 }
 
+#' Filter Track Events
+#'
+#' Filters Centrix track events to only the events that lie within the
+#' calculated valid time windows. Also filters to only the tracks specified in
+#' the asset map.
+#'
+#' @param track_events A data frame containing pre-processed track events from
+#'   Centrix data. No input validation is performed. It is assumed that the data
+#'   frame will follow the structure return by the function
+#'   [preprocess_track_events()].
+#' @param time_windows A data frame containing window IDs and time intervals in
+#'   the columns:
+#'  * window: (numeric) window ID,
+#'  * interval: (lubridate::interval) window time interval.
+#'   No input validation is performed. The structure is expected to follow the
+#'   output of [calculate_time_windows()]
+#' @param asset_map A data frame containing a map of the track section. No input
+#'   validation is performed. See [wrangle_centrix()] for the expected
+#'   structure.
+#'
+#' @returns A data frame containing filtered track events, with additional
+#'   columns:
+#'  * window: (numeric) the window ID as calculated in [calculate_time_windows()]
+#'  * interval: (lubridate::interval) the time interval of the window
+#'
+#' @importFrom dplyr inner_join mutate join_by select
+#'
+#' @export
+filter_track_events <- function(track_events, time_windows, asset_map) {
+  tracks <- asset_map %>%
+    distinct(.data$track)
+
+  valid_track_events <- inner_join(
+    track_events %>% semi_join(tracks, by = "track"),
+    time_windows %>%
+      mutate(start = lubridate::int_start(.data$interval),
+             end = lubridate::int_end(.data$interval)),
+    by = join_by(between(x$dt, y$start, y$end))
+  ) %>%
+    select(-"start", -"end")
+  return(valid_track_events)
+}
+
+#' Filter Aspect Events
+#'
+#' Filters Centrix aspect events to only the events that lie within the
+#' calculated valid time windows. Also filters to only the signals specified in
+#' the asset map.
+#'
+#' @param aspect_events A data frame containing pre-processed aspect events from
+#'   Centrix data. No input validation is performed. It is assumed that the data
+#'   frame will follow the structure return by the function
+#'   [preprocess_signal_events()].
+#' @param time_windows A data frame containing window IDs and time intervals in
+#'   the columns:
+#'  * window: (numeric) window ID,
+#'  * interval: (lubridate::interval) window time interval.
+#'   No input validation is performed. The structure is expected to follow the
+#'   output of [calculate_time_windows()]
+#' @param asset_map A data frame containing a map of the track section. No input
+#'   validation is performed. See [wrangle_centrix()] for the expected
+#'   structure.
+#'
+#' @returns A data frame containing filtered aspect events, with additional
+#'   columns:
+#'  * window: (numeric) the window ID as calculated in [calculate_time_windows()]
+#'  * interval: (lubridate::interval) the time interval of the window
+#'
+#' @importFrom dplyr inner_join mutate join_by select
+#'
+#' @export
+filter_aspect_events <- function(aspect_events, time_windows, asset_map) {
+  signals <- asset_map %>%
+    group_by(.data$signal) %>%
+    filter(n() == 2) %>%
+    ungroup() %>%
+    distinct(.data$signal)
+
+  valid_aspect_events <- inner_join(
+    aspect_events %>% semi_join(signals, by = "signal"),
+    time_windows %>%
+      mutate(start = lubridate::int_start(.data$interval),
+             end = lubridate::int_end(.data$interval) + 10),
+    by = join_by(between(x$dt, y$start, y$end))
+  ) %>%
+    select(-"start", -"end")
+  return(valid_aspect_events)
+}
+
+
 #' @importFrom dplyr first last filter select arrange mutate lead full_join
 #'   join_by lag bind_rows distinct row_number
 find_time_windows <- function(track_events, asset_map) {
