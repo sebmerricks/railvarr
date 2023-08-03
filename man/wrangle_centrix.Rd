@@ -7,6 +7,30 @@
 wrangle_centrix(raw_centrix, asset_map, state_mapping = NULL)
 }
 \arguments{
+\item{raw_centrix}{A data frame containing raw Centrix data. Strict input
+validation is #' applied to ensure the data adhere to the expected
+structure. The data should be in a data frame with the following columns:
+\itemize{
+\item{\code{asset}}: A character vector containing the asset ID. Tracks
+are expected to follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}. E.g.,
+'TABC' 'TABC-1' 'TABC-2'.
+Signals are expected to follow the regex pattern \code{"S[0-9]+\\s[A-Z]+"}.
+E.g., 'S123 HGE' 'S123 I'.
+The second part of the signal ID should be a state code referring to
+the signal aspect, e.g. 'RGE' for red or 'DGE' for green. For other
+codes see:
+\url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
+\item{\code{dt}}: A \link[lubridate:posix_utils]{lubridate::POSIXct} object representing the date
+and time at which the observation was made.
+\item{\code{transition}}: A character vector representing the state
+transition that caused the observation. A transition can be one of
+"UP to DN" or "DN to UP", anything else will be ignored. For tracks,
+"UP to DN" signifies a train entering the track, while "DN to UP" is a
+train vacating the track. For signals, "UP to DN" represents an aspect
+change. Therefore, any signals with a "DN to UP" transition will be
+ignored.
+}}
+
 \item{asset_map}{A data frame containing a 1-1 mapping from signals to berths
 and a 1-many mapping from berths to tracks. The map also contains a 1-many
 mapping from tracks to events, reflecting the fact that there is an 'enter'
@@ -26,30 +50,6 @@ must be one of either "enters" or "vacates".
 \item{state_mapping}{A data frame containing a 1-1 mapping from signal state
 to signal aspect. See \link{state_mapping} (the default) for the expected
 structure.}
-
-\item{centrix}{A data frame containing raw Centrix data. Strict input
-validation is #' applied to ensure the data adhere to the expected
-structure. The data should be in a data frame with the following columns:
-\itemize{
-\item{\code{asset}}: A character vector containing the asset ID. Tracks
-are expected to follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}. E.g.,
-'TABC' 'TABC-1' 'TABC-2'.
-Signals are expected to follow the regex pattern \code{"S[0-9]+\\s[A-Z]+"}.
-E.g., 'S123 HGE' 'S123 I'.
-The second part of the signal ID should be a state code referring to
-the signal aspect, e.g. 'RGE' for red or 'DGE' for green. For other
-codes see:
-\link{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
-\item{\code{dt}}: A \link[lubridate:posix_utils]{lubridate::POSIXct} object representing the date
-and time at which the observation was made.
-\item{\code{transition}}: A character vector representing the state
-transition that caused the observation. A transition can be one of
-"UP to DN" or "DN to UP", anything else will be ignored. For tracks,
-"UP to DN" signifies a train entering the track, while "DN to UP" is a
-train vacating the track. For signals, "UP to DN" represents an aspect
-change. Therefore, any signals with a "DN to UP" transition will be
-ignored.
-}}
 }
 \value{
 A data frame containing the fully processed Centrix data, containing

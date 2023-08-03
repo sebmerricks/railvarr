@@ -3,7 +3,7 @@
 #' Splits a single Centrix data frame containing both signal and track events
 #' into a list containing two data frames.
 #'
-#' @param raw_centrix A data frame containing raw Centrix data with both signal
+#' @param raw_events A data frame containing raw Centrix data with both signal
 #'   and track events. No input validation is performed, see [wrangle_centrix()]
 #'   for expected structure.
 #'

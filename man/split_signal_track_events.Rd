@@ -7,7 +7,7 @@
 split_signal_track_events(raw_events)
 }
 \arguments{
-\item{raw_centrix}{A data frame containing raw Centrix data with both signal
+\item{raw_events}{A data frame containing raw Centrix data with both signal
 and track events. No input validation is performed, see \code{\link[=wrangle_centrix]{wrangle_centrix()}}
 for expected structure.}
 }

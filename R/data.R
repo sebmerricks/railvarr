@@ -1,7 +1,7 @@
 #' Default State Mapping
 #'
 #' The default 1-1 mapping from signal state to aspect. See
-#' [https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals].
+#' \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
 #' This is used as the default state mapping in Centrix wrangling.
 #'
 #' @format ## `state_mapping`

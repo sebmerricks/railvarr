@@ -35,87 +35,91 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
   return(valid_windows)
 }
 
+#' @importFrom dplyr first last filter select arrange mutate lead full_join
+#'   join_by lag bind_rows distinct row_number
 find_time_windows <- function(track_events, asset_map) {
-  start_track <- dplyr::first(asset_map$track)
-  end_track <- dplyr::last(asset_map$track)
+  start_track <- first(asset_map$track)
+  end_track <- last(asset_map$track)
 
   track_events_start_end <- track_events %>%
-    dplyr::filter((.data$track == start_track & .data$event == "enters") |
+    filter((.data$track == start_track & .data$event == "enters") |
                     (.data$track == end_track & .data$event == "vacates")) %>%
-    dplyr::select("track", "dt") %>%
-    dplyr::arrange(.data$dt)
+    select("track", "dt") %>%
+    arrange(.data$dt)
 
   track_intervals <- track_events_start_end %>%
-    dplyr::mutate(next_dt = dplyr::lead(.data$dt)) %>%
-    dplyr::filter(.data$track != dplyr::lead(.data$track) &
+    mutate(next_dt = lead(.data$dt)) %>%
+    filter(.data$track != lead(.data$track) &
                     .data$track == end_track) %>%
-    dplyr::mutate(diff = as.integer(
+    mutate(diff = as.integer(
       lubridate::as.duration(.data$next_dt - .data$dt))) %>%
-    dplyr::filter(.data$diff > 0) %>%
-    dplyr::mutate(interval = lubridate::interval(start = .data$dt + 1,
+    filter(.data$diff > 0) %>%
+    mutate(interval = lubridate::interval(start = .data$dt + 1,
                                                  end = .data$next_dt - 1)) %>%
-    dplyr::select("interval")
+    select("interval")
 
   has_no_events <- track_intervals %>%
-    dplyr::mutate(start = lubridate::int_start(.data$interval),
+    mutate(start = lubridate::int_start(.data$interval),
                   end = lubridate::int_end(.data$interval)) %>%
-    dplyr::full_join(track_events,
-                     by = dplyr::join_by(between(y$dt, x$start, x$end))) %>%
-    dplyr::mutate(has_events = !is.na(.data$dt)) %>%
-    dplyr::select("interval", "has_events") %>%
-    dplyr::filter(!.data$has_events)
+    full_join(track_events,
+                     by = join_by(between(y$dt, x$start, x$end))) %>%
+    mutate(has_events = !is.na(.data$dt)) %>%
+    select("interval", "has_events") %>%
+    filter(!.data$has_events)
 
   windows <- has_no_events %>%
-    dplyr::mutate(
+    mutate(
       left = lubridate::int_end(.data$interval) + 1,
-      right = lubridate::int_start(dplyr::lead(.data$interval)) - 1
+      right = lubridate::int_start(lead(.data$interval)) - 1
     ) %>%
-    dplyr::mutate(right = if_else(
+    mutate(right = if_else(
       is.na(.data$right),
       .data$left + lubridate::days(1),
       .data$right
     ))
 
   first_window <- has_no_events %>%
-    dplyr::mutate(left = lubridate::int_end(dplyr::lag(interval)) + 1,
+    mutate(left = lubridate::int_end(lag(interval)) + 1,
                   right = lubridate::int_start(interval) - 1) %>%
-    dplyr::mutate(left = dplyr::if_else(
+    mutate(left = if_else(
       is.na(left),
       right - lubridate::days(1),
       left
     ))
 
   time_windows <- bind_rows(windows, first_window) %>%
-    dplyr::select("left", "right") %>%
-    dplyr::mutate(interval = lubridate::interval(
+    select("left", "right") %>%
+    mutate(interval = lubridate::interval(
       start = .data$left, end = .data$right)) %>%
-    dplyr::distinct(.data$interval) %>%
-    dplyr::arrange(.data$interval) %>%
-    dplyr::mutate(window = dplyr::row_number()) %>%
-    dplyr::select("window", "interval")
+    distinct(.data$interval) %>%
+    arrange(.data$interval) %>%
+    mutate(window = row_number()) %>%
+    select("window", "interval")
 
   return(time_windows)
 }
 
+#' @importFrom dplyr inner_join mutate join_by select arrange group_by ungroup
+#'   summarise n distinct first n_distinct filter
 validate_track_windows <- function(track_events, time_windows, asset_map) {
-  track_events_windowed <- dplyr::inner_join(
+  track_events_windowed <- inner_join(
     track_events,
     time_windows %>%
       mutate(start = lubridate::int_start(.data$interval),
              end = lubridate::int_end(.data$interval)),
-    by = dplyr::join_by(between(x$dt, y$start, y$end))
+    by = join_by(between(x$dt, y$start, y$end))
   ) %>%
-    dplyr::select("window", "track", "dt", "event")
+    select("window", "track", "dt", "event")
 
   track_activation_counts <- track_events_windowed %>%
-    dplyr::arrange(.data$window, .data$track, .data$dt) %>%
-    dplyr::group_by(.data$window, .data$track) %>%
-    dplyr::mutate(past_event = dplyr::lag(.data$event)) %>%
-    dplyr::ungroup() %>%
-    dplyr::mutate(past_event = tidyr::replace_na(.data$past_event, "first")) %>%
-    dplyr::group_by(.data$window, .data$track) %>%
-    dplyr::summarise(
-      n = dplyr::n(),
+    arrange(.data$window, .data$track, .data$dt) %>%
+    group_by(.data$window, .data$track) %>%
+    mutate(past_event = lag(.data$event)) %>%
+    ungroup() %>%
+    mutate(past_event = tidyr::replace_na(.data$past_event, "first")) %>%
+    group_by(.data$window, .data$track) %>%
+    summarise(
+      n = n(),
       n_enters = sum(.data$event == "enters"),
       n_vacates = sum(.data$event == "vacates"),
       n_same_as_prior = sum(.data$event == .data$past_event),
@@ -123,15 +127,15 @@ validate_track_windows <- function(track_events, time_windows, asset_map) {
     )
 
   track_count <- asset_map %>%
-    dplyr::distinct(.data$track) %>%
+    distinct(.data$track) %>%
     nrow()
 
   track_events_summarised <- track_activation_counts %>%
-    dplyr::group_by(.data$window) %>%
-    dplyr::summarise(
-      ntrains = dplyr::first(.data$n_enters),
-      ntracks = dplyr::n_distinct(.data$track),
-      distinct_track_counts = dplyr::n_distinct(.data$n),
+    group_by(.data$window) %>%
+    summarise(
+      ntrains = first(.data$n_enters),
+      ntracks = n_distinct(.data$track),
+      distinct_track_counts = n_distinct(.data$n),
       any_different_enters_vacates = any(
         (.data$n_enters - .data$n_vacates) != 0
       ),
@@ -139,80 +143,83 @@ validate_track_windows <- function(track_events, time_windows, asset_map) {
     )
 
   valid_track_events_windowed <- track_events_summarised %>%
-    dplyr::filter(
+    filter(
       .data$ntracks == track_count &
         .data$distinct_track_counts == 1 &
         !.data$any_not_interlaced &
         !.data$any_different_enters_vacates
     ) %>%
-    dplyr::ungroup()
+    ungroup()
 
   valid_windows <- valid_track_events_windowed %>%
-    dplyr::select("window", "ntrains")
+    select("window", "ntrains")
 
   return(valid_windows)
 }
 
+#' @importFrom dplyr group_by filter ungroup distinct inner_join mutate join_by
+#'   select semi_join arrange if_else summarise
 validate_aspect_windows <- function(aspect_events, time_windows, asset_map) {
   signals <- asset_map %>%
-    dplyr::group_by(.data$signal) %>%
-    dplyr::filter(dplyr::n() == 2) %>%
-    dplyr::ungroup() %>%
-    dplyr::distinct(.data$signal)
+    group_by(.data$signal) %>%
+    filter(n() == 2) %>%
+    ungroup() %>%
+    distinct(.data$signal)
 
-  aspect_events_windowed <- dplyr::inner_join(
+  aspect_events_windowed <- inner_join(
     aspect_events,
     time_windows %>%
       mutate(start = lubridate::int_start(.data$interval),
              end = lubridate::int_end(.data$interval) + 10), # + 10 to account for signal offset
-    dplyr::join_by(between(x$dt, y$start, y$end))
+    join_by(between(x$dt, y$start, y$end))
   ) %>%
-    dplyr::select("window", "signal", "dt", "aspect", "past_aspect")
+    select("window", "signal", "dt", "aspect", "past_aspect")
 
   # find valid aspect windows (find_valid_aspect_events())
   red_events_windowed <- aspect_events_windowed %>%
-    dplyr::semi_join(signals, by = "signal") %>%
-    dplyr::arrange(.data$window, .data$signal, .data$dt) %>%
-    dplyr::filter(.data$aspect == "R" | .data$past_aspect == "R") %>%
-    dplyr::mutate(event = dplyr::if_else(.data$aspect == "R",
+    semi_join(signals, by = "signal") %>%
+    arrange(.data$window, .data$signal, .data$dt) %>%
+    filter(.data$aspect == "R" | .data$past_aspect == "R") %>%
+    mutate(event = if_else(.data$aspect == "R",
                                          "red_on",
                                          "red_off"))
 
   red_events_counts <- red_events_windowed %>%
-    dplyr::group_by(.data$window) %>%
-    dplyr::summarise(
+    group_by(.data$window) %>%
+    summarise(
       n_red_on = sum(.data$aspect == "R"),
       n_red_off = sum(.data$past_aspect == "R"),
       .groups = "drop"
     )
 
   signal_count <- signals %>%
-    dplyr::distinct(.data$signal) %>%
+    distinct(.data$signal) %>%
     nrow()
 
   valid_red_events_windowed <- red_events_counts %>%
-    dplyr::mutate(ntrains = as.integer(.data$n_red_on / signal_count)) %>%
-    dplyr::filter(
+    mutate(ntrains = as.integer(.data$n_red_on / signal_count)) %>%
+    filter(
       (.data$n_red_on == .data$n_red_off) &
         (.data$n_red_on %% signal_count == 0)
     )
 
   valid_windows <- valid_red_events_windowed %>%
-    dplyr::select("window", "ntrains")
+    select("window", "ntrains")
 
   return(valid_windows)
 }
 
+#' @importFrom dplyr left_join filter select
 find_good_windows_in_common <- function(valid_track_windows,
                                         valid_aspect_windows) {
-  good_windows <- dplyr::left_join(
+  good_windows <- left_join(
     valid_track_windows,
     valid_aspect_windows,
     by = "window"
   ) %>%
-    dplyr::filter(!is.na(.data$ntrains.x) &
+    filter(!is.na(.data$ntrains.x) &
                     !is.na(.data$ntrains.y) &
                     .data$ntrains.x == .data$ntrains.y) %>%
-    dplyr::select("window")
+    select("window")
   return(good_windows)
 }

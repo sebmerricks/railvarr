@@ -1,6 +1,3 @@
-#' Calculate TSARs from Raw Centrix
-#'
-#' @export
 calculate_tsars <- function() {
   asset_map <- get_asset_mapping()
   stopifnot(!is.null(asset_map))

@@ -4,7 +4,7 @@
 #' processed data frame containing berth-level signal and track observations,
 #' along with calculations of TSAR and all its subcomponents.
 #'
-#' @param centrix A data frame containing raw Centrix data. Strict input
+#' @param raw_centrix A data frame containing raw Centrix data. Strict input
 #'   validation is #' applied to ensure the data adhere to the expected
 #'   structure. The data should be in a data frame with the following columns:
 #'   \itemize{
@@ -16,7 +16,7 @@
 #'       The second part of the signal ID should be a state code referring to
 #'        the signal aspect, e.g. 'RGE' for red or 'DGE' for green. For other
 #'        codes see:
-#'    [https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals].
+#'    \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
 #'     \item{\code{dt}}: A [lubridate::POSIXct] object representing the date
 #'       and time at which the observation was made.
 #'     \item{\code{transition}}: A character vector representing the state
@@ -73,7 +73,7 @@ wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
   valid_track_events <- validate_track_events(track_events, time_windows)
   valid_red_events <- validate_aspect_events(aspect_events, time_windows)
 
-  berth_events <- calculate_tsars(valid_track_events, valid_red_events)
+  #berth_events <- calculate_tsars(valid_track_events, valid_red_events)
 
-  return(berth_events)
+  #return(berth_events)
 }
