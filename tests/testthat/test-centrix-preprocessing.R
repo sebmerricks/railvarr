@@ -33,45 +33,41 @@ test_that("split_signal_track_events() splits signal and track events", {
 # Pre-process Signal Events ----------------------------------------------------
 
 test_that("preprocess_signal_events() successfully converts to signal/aspect", {
-  state_mapping <- dplyr::tribble(
-    ~state, ~aspect,
-    "RGE", factor("R", levels = c("R", "Y", "YY", "G")),
-    "HGE", factor("Y", levels = c("R", "Y", "YY", "G")),
-    "HHGE", factor("YY", levels = c("R", "Y", "YY", "G")),
-    "DGE", factor("G", levels = c("R", "Y", "YY", "G"))
-  )
-
   raw_signal_events <- dplyr::tribble(
     ~asset, ~dt, ~transition,
-    "S1 RGE", lubridate::as_datetime(100), "DN to UP",
-    "S2 HGE", lubridate::as_datetime(200), "DN to UP",
-    "S3 DGE", lubridate::as_datetime(300), "DN to UP",
-    "S4 HHGE", lubridate::as_datetime(400), "DN to UP",
+    "S1 HGE", lubridate::as_datetime(50), "DN to UP", # output
+    "S1 RGE", lubridate::as_datetime(100), "DN to UP", # output
+    "S1 I", lubridate::as_datetime(100), "DN to UP", # not in state_mapping
+    "S1 RGE",  lubridate::as_datetime(100), "UP to DN", # incorrect transition
+    "S2 RGE", lubridate::as_datetime(100), "DN to UP", # output
+    "S3 RGE", lubridate::as_datetime(100), "DN to UP", # output
+    "S3 RGEK", lubridate::as_datetime(100), "DN to UP", # not in state_mapping
+    "S4 RGE", lubridate::as_datetime(100), "DN to UP", # not in asset_map
   )
 
-  asset_map <- data.frame(
-    signal = c("S1", "S2", "S3", "S4"),
-    berth = c("", "", "", ""),
-    track = c("TA", "TA", "TA", "TA"),
-    event = c("enters", "enters", "enters", "enters")
+  asset_map <- dplyr::tribble(
+    ~signal,
+    "S1",
+    "S2",
+    "S3"
   )
 
-  out <- dplyr::tibble(data.frame(
-    signal = c("S1", "S2", "S3", "S4"),
-    dt = c(lubridate::as_datetime(100), lubridate::as_datetime(200),
-           lubridate::as_datetime(300), lubridate::as_datetime(400)),
-    aspect = factor(
-      c("R", "Y", "G", "YY"),
-      levels = c("R", "Y", "YY", "G")
-    ),
-    past_aspect = factor(
-      c(NA_character_, NA_character_, NA_character_, NA_character_),
-      levels = c("R", "Y", "YY", "G")
-    )
-  ))
+  state_mapping <- dplyr::tribble(
+    ~state, ~aspect,
+    "RGE", factor("R", levels = c("R", "Y")),
+    "HGE", factor("Y", levels = c("R", "Y"))
+  )
 
-  expect_equal(preprocess_signal_events(raw_signal_events, asset_map,
-                                        state_mapping), out)
+  out <- dplyr::tribble(
+    ~signal, ~dt, ~aspect, ~past_aspect,
+    "S1", lubridate::as_datetime(50), factor("Y", levels = c("R", "Y")), factor(NA_character_, levels = c("R", "Y")),
+    "S1", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y")),
+    "S2", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor(NA_character_, levels = c("R", "Y")),
+    "S3", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor(NA_character_, levels = c("R", "Y"))
+  )
+
+  expect_equal(
+    preprocess_signal_events(raw_signal_events, asset_map, state_mapping), out)
 })
 
 # Pre-process Track Events -----------------------------------------------------
