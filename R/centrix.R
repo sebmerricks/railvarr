@@ -81,39 +81,61 @@ wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
 }
 
 validate_centrix <- function(centrix) {
-  stopifnot(all(c("asset", "dt", "transition") %in% names(centrix)))
+  stop_if_not(all(c("asset", "dt", "transition") %in% names(centrix)),
+              msg = "Centrix data requires the columns 'asset', 'dt', and 'transition'.")
   assets <- centrix$asset
-  stopifnot(is.character(assets))
-  stopifnot(all(!is.na(
+  stop_if_not(is.character(assets),
+              msg = "Column 'asset' must be of type character().")
+  stop_if_not(all(!is.na(
     stringr::str_extract(assets, "(S[0-9]+\\s[A-Z]+)|(T[A-Z]+(-[0-9])?)")
-    )))
+    )), msg = "Column 'asset' must match the regular expression
+    '(S[0-9]+\\s[A-Z]+)|(T[A-Z]+(-[0-9])?)'
+    e.g., 'S123 RGE', 'S123 HHGE', 'TABC-1', 'TXYZ'")
   dts <- centrix$dt
-  stopifnot(lubridate::is.POSIXct(dts))
+  stop_if_not(lubridate::is.POSIXct(dts),
+              msg = "Column 'dt' must be of type lubridate::POSIXct().")
   transitions <- centrix$transition
-  stopifnot(is.character(transitions))
-  stopifnot(all(transitions %in% c("DN to UP", "UP to DN")))
+  stop_if_not(is.character(transitions),
+              msg = "Column 'transition' must be of type character().")
+  stop_if_not(all(transitions %in% c("DN to UP", "UP to DN")),
+              msg = "Every element in column 'transition' must be equal to either 'DN to UP' or 'UP to DN'.")
 }
 
 validate_asset_map <- function(asset_map) {
-  stopifnot(all(c("signal", "berth", "track", "event") %in% names(asset_map)))
+  stop_if_not(all(c("signal", "berth", "track", "event") %in% names(asset_map)),
+              msg = "Asset map requires the columns 'signal', 'berth', 'track', and 'event'.")
   signals <- asset_map$signal
-  stopifnot(is.character(signals))
-  stopifnot(all(!is.na(stringr::str_extract(signals, "S[0-9]+"))))
+  stop_if_not(is.character(signals),
+              msg = "Column 'signal' must be of type character().")
+  stop_if_not(all(!is.na(stringr::str_extract(signals, "S[0-9]+"))),
+              msg = "Column 'signal' must match the regular expression 'S[0-9]+'
+              e.g., 'S1', 'S123'.")
   berths <- asset_map$berth
-  stopifnot(is.character(berths))
-  stopifnot(all(!is.na(stringr::str_extract(berths, "[A-Z]+"))))
+  stop_if_not(is.character(berths),
+              msg = "Column 'berth' must be of type character().")
+  stop_if_not(all(!is.na(stringr::str_extract(berths, "[A-Z]+"))),
+              msg = "Column 'berth' must match the regular expression '[A-Z]+'
+              e.g., 'A', 'ABC'.")
   tracks <- asset_map$track
-  stopifnot(is.character(tracks))
-  stopifnot(all(!is.na(stringr::str_extract(tracks, "T[A-Z]+(-[0-9])?"))))
+  stop_if_not(is.character(tracks),
+              msg = "Column 'track' must be of type character().")
+  stop_if_not(all(!is.na(stringr::str_extract(tracks, "T[A-Z]+(-[0-9])?"))),
+              msg = "Column 'track' must match the regular expression 'T[A-Z]+(-[0-9])?'
+              e.g., 'TA', 'TABC', 'TXYZ-1'.")
   events <- asset_map$event
-  stopifnot(is.character(events))
-  stopifnot(all(events %in% c("enters", "vacates")))
+  stop_if_not(is.character(events),
+              msg = "Column 'event' must be of type character().")
+  stop_if_not(all(events %in% c("enters", "vacates")),
+              msg = "Every element in column 'event' must be equal to either 'enters' or 'vacates'.")
 }
 
 validate_state_mapping <- function(state_mapping) {
-  stopifnot(all(c("state", "aspect") %in% names(state_mapping)))
+  stop_if_not(all(c("state", "aspect") %in% names(state_mapping)),
+              msg = "State mapping requires the columns 'state' and 'aspect'.")
   states <- state_mapping$state
-  stopifnot(is.character(states))
+  stop_if_not(is.character(states),
+              msg = "Column 'state' must be of type character().")
   aspects <- state_mapping$aspect
-  stopifnot(is.factor(aspects))
+  stop_if_not(is.factor(aspects),
+              msg = "Column 'aspect' must be of type factor().")
 }
