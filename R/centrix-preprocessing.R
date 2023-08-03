@@ -12,6 +12,8 @@
 #'
 #' @seealso [wrangle_centrix()]
 #'
+#' @importFrom dplyr filter mutate group_by group_split
+#'
 #' @export
 split_signal_track_events <- function(raw_events) {
   events <- raw_events %>%
@@ -42,7 +44,10 @@ split_signal_track_events <- function(raw_events) {
 #'  * 'dt': (lubridate::POSIXct) datetime,
 #'  * 'aspect': (factor) signal aspect after train enters the signal section.
 #'  * 'past_aspect': (factor) signal aspect before train enters the signal
-#'                            section.
+#'   section.
+#'
+#' @importFrom dplyr mutate filter select semi_join inner_join arrange group_by
+#'   ungroup lag
 #'
 #' @export
 preprocess_signal_events <- function(raw_signal_events, asset_map,
@@ -93,6 +98,8 @@ preprocess_signal_events <- function(raw_signal_events, asset_map,
 #'  * 'event': (character) 'enters' if train enters track, else 'vacates'.
 #'
 #' @seealso [wrangle_centrix()]
+#'
+#' @importFrom dplyr select mutate rename arrange semi_join if_else
 #'
 #' @export
 preprocess_track_events <- function(raw_track_events, asset_map) {

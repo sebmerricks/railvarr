@@ -35,7 +35,7 @@ find_intervals <- function(track_events) {
   return(track_events_intervals)
 }
 
-find_time_windows <- function(track_events_intervals, track_events) {
+old_find_time_windows <- function(track_events_intervals, track_events) {
   has_no_events <- track_events_intervals %>%
     mutate(start = lubridate::int_start(.data$interval),
            end = lubridate::int_end(.data$interval)) %>%
