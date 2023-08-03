@@ -75,7 +75,12 @@ wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
   valid_aspect_events <- filter_aspect_events(aspect_events, time_windows,
                                               asset_map)
 
-  #berth_events <- calculate_tsars(valid_track_events, valid_red_events)
+  berth_events <- calculate_tsars(valid_track_events, valid_red_events,
+                                  asset_map)
 
-  #return(berth_events)
+  return(berth_events)
+}
+
+calculate_tsars <- function(track_events, red_events, asset_map) {
+
 }
