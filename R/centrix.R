@@ -70,15 +70,44 @@ wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
 
   time_windows <- calculate_time_windows(aspect_events, track_events)
 
-  valid_track_events <- filter_track_events(track_events, time_windows)
-  valid_aspect_events <- filter_aspect_events(aspect_events, time_windows)
+  valid_track_events <- filter_track_events(track_events, time_windows,
+                                            asset_map)
+  valid_aspect_events <- filter_aspect_events(aspect_events, time_windows,
+                                              asset_map)
 
   #berth_events <- calculate_tsars(valid_track_events, valid_red_events)
 
   #return(berth_events)
 }
 
+#' Filter Track Events
+#'
+#' Filters Centrix track events to only the events that lie within the
+#' calculated valid time windows. Also filters to only the tracks specified in
+#' the asset map.
+#'
+#' @param track_events A data frame containing pre-processed track events from
+#'   Centrix data. No input validation is performed. It is assumed that the data
+#'   frame will follow the structure return by the function
+#'   [preprocess_track_events()].
+#' @param time_windows A data frame containing window IDs and time intervals in
+#'   the columns:
+#'  * window: (numeric) window ID,
+#'  * interval: (lubridate::interval) window time interval.
+#'   No input validation is performed. The structure is expected to follow the
+#'   output of [calculate_time_windows()]
+#' @param asset_map A data frame containing a map of the track section. No input
+#'   validation is performed. See [wrangle_centrix()] for the expected
+#'   structure.
+#'
+#' @returns A data frame containing filtered track events, with additional
+#'   columns:
+#'  * window: (numeric) the window ID as calculated in [calculate_time_windows()]
+#'  * interval: (lubridate::interval) the time interval of the window
+#'
 #' @importFrom dplyr inner_join mutate join_by select
+#'
+#' @export
 filter_track_events <- function(track_events, time_windows, asset_map) {
   tracks <- asset_map %>%
     distinct(.data$track)
@@ -94,7 +123,34 @@ filter_track_events <- function(track_events, time_windows, asset_map) {
   return(valid_track_events)
 }
 
+#' Filter Aspect Events
+#'
+#' Filters Centrix aspect events to only the events that lie within the
+#' calculated valid time windows. Also filters to only the signals specified in
+#' the asset map.
+#'
+#' @param aspect_events A data frame containing pre-processed aspect events from
+#'   Centrix data. No input validation is performed. It is assumed that the data
+#'   frame will follow the structure return by the function
+#'   [preprocess_signal_events()].
+#' @param time_windows A data frame containing window IDs and time intervals in
+#'   the columns:
+#'  * window: (numeric) window ID,
+#'  * interval: (lubridate::interval) window time interval.
+#'   No input validation is performed. The structure is expected to follow the
+#'   output of [calculate_time_windows()]
+#' @param asset_map A data frame containing a map of the track section. No input
+#'   validation is performed. See [wrangle_centrix()] for the expected
+#'   structure.
+#'
+#' @returns A data frame containing filtered aspect events, with additional
+#'   columns:
+#'  * window: (numeric) the window ID as calculated in [calculate_time_windows()]
+#'  * interval: (lubridate::interval) the time interval of the window
+#'
 #' @importFrom dplyr inner_join mutate join_by select
+#'
+#' @export
 filter_aspect_events <- function(aspect_events, time_windows, asset_map) {
   signals <- asset_map %>%
     group_by(.data$signal) %>%
