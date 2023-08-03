@@ -73,29 +73,33 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
 # Pre-process Track Events -----------------------------------------------------
 
 test_that("preprocess_track_events() correctly processes track data", {
-  dt <- lubridate::as_datetime(100)
   raw_track_events <- dplyr::tribble(
     ~asset, ~dt, ~transition,
-    "TA-1", dt, "DN to UP",
-    "TA-2", dt, "UP to DN",
-    "TB-1", dt, "DN to UP",
-    "TB-2", dt, "UP to DN",
-    "TC", dt, "DN to UP",
-    "TD", dt, "UP to DN",
+    "TAAB-2 TR", lubridate::as_datetime(300), "UP to DN",
+    "TAAB-2 1R" , lubridate::as_datetime(410), "DN to UP",
+    "TAAA 453", lubridate::as_datetime(100), "UP to DN",
+    "TAAA bf", lubridate::as_datetime(210), "DN to UP",
+    "TAAB-1 RGE", lubridate::as_datetime(200), "UP to DN",
+    "TAAB-1 gdf", lubridate::as_datetime(310), "DN to UP",
+    "TAAC TR", lubridate::as_datetime(400), "UP to DN",
+    "TAAC TR", lubridate::as_datetime(510), "DN to UP",
   )
 
-  asset_map <- data.frame(
-    signal = c("S1", "S2", "S3"),
-    berth = c("", "", ""),
-    track = c("TA-1", "TB-1", "TC"),
-    event = c("vacates", "vacates", "vacates")
+  asset_map <- dplyr::tribble(
+    ~track,
+    "TAAA",
+    "TAAB-1",
+    "TAAB-2"
   )
 
   out <- dplyr::tribble(
     ~track, ~dt, ~occupied, ~event,
-    "TA-1", dt, F, "vacates",
-    "TB-1", dt, F, "vacates",
-    "TC", dt, F, "vacates"
+    "TAAA", lubridate::as_datetime(100), T, "enters",
+    "TAAA", lubridate::as_datetime(210), F, "vacates",
+    "TAAB-1", lubridate::as_datetime(200), T, "enters",
+    "TAAB-1", lubridate::as_datetime(310), F, "vacates",
+    "TAAB-2", lubridate::as_datetime(300), T, "enters",
+    "TAAB-2", lubridate::as_datetime(410), F, "vacates"
   )
 
   expect_equal(preprocess_track_events(raw_track_events, asset_map), out)
