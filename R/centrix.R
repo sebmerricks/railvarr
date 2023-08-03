@@ -70,10 +70,45 @@ wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
 
   time_windows <- calculate_time_windows(aspect_events, track_events)
 
-  valid_track_events <- validate_track_events(track_events, time_windows)
-  valid_red_events <- validate_aspect_events(aspect_events, time_windows)
+  valid_track_events <- filter_track_events(track_events, time_windows)
+  valid_aspect_events <- filter_aspect_events(aspect_events, time_windows)
 
   #berth_events <- calculate_tsars(valid_track_events, valid_red_events)
 
   #return(berth_events)
+}
+
+#' @importFrom dplyr inner_join mutate join_by select
+filter_track_events <- function(track_events, time_windows, asset_map) {
+  tracks <- asset_map %>%
+    distinct(.data$track)
+
+  valid_track_events <- inner_join(
+    track_events %>% semi_join(tracks, by = "track"),
+    time_windows %>%
+      mutate(start = lubridate::int_start(.data$interval),
+             end = lubridate::int_end(.data$interval)),
+    by = join_by(between(x$dt, y$start, y$end))
+  ) %>%
+    select(-"start", -"end")
+  return(valid_track_events)
+}
+
+#' @importFrom dplyr inner_join mutate join_by select
+filter_aspect_events <- function(aspect_events, time_windows, asset_map) {
+  signals <- asset_map %>%
+    group_by(.data$signal) %>%
+    filter(n() == 2) %>%
+    ungroup() %>%
+    distinct(.data$signal)
+
+  valid_aspect_events <- inner_join(
+    aspect_events %>% semi_join(signals, by = "signal"),
+    time_windows %>%
+      mutate(start = lubridate::int_start(.data$interval),
+             end = lubridate::int_end(.data$interval) + 10),
+    by = join_by(between(x$dt, y$start, y$end))
+  ) %>%
+    select(-"start", -"end")
+  return(valid_aspect_events)
 }

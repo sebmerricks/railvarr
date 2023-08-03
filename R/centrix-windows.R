@@ -179,7 +179,6 @@ validate_aspect_windows <- function(aspect_events, time_windows, asset_map) {
   ) %>%
     select("window", "signal", "dt", "aspect", "past_aspect")
 
-  # find valid aspect windows (find_valid_aspect_events())
   red_events_windowed <- aspect_events_windowed %>%
     semi_join(signals, by = "signal") %>%
     arrange(.data$window, .data$signal, .data$dt) %>%
