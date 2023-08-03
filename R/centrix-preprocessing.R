@@ -15,7 +15,8 @@
 #' @export
 split_signal_track_events <- function(raw_events) {
   events <- raw_events %>%
-    mutate(is_track = stringr::str_starts(asset, "T")) %>%
+    filter(stringr::str_starts(.data$asset, "T|S")) %>%
+    mutate(is_track = stringr::str_starts(.data$asset, "T")) %>%
     group_by(.data$is_track) %>%
     group_split(.keep = F)
   return(events)

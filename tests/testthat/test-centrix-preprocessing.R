@@ -1,16 +1,31 @@
 # Split Signal Track Events ----------------------------------------------------
 
 test_that("split_signal_track_events() splits signal and track events", {
-  raw_events <- tribble(
-    ~asset, ~dt, ~transition, ~period,
-    "S1", lubridate::as_datetime(100), "DN to UP", 1,
-    "T1", lubridate::as_datetime(200), "DN to UP", 1
+  raw_events <- dplyr::tribble(
+    ~asset, ~dt, ~transition,
+    "S123 RGE", lubridate::as_datetime(100), "DN to UP",
+    "S123", lubridate::as_datetime(100), "DN to UP",
+    "s123", lubridate::as_datetime(100), "DN to UP",
+    "sabc", lubridate::as_datetime(100), "DN to UP",
+    "TABC", lubridate::as_datetime(100), "DN to UP",
+    "TABC-1", lubridate::as_datetime(100), "DN to UP",
+    "tABC", lubridate::as_datetime(100), "DN to UP",
+    "tabc", lubridate::as_datetime(100), "DN to UP",
+    "x123", lubridate::as_datetime(100), "DN to UP"
   )
 
-  out <- raw_events %>%
-    dplyr::mutate(is_track = stringr::str_starts(asset, "T")) %>%
-    dplyr::group_by(is_track) %>%
-    dplyr::group_split(.keep = F)
+  out <- vctrs::list_of(
+    dplyr::tribble(
+      ~asset, ~dt, ~transition,
+      "S123 RGE", lubridate::as_datetime(100), "DN to UP",
+      "S123", lubridate::as_datetime(100), "DN to UP"
+    ),
+    dplyr::tribble(
+      ~asset, ~dt, ~transition,
+      "TABC", lubridate::as_datetime(100), "DN to UP",
+      "TABC-1", lubridate::as_datetime(100), "DN to UP"
+    )
+  )
 
   expect_equal(split_signal_track_events(raw_events), out)
 })
