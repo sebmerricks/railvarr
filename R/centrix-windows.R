@@ -23,6 +23,8 @@
 #'   Each window indicates a time interval in which the data contain valid
 #'   observations.
 #'
+#' @importFrom dplyr semi_join
+#'
 #' @export
 calculate_time_windows <- function(aspect_events, track_events, asset_map) {
   time_windows <- find_time_windows(track_events, asset_map)
@@ -32,7 +34,9 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
                                                   asset_map)
   valid_windows <- find_good_windows_in_common(valid_track_windows,
                                                valid_aspect_windows)
-  return(valid_windows)
+  valid_windows_with_intervals <- time_windows %>%
+    semi_join(valid_windows, by = "window")
+  return(valid_windows_with_intervals)
 }
 
 #' @importFrom dplyr first last filter select arrange mutate lead full_join
