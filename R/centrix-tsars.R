@@ -75,6 +75,7 @@ calculate_tsars <- function(track_events, red_events, asset_map) {
     select("signal", "berth", "train_id", "aspect", "t_enters", "t_red_on",
            "t_enters_next", "t_vacates", "t_red_off", "TSAR", "T_onset",
            "T_clear", "T_offset", "T_travel", "T_coach") %>%
+    arrange(.data$train_id, .data$t_enters) %>%
     mutate(across(TSAR:last_col(), lubridate::as.duration),
            across(TSAR:last_col(), as.double))
 
