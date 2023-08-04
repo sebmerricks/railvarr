@@ -47,7 +47,7 @@ split_signal_track_events <- function(raw_events) {
 #'   section.
 #'
 #' @importFrom dplyr mutate filter select semi_join inner_join arrange group_by
-#'   ungroup lag
+#'   ungroup lag if_else
 #'
 #' @export
 preprocess_signal_events <- function(raw_signal_events, asset_map,

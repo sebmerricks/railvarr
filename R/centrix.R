@@ -65,10 +65,11 @@ wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
   raw_aspect_events <- separated_events[[1]]
   raw_track_events <- separated_events[[2]]
 
-  aspect_events <- preprocess_signal_events(raw_aspect_events)
-  track_events <- preprocess_track_events(raw_track_events)
+  aspect_events <- preprocess_signal_events(raw_aspect_events, asset_map,
+                                            state_mapping)
+  track_events <- preprocess_track_events(raw_track_events, asset_map)
 
-  time_windows <- calculate_time_windows(aspect_events, track_events)
+  time_windows <- calculate_time_windows(aspect_events, track_events, asset_map)
 
   # I need time_windows, track_events, aspect_events, asset_map
 
