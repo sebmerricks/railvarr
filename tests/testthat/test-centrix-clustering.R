@@ -11,7 +11,6 @@ save_pclusters <- function(pclusters) {
 }
 
 expect_snapshot_plot <- function(name, pclusters) {
-  skip_if(FALSE)
   name <- paste0(name, ".jpg")
   announce_snapshot_file(name = name)
   path <- save_pclusters(pclusters)
@@ -19,6 +18,9 @@ expect_snapshot_plot <- function(name, pclusters) {
 }
 
 test_that("cluster_centrix works", {
+  skip_on_cran()
+  skip_on_ci()
+  skip_if(is_checking())
   berth_events <- read_rds_test("centrix-clustering/berth-events.rds")
   cluster_events <- cluster_centrix(berth_events, k = 2L) %>%
     dplyr::filter(!is.na(.data$T_travel))
