@@ -23,7 +23,9 @@ Imports:
     purrr,
     readxl,
     validate,
-    vctrs
+    vctrs,
+    ggplot2,
+    broom
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
