@@ -13,3 +13,15 @@
 #'
 #' @seealso [wrangle_centrix()]
 "state_mapping"
+
+#' Default Event Mapping
+#'
+#' @format ## `event_mapping`
+#' A data frame with 5 rows and 2 columns:
+#' \describe{
+#'   \item{event}{Raw event code}
+#'   \item{name}{Event name}
+#' }
+#'
+#' @seealso [wrangle_timetable()]
+"event_mapping"
