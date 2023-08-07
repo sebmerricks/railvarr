@@ -112,12 +112,6 @@ test_that("wrangle_centrix successfully wraps other functions", {
     "S3", "C", "TC", "vacates"
   )
 
-  state_mapping <- dplyr::tribble(
-    ~state, ~aspect,
-    "RGE", factor("R", levels = c("R", "Y", "YY", "G")),
-    "HGE", factor("Y", levels = c("R", "Y", "YY", "G"))
-  )
-
   berth_events <- dplyr::tribble(
     ~signal, ~berth, ~train_id, ~aspect, ~t_enters, ~t_red_on, ~t_enters_next, ~t_vacates, ~t_red_off, ~TSAR, ~T_onset, ~T_clear, ~T_offset, ~T_travel, ~T_coach,
     "S1", "A", 1, "Y", 1100, 1101, 1200, 1210, 1220, 119, 1, 110, 10, 100, 10,
@@ -136,6 +130,6 @@ test_that("wrangle_centrix successfully wraps other functions", {
            across(starts_with("T", ignore.case=FALSE), as.double),
            train_id = as.numeric(train_id))
 
-  expect_equal(wrangle_centrix(raw_centrix, asset_map, state_mapping),
+  expect_equal(wrangle_centrix(raw_centrix, asset_map),
                berth_events)
 })

@@ -42,7 +42,7 @@
 #'     \item{\code{event}}: A character vector containing the event type. It
 #'       must be one of either "enters" or "vacates".
 #'    }
-#' @param state_mapping A data frame containing a 1-1 mapping from signal state
+#' @param state_map A data frame containing a 1-1 mapping from signal state
 #'   to signal aspect. See [state_mapping] (the default) for the expected
 #'   structure.
 #'
@@ -56,17 +56,19 @@
 #' # This will require some example data
 #'
 #' @export
-wrangle_centrix <- function(raw_centrix, asset_map, state_mapping = NULL) {
+wrangle_centrix <- function(raw_centrix,
+                            asset_map,
+                            state_map = state_mapping) {
   validate_centrix(raw_centrix)
   validate_asset_map(asset_map)
-  validate_state_mapping(state_mapping)
+  validate_state_mapping(state_map)
 
   separated_events <- split_signal_track_events(raw_centrix)
   raw_aspect_events <- separated_events[[1]]
   raw_track_events <- separated_events[[2]]
 
   aspect_events <- preprocess_signal_events(raw_aspect_events, asset_map,
-                                            state_mapping)
+                                            state_map)
   track_events <- preprocess_track_events(raw_track_events, asset_map)
 
   time_windows <- calculate_time_windows(aspect_events, track_events, asset_map)
