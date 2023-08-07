@@ -4,7 +4,7 @@
 \alias{wrangle_centrix}
 \title{Wrangle Raw Centrix Data}
 \usage{
-wrangle_centrix(raw_centrix, asset_map, state_mapping = NULL)
+wrangle_centrix(raw_centrix, asset_map, state_map = state_mapping)
 }
 \arguments{
 \item{raw_centrix}{A data frame containing raw Centrix data. Strict input
@@ -47,7 +47,7 @@ should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
 must be one of either "enters" or "vacates".
 }}
 
-\item{state_mapping}{A data frame containing a 1-1 mapping from signal state
+\item{state_map}{A data frame containing a 1-1 mapping from signal state
 to signal aspect. See \link{state_mapping} (the default) for the expected
 structure.}
 }
