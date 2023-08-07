@@ -55,9 +55,44 @@ cluster_centrix <- function(berth_events,
 
   clusters <- kmeans_clusters(berth_events_slopes, k = k, niter = niter)
 
+  new_order <- clusters$centroids %>%
+    tidyr::pivot_longer(
+      cols = starts_with("m")
+    ) %>%
+    group_by(cluster) %>%
+    summarise(avg = var(value)) %>%
+    ungroup() %>%
+    arrange(desc(avg)) %>%
+    mutate(new_cluster = row_number())
+
+  new_clusters <- clusters$clusters %>%
+    rename(cluster = .cluster) %>%
+    left_join(new_order, by = "cluster") %>%
+    select("train_id", "new_cluster") %>%
+    rename(cluster = new_cluster)
+
   berth_events_clusters <- berth_events %>%
     select("signal", "berth", "train_id", "aspect", "T_travel") %>%
     inner_join(clusters$clusters, by = "train_id")
 
   return(berth_events_clusters)
+}
+
+#' @import ggplot2
+plot_cluster_events <- function(cluster_events) {
+  pclusters <- cluster_events %>%
+    group_by(train_id) %>%
+    mutate(x = row_number()) %>%
+    ungroup() %>%
+    ggplot() +
+    geom_line(
+      aes(x = signal, y = T_travel, group = train_id),
+      alpha = .5,
+      colour = "grey50"
+    ) +
+    ylab("Travel time") +
+    xlab("Signal") +
+    facet_wrap(vars(.cluster), ncol = 2) +
+    theme_bw()
+  pclusters
 }
