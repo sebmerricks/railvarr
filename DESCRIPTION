@@ -14,15 +14,11 @@ URL: https://github.com/sebmerricks/railvarr
 BugReports: https://github.com/sebmerricks/railvarr/issues
 Imports:
     dplyr,
-    readr (>= 2.0.0),
     glue,
     lubridate,
     stringr,
-    vetr,
     tidyr,
     purrr,
-    readxl,
-    validate,
     vctrs,
     ggplot2,
     broom

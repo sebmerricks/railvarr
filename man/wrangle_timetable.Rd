@@ -6,6 +6,11 @@
 \usage{
 wrangle_timetable(timetable, stations)
 }
+\arguments{
+\item{timetable}{Data frame containing timetable data.}
+
+\item{stations}{List containing station names.}
+}
 \description{
 Wrangle Timetable Data
 }

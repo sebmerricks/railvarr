@@ -1,4 +1,8 @@
 #' Wrangle Timetable Data
+#'
+#' @param timetable Data frame containing timetable data.
+#' @param stations List containing station names.
+#'
 #' @export
 wrangle_timetable <- function(timetable, stations) {
   validate_timetable(timetable)
