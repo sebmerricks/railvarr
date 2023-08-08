@@ -82,9 +82,9 @@ cluster_centrix <- function(berth_events,
       cols = starts_with("m")
     ) %>%
     group_by(cluster) %>%
-    summarise(avg = var(value)) %>%
+    summarise(variance = var(value)) %>%
     ungroup() %>%
-    arrange(desc(avg)) %>%
+    arrange(desc(variance)) %>%
     mutate(new_cluster = row_number())
 
   new_clusters <- clusters$clusters %>%
@@ -95,7 +95,7 @@ cluster_centrix <- function(berth_events,
 
   berth_events_clusters <- berth_events %>%
     select("signal", "berth", "train_id", "aspect", "T_travel") %>%
-    inner_join(clusters$clusters, by = "train_id")
+    inner_join(new_clusters, by = "train_id")
 
   return(berth_events_clusters)
 }
@@ -114,7 +114,7 @@ plot_cluster_events <- function(cluster_events) {
     ) +
     ylab("Travel time") +
     xlab("Signal") +
-    facet_wrap(vars(.cluster), ncol = 2) +
+    facet_wrap(vars(cluster), ncol = 2) +
     theme_bw()
   pclusters
 }
