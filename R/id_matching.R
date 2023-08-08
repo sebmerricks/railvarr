@@ -1,447 +1,100 @@
-fuzzy_less_than <- function(observed, rounded, tolerance = 1) {
-  rounded.UB <- rounded + 29 * tolerance
-  return(observed < rounded.UB)
-}
+#' @export
+#' @importFrom dplyr filter select inner_join anti_join mutate if_else arrange
+#'   group_by distinct
+match_ids <- function(berth_events_classes, timetable_groups, match_mapping) {
+  #validate_berth_eents(berth_events)
+  #validate_timetable_subset(timetable_subset)
+  #validate_match_mapping(match_mapping)
+  berth_matching <- berth_events_classes %>%
+    preprocess_berth_matching(match_mapping)
 
-fuzzy_greater_than <- function(observed, rounded, tolerance = 1) {
-  rounded.LB <- rounded - 30 * tolerance
-  return(observed > rounded.LB)
-}
+  timetable_matching <-  timetable_groups %>%
+    preprocess_timetable_matching(match_mapping)
 
-fuzzy_equals <- function(observed, rounded, tolerance = 1) {
-  rounded.LB <- rounded - 30 * tolerance
-  rounded.UB <- rounded + 29 * tolerance
-  return(observed > rounded.LB & observed < rounded.UB)
-}
-
-pair_observations <- function(observed, timetable) {
-  # Identify Duplicates
-  duplicates <- timetable %>%
-    group_by(.data$train_header, .data$geo, .data$event) %>%
-    summarise(n = n(), .groups = "drop") %>%
-    filter(.data$n > 1)
-  # Remove Duplicates
-  timetable <- timetable %>%
-    anti_join(duplicates, by = "train_header")
-
-  timetable_wider <- timetable %>%
-    select("train_header", "geo", "wtt", "t", "event") %>%
+  timetable_wider <- timetable_matching %>%
     filter(.data$event %in% c("Pass", "Arrive", "Depart")) %>%
     tidyr::pivot_wider(
-      id_cols = c("train_header", "geo"),
+      id_cols = c("train_header", "dt_origin", "group", "geo", "date", "start_hour", "end_hour", "berth", "lb", "ub"),
       values_from = c("wtt", "t"),
       names_from = "event"
-    ) %>%
-    left_join(timetable %>%
-                select("train_header", "geo", "day", "start_hour", "end_hour",
-                       "group") %>%
-                group_by(.data$train_header, .data$geo) %>%
-                filter(row_number() == 1) %>%
-                ungroup(),
-              by = c("train_header", "geo"))
+    )
 
-  observed_geos <- observed %>%
-    inner_join(get_map() %>%
-                 select("signal", "geo") %>%
-                 distinct(.data$signal, .data$geo),
-               by = "signal",
-               relationship = "many-to-many")
-
-  start_hours <- observed_geos %>%
+  pair_start <- berth_matching %>%
     select(-"end_hour") %>%
     inner_join(timetable_wider %>%
-                select(-"end_hour"),
-               by = c("group", "day", "start_hour", "geo"),
+                 select(-"end_hour"),
+               by = c("group", "berth", "lb", "ub", "date", "start_hour", "geo"),
                relationship = "many-to-many")
 
-  end_hours <- observed_geos %>%
+  pair_end <- berth_matching %>%
     select(-"start_hour") %>%
     inner_join(timetable_wider %>%
                  select(-"start_hour"),
-               by = c("group", "day", "end_hour", "geo"),
+               by = c("group", "berth", "lb", "ub", "date", "end_hour", "geo"),
                relationship = "many-to-many")
 
-  aligned_observations <- bind_rows(start_hours, end_hours)
+  paired <- bind_rows(
+    pair_start,
+    pair_end %>% anti_join(pair_start,
+                           by = c("train_id", "train_header", "dt_origin"))
+  )
 
-  return(aligned_observations)
-}
-
-match_pass <- function(t_enters, t_vacates, t_Pass, lb, ub,
-                       operators, fuzzy_tolerance, tolerance) {
-  if (operators == "fuzzy") {
-    return(fuzzy_less_than(t_enters + tolerance*lb, t_Pass, fuzzy_tolerance) &
-             fuzzy_greater_than(t_vacates + tolerance*ub, t_Pass, fuzzy_tolerance))
-  } else {
-    return(t_enters + tolerance*lb < t_Pass & t_vacates + tolerance*ub > t_Pass)
-  }
-}
-
-match_stop <- function(t_enters, t_vacates, t_Arrive, t_Depart, lb, ub,
-                       operators, fuzzy_tolerance, tolerance) {
-  if (operators == "fuzzy") {
-    return(fuzzy_less_than(t_enters + tolerance*lb, t_Arrive, fuzzy_tolerance) &
-             fuzzy_greater_than(t_vacates + tolerance*ub, t_Depart,
-                                fuzzy_tolerance))
-  } else {
-    return(t_enters + tolerance*lb < t_Arrive &
-             t_vacates + tolerance*ub > t_Depart)
-  }
-}
-
-match_group <- function(observed, timetable, match_map,
-                        operators, fuzzy_tolerance, tolerance) {
-  paired_observations <- pair_observations(observed, timetable)
-
-  match_at <- paired_observations %>%
-    inner_join(match_map, by = c("group", "geo"))
-
-  if (nrow(match_at) > 0) {
-    is_matched <- match_at %>%
-      mutate(is_match = if_else(
-        .data$event == "Pass",
-        match_pass(.data$t_enters, .data$t_vacates, .data$t_Pass, .data$lb,
-                   .data$ub, operators, fuzzy_tolerance, tolerance),
-        match_stop(.data$t_enters, .data$t_vacates, .data$t_Arrive,
-                   .data$t_Depart, .data$lb, .data$ub, operators, fuzzy_tolerance,
-                   tolerance)
-      )) %>%
-      select("train_id", "train_header", "t_enters", "t_vacates", "t_Pass",
-             "t_Arrive", "t_Depart", "is_match", "group")
-
-    matched <- is_matched %>%
-      filter(.data$is_match) %>%
-      mutate(t = if_else(is.na(.data$t_Pass),
-                         .data$t_Arrive,
-                         .data$t_Pass)) %>%
-      group_by(.data$train_id) %>%
-      mutate(tdiff = .data$t - .data$t_enters) %>%
-      slice_min(order_by = .data$tdiff) %>%
-      group_by(.data$train_header) %>%
-      slice_min(order_by = .data$tdiff) %>%
-      group_by(.data$train_id) %>%
-      slice_min(order_by = .data$train_header) %>%
-      arrange(.data$train_id) %>%
-      select(-"is_match", -"t", -"tdiff") %>%
-      distinct(.data$train_id, .data$train_header, .keep_all = TRUE)
-  } else {
-    matched <- match_at %>% select("train_id", "train_header")
-  }
+  matched <- paired %>%
+    mutate(is_match = if_else(
+      is.na(t_Pass),
+      (t_enters + lb < t_Arrive & t_vacates + ub > t_Depart),
+      (t_enters + lb < t_Pass & t_enters + ub > t_Pass)
+    )) %>%
+    select(train_id, train_header, dt_origin, berth, geo, t_enters, t_Pass, t_Arrive,
+           t_Depart, t_vacates, lb, ub, is_match) %>%
+    arrange(train_id, dt_origin, train_header) %>%
+    group_by(train_id, train_header, dt_origin) %>%
+    filter(any(is_match)) %>%
+    distinct(train_id, train_header, dt_origin) %>%
+    ungroup()
 
   return(matched)
 }
 
-#' Preprocess Berth Data for ID Matching
-#'
-#' @param berth_events Data frame containing berth data
-#' @param train_classes Data frame containing train classes
-#'
-#' @export
-preprocess_berths <- function(berth_events, train_classes) {
-  names_berths <- c("signal", "train_id", "t_enters", "t_vacates")
-  types_berths <- list(character(), integer(), lubridate::POSIXct(),
-                       lubridate::POSIXct())
-  check_df(berth_events, names_berths, types_berths)
+#' @importFrom dplyr select inner_join group_by mutate first last ungroup
+preprocess_berth_matching <- function(berth_events_classes, match_mapping) {
+  berth_events_mapping <- berth_events_classes %>%
+    select("train_id", "group", "berth", "t_enters", "t_vacates") %>%
+    inner_join(match_mapping,
+               by = c("group", "berth"))
 
-  names_classes <- c("train_id", "group")
-  types_classes <- list(integer(), character())
-  check_df(train_classes, names_classes, types_classes)
-
-  berth_groups <- berth_events %>%
-    select("signal", "train_id", "t_enters", "t_vacates") %>%
-    inner_join(
-      train_classes %>%
-        select("train_id", "group"),
-      by = "train_id"
-    )
-
-  berth_groups <- berth_groups %>%
+  berth_events_times <- berth_events_mapping %>%
     group_by(.data$train_id) %>%
     mutate(first = first(.data$t_enters),
            last = last(.data$t_vacates)) %>%
     ungroup() %>%
-    mutate(day = lubridate::date(.data$first),
+    mutate(date = lubridate::date(.data$first),
            start_hour = lubridate::hour(.data$first),
            end_hour = lubridate::hour(.data$last)) %>%
     select(-"first", -"last")
 
-  return(berth_groups)
+  return(berth_events_times)
 }
 
-#' Preprocess Timetable Data for ID Matching
-#'
-#' @param timetable Data frame containing timetable data
-#' @param train_classes Data frame containing train classes
-#'
-#' @export
-preprocess_timetable <- function(timetable, train_classes) {
-  names_tt <- c("train_header", "geo", "event", "wtt", "t")
-  types_tt <- list(character(), character(), character(), lubridate::POSIXct(),
-                   lubridate::POSIXct())
-  check_df(timetable, names_tt, types_tt)
+#' @importFrom dplyr select inner_join group_by mutate first last ungroup filter
+#'   arrange
+preprocess_timetable_matching <- function(timetable_groups, match_mapping) {
+  timetable_subset_mapping <- timetable_groups %>%
+    select("train_header", "dt_origin", "group", "geo", "event", "wtt", "t") %>%
+    inner_join(match_mapping,
+               by = c("group", "geo"))
 
-  names_classes <- c("train_header", "group")
-  types_classes <- list(character(), character())
-  check_df(train_classes, names_classes, types_classes)
-
-  timetable_groups <- timetable %>%
-    select("train_header", "geo", "event", "wtt", "t") %>%
-    inner_join(train_classes %>%
-                 select("train_header", "group"),
-               by = "train_header",
-               relationship = "many-to-many") %>%
+  timetable_subset_times <- timetable_subset_mapping %>%
     filter(!is.na(.data$t)) %>%
-    group_by(.data$train_header) %>%
+    group_by(.data$train_header, .data$dt_origin) %>%
     mutate(first = first(.data$t),
            last = last(.data$t)) %>%
     ungroup() %>%
-    mutate(day = lubridate::date(.data$first),
+    mutate(date = lubridate::date(.data$first),
            start_hour = lubridate::hour(.data$first),
            end_hour = lubridate::hour(.data$last)) %>%
-    arrange(.data$day, .data$t) %>%
+    arrange(.data$date, .data$t) %>%
     select(-"first", -"last")
 
-  return(timetable_groups)
-}
-
-#' Match Train IDs to Train Headers based on Group Information
-#'
-#' This function matches train IDs dervied from Centrix data to corresponding
-#' timetable train headers. It performs the matching for each unique group in
-#' the data.
-#'
-#' @param berth_groups A data frame containing observed Centrix data that has
-#'   been pre-processed for ID matching. See [preprocess_berths()]. This data
-#'   should contain the following columns:
-#'   \itemize{
-#'     \item \code{signal}: Character vector, signal ID.
-#'     \item \code{train_id}: Integer vector, train ID.
-#'     \item \code{t_enters}: [POSIXct], the time when the train enters the
-#'                      berth.
-#'     \item \code{t_vacates}: [POSIXct], the time when the train vacates the
-#'                      berth.
-#'     \item \code{group}: Character vector, the group name.
-#'     \item \code{day}: [Date], the day of the journey.
-#'     \item \code{start_hour}: Integer, the start hour of the journey.
-#'     \item \code{end_hour}: Integer, the end hour of the journey.
-#'   }
-#'
-#' @param timetable_groups A data frame containing pre-processed timetable data
-#'   (see [preprocess_timetable()]) with the following columns:
-#'   \itemize{
-#'     \item \code{train_header}: Character vector, the train header.
-#'     \item \code{geo}: Character vector, the geographical location.
-#'     \item \code{event}: Character vector, the type of event.
-#'     \item \code{wtt}: [POSIXct], the time according to the working timetable.
-#'     \item \code{t}: [POSIXct], the actual time of the event.
-#'     \item \code{group}: Character vector, the group name.
-#'     \item \code{day}: [Date], the day of the journey. Used to narrow down
-#'                      the number of potential matches.
-#'     \item \code{start_hour}: Integer, the start hour of the journey. Used to
-#'                      narrow down the number of potential matches.
-#'     \item \code{end_hour}: Integer, the end hour of the journey. Used to
-#'                      narrow down the number of potential matches.
-#'   }
-#'
-#' @param group_map A data frame containing group-specific information about
-#'   which geographical locations to perform ID matching:
-#'   \itemize{
-#'     \item \code{group}: Character vector, the group name.
-#'     \item \code{geo}: Character vector, the geographical location.
-#'     \item \code{event}: Character vector, the type of event. Should be either
-#'                      'Pass' if the train does not stop, or 'Stop' if the
-#'                      train does stop.
-#'     \item \code{lb}: Numeric, the lower bound (in seconds) for what is
-#'                      considered a match. Together with `ub`, this defines a
-#'                      time range based on `berth_groups$t_enters`. If the
-#'                      actual timetable time `t` occurs within this range, it
-#'                      is considered a match.
-#'     \item \code{ub}: Numeric, the upper bound (in seconds) for what is
-#'                      considered a match. Together with `lb`, this defines a
-#'                      time range based on `berth_groups$t_enters`. If the
-#'                      actual timetable time `t` occurs within this range, it
-#'                      is considered a match.
-#'   }
-#'
-#' @param operators The type of matching operator to be used. It can be one of
-#'   "fuzzy" (default) or "exact". Using "exact" will use normal mathematical
-#'   operators `<` and `>`. Using "fuzzy" accounts for the rounding in timetable
-#'   data.
-#'
-#' @param fuzzy_tolerance The tolerance value for fuzzy matching. This parameter
-#'   is used when "operators" is set to "fuzzy". A higher fuzzy_tolerance will
-#'   produce more matches.
-#'
-#' @param tolerance The tolerance value for matching. This parameter acts as a
-#'   scalar for the bounds (`lb` and `ub`) defined in the `group_map`. A higher
-#'   tolerance will produce more matches.
-#'
-#' @return A data frame containing the matched train IDs and their corresponding
-#'   train headers. The data frame is sorted by train IDs in ascending order.
-#'
-#' @importFrom lubridate POSIXct
-#' @importFrom dplyr bind_rows arrange filter
-#'
-#' @export
-match_ids <- function(berth_groups,
-                      timetable_groups,
-                      group_map,
-                      operators = "fuzzy",
-                      fuzzy_tolerance = 1,
-                      tolerance = 1) {
-  names_berths <- c("signal", "train_id", "t_enters", "t_vacates", "group",
-                    "day", "start_hour", "end_hour")
-  types_berths <- list(character(), integer(), lubridate::POSIXct(),
-                       lubridate::POSIXct(), character(), lubridate::Date(),
-                       integer(), integer())
-  check_df(berth_groups, names_berths, types_berths)
-
-  names_tt <- c("train_header", "geo", "event", "wtt", "t", "group", "day",
-                "start_hour", "end_hour")
-  types_tt <- list(character(), character(), character(), lubridate::POSIXct(),
-                   lubridate::POSIXct(), character(), lubridate::Date(),
-                   integer(), integer())
-  check_df(timetable_groups, names_tt, types_tt)
-
-  names_map <- c("group", "geo", "event", "lb", "ub")
-  types_map <- list(character(), character(), character(), numeric(), numeric())
-  check_df(group_map, names_map, types_map)
-  groups <- unique(group_map$group)
-
-  matched_ids <- dplyr::tribble(~train_id, ~train_header)
-
-  for (g in groups) {
-    map <- group_map %>%
-      filter(.data$group == g)
-
-    observed_group <- berth_groups %>%
-      filter(.data$group == g)
-    timetable_group <- timetable_groups %>%
-      filter(.data$group == g)
-
-    matched <- match_group(observed_group, timetable_group, map, operators,
-                           fuzzy_tolerance, tolerance)
-
-    matched_ids <- dplyr::bind_rows(matched_ids, matched)
-  }
-
-  return(matched_ids %>% arrange(.data$train_id))
-}
-
-#' Combine Observed and Timetable Data based on ID Matching
-#'
-#' This function combines observed and timetable data based on the results of ID
-#' matching. It takes three data frames as input: `ids`, `observed`, and
-#' `timetable`, and returns a combined data frame with relevant information.
-#'
-#' @param ids A data frame containing the results of ID matching. It should have
-#'   the following columns:
-#'   \itemize{
-#'     \item \code{train_id}: Integer, the train ID obtained from ID matching.
-#'     \item \code{train_header}: Character, the corresponding train header
-#'           from the timetable data.
-#'   }
-#'
-#' @param observed A data frame containing observed Centrix data that has been
-#'   pre-processed for ID matching. It should contain the following columns:
-#'   \itemize{
-#'     \item \code{train_id}: Integer vector, train ID.
-#'     \item \code{signal}: Character vector, signal ID.
-#'     \item \code{t_enters}: [POSIXct], the time when the train enters the
-#'                      berth.
-#'     \item \code{t_vacates}: [POSIXct], the time when the train vacates the
-#'                      berth.
-#'     \item \code{group}: Character vector, the group name.
-#'   }
-#'
-#' @param timetable A data frame containing pre-processed timetable data with
-#'   the following columns:
-#'   \itemize{
-#'     \item \code{train_header}: Character vector, the train header.
-#'     \item \code{geo}: Character vector, the geographical location.
-#'     \item \code{t}: [POSIXct], the actual time of the event.
-#'     \item \code{event}: Character vector, the type of event.
-#'     \item \code{group}: Character vector, the group name.
-#'   }
-#'
-#' @return A data frame containing the combined information from the ID matching
-#'   results, observed data, and timetable data. The data frame is sorted by
-#'   train IDs in ascending order.
-#'
-#' @importFrom dplyr arrange inner_join select
-#' @importFrom tidyr pivot_wider
-#'
-#' @export
-combine_data <- function(ids, observed, timetable) {
-  duplicates <- timetable %>%
-    group_by(.data$train_header, .data$geo, .data$event) %>%
-    summarise(n = n(), .groups = "drop") %>%
-    filter(n > 1)
-
-  timetable_wider <- timetable %>%
-    select("train_header", "geo", "t", "event", "group") %>%
-    anti_join(duplicates, by = c("train_header", "geo", "event")) %>%
-    filter(.data$event %in% c("Pass", "Arrive", "Depart")) %>%
-    tidyr::pivot_wider(
-      id_cols = c("train_header", "geo", "group"),
-      values_from = "t",
-      names_from = "event",
-      names_glue = "t_{.name}"
-    )
-
-  observed_geos <- observed %>%
-    select("train_id", "signal", "t_enters", "t_vacates") %>%
-    inner_join(get_map() %>%
-                 select("signal", "geo") %>%
-                 distinct(.data$signal, .data$geo),
-               by = "signal",
-               relationship = "many-to-many")
-
-  combined_data <- timetable_wider %>%
-    inner_join(ids %>%
-                 select("train_id", "train_header"),
-               by = "train_header") %>%
-    inner_join(observed_geos,
-               by = c("geo", "train_id")) %>%
-    arrange(.data$train_id) %>%
-    select("train_id", "train_header", "group", "geo", "t_enters", "t_vacates",
-           "t_Pass", "t_Arrive", "t_Depart") %>%
-    mutate(t = if_else(
-      is.na(.data$t_Pass),
-      .data$t_Arrive,
-      .data$t_Pass
-    ))
-
-  return(combined_data)
-}
-
-#' Calculate Mean Accuracy and Mean Squared Accuracy of ID Matching
-#'
-#' This function takes ID matching results produced by [match_ids()] and
-#' calculates the mean accuracy and mean squared accuracy of the matches.
-#'
-#' @param ids A data frame with matched IDs.
-#' @param group_map A data frame containing matching information for each group
-#'
-#' @return A message displaying the calculated mean accuracy and mean squared
-#'   accuracy. The result is printed to the console.
-#'
-#' @importFrom dplyr mutate
-#' @importFrom glue glue
-#'
-#' @export
-accuracy <- function(ids, group_map) {
-  ids <- ids %>%
-    left_join(group_map %>%
-                select(group, lb, ub),
-              by = "group",
-              relationship = "many-to-many") %>%
-    mutate(acc = as.integer(.data$t_enters + .data$lb - .data$t),
-           acc2 = .data$acc * .data$acc)
-
-  ma = summary(ids$acc)
-  m2a = summary(ids$acc2)
-
-  print(glue::glue("Mean Accuracy: {ma[['Mean']]}s       Mean Squared Accuracy: {m2a[['Mean']]}s^2"))
-
-  return(ids)
+  return(timetable_subset_times)
 }

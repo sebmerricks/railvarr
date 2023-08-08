@@ -4,32 +4,9 @@
 \alias{match_ids}
 \title{Match Train IDs to Train Headers based on Group Information}
 \usage{
-match_ids(
-  berth_groups,
-  timetable_groups,
-  group_map,
-  operators = "fuzzy",
-  fuzzy_tolerance = 1,
-  tolerance = 1
-)
+match_ids(berth_events_classes, timetable_groups, match_mapping)
 }
 \arguments{
-\item{berth_groups}{A data frame containing observed Centrix data that has
-been pre-processed for ID matching. See \code{\link[=preprocess_berths]{preprocess_berths()}}. This data
-should contain the following columns:
-\itemize{
-\item \code{signal}: Character vector, signal ID.
-\item \code{train_id}: Integer vector, train ID.
-\item \code{t_enters}: \link{POSIXct}, the time when the train enters the
-berth.
-\item \code{t_vacates}: \link{POSIXct}, the time when the train vacates the
-berth.
-\item \code{group}: Character vector, the group name.
-\item \code{day}: \link{Date}, the day of the journey.
-\item \code{start_hour}: Integer, the start hour of the journey.
-\item \code{end_hour}: Integer, the end hour of the journey.
-}}
-
 \item{timetable_groups}{A data frame containing pre-processed timetable data
 (see \code{\link[=preprocess_timetable]{preprocess_timetable()}}) with the following columns:
 \itemize{
@@ -45,6 +22,22 @@ the number of potential matches.
 narrow down the number of potential matches.
 \item \code{end_hour}: Integer, the end hour of the journey. Used to
 narrow down the number of potential matches.
+}}
+
+\item{berth_groups}{A data frame containing observed Centrix data that has
+been pre-processed for ID matching. See \code{\link[=preprocess_berths]{preprocess_berths()}}. This data
+should contain the following columns:
+\itemize{
+\item \code{signal}: Character vector, signal ID.
+\item \code{train_id}: Integer vector, train ID.
+\item \code{t_enters}: \link{POSIXct}, the time when the train enters the
+berth.
+\item \code{t_vacates}: \link{POSIXct}, the time when the train vacates the
+berth.
+\item \code{group}: Character vector, the group name.
+\item \code{day}: \link{Date}, the day of the journey.
+\item \code{start_hour}: Integer, the start hour of the journey.
+\item \code{end_hour}: Integer, the end hour of the journey.
 }}
 
 \item{group_map}{A data frame containing group-specific information about

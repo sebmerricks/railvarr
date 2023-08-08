@@ -101,6 +101,7 @@ cluster_centrix <- function(berth_events,
 }
 
 #' @import ggplot2
+#' @export
 plot_cluster_events <- function(cluster_events) {
   pclusters <- cluster_events %>%
     group_by(train_id) %>%

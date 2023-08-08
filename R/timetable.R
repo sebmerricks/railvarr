@@ -13,17 +13,17 @@ wrangle_timetable <- function(timetable, stations) {
     filter_relevant_direction(stations) %>%
     find_calling_patterns()
 
-  return(timetable_subset)
+  return(timetable_subset %>%
+           mutate(
+             across(c(dt_origin, wtt, t),
+                    ~lubridate::with_tz(.x, tzone = "UTC"))
+           ))
 }
 
 #' @importFrom dplyr filter mutate across
 filter_relevant_services <- function(timetable, stations) {
   return(timetable %>%
-           filter(geo %in% unlist(stations)) %>%
-           mutate(
-             across(c(dt_origin, wtt, t),
-                    ~lubridate::with_tz(.x, tzone = "Europe/London"))
-           ))
+           filter(geo %in% unlist(stations)))
 }
 
 #' @importFrom dplyr filter mutate first last group_by select
