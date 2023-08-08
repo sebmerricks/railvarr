@@ -6,7 +6,45 @@
 \usage{
 calculate_tsars(track_events, red_events, asset_map)
 }
+\arguments{
+\item{track_events}{A data frame containing windowed track events. No input
+validation is performed. It is assumed that the data frame will follow the
+structure returned by the function \code{\link[=filter_track_events]{filter_track_events()}}}
+
+\item{red_events}{A data frame containing windowed red events. No input
+validation is performed. It is assumed that the data frame will follow the
+structure returns by the function \code{\link[=filter_aspect_events]{filter_aspect_events()}}}
+
+\item{asset_map}{A data frame containing a map of the track section. No input
+validation is performed. See \code{\link[=wrangle_centrix]{wrangle_centrix()}} for the expected
+structure.}
+}
+\value{
+A data frame containing berth level observations including TSAR and
+its subcomponents. The following columns are included:
+\itemize{
+\item{\code{signal}} Signal ID.
+\item{\code{berth}} Berth ID.
+\item{\code{train_id}} Train ID.
+\item{\code{aspect}} Signal aspect on berth entry.
+\item{\code{t_enters}} Date and time of berth entry.
+\item{\code{t_red_on}} Date and time of signal changing to red.
+\item{\code{t_enters_next}} Date and time of entry into next berth.
+\item{\code{t_vacates}} Date and time of vacating the berth.
+\item{\code{t_red_off}} Date and time of signal changing from red.
+\item{\code{TSAR}} Amount of time the signal spends on red.
+\item{\code{T_onset}} Signal onset time between train entry and signal
+changing to red.
+\item{\code{T_clear}} Amount of time the train takes to clear the berth.
+\item{\code{T_offset}} Signal offset time between train exit and signal
+changing from red.
+\item{\code{T_travel}} Amount of time the train takes to travel the
+length of the berth.
+\item{\code{T_coach}} Amount of time the train takes to travel its own
+length.
+}
+}
 \description{
-Calculate berth-level information including TSAR and all sub-components, e.g.,
-T_onset, T_clear, T_offset, etc.
+Calculate berth-level information including TSAR and all sub-components,
+e.g., T_onset, T_clear, T_offset, etc.
 }
