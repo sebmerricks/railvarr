@@ -1,3 +1,5 @@
+#' Wrangle Timetable Data
+#' @export
 wrangle_timetable <- function(timetable, stations) {
   validate_timetable(timetable)
   validate_stations(stations)
@@ -10,6 +12,7 @@ wrangle_timetable <- function(timetable, stations) {
   return(timetable_subset)
 }
 
+#' @importFrom dplyr filter mutate across
 filter_relevant_services <- function(timetable, stations) {
   return(timetable %>%
            filter(geo %in% unlist(stations)) %>%
@@ -19,6 +22,7 @@ filter_relevant_services <- function(timetable, stations) {
            ))
 }
 
+#' @importFrom dplyr filter mutate first last group_by select
 filter_relevant_direction <- function(timetable, stations) {
   return(timetable %>%
     filter(.data$geo %in% unlist(stations)) %>%
@@ -29,7 +33,8 @@ filter_relevant_direction <- function(timetable, stations) {
     select(-"is_first", -"is_last"))
 }
 
-
+#' @importFrom dplyr distinct mutate filter bind_rows summarise inner_join
+#'   ungroup
 find_calling_patterns <- function(timetable) {
   dummy_geo <- timetable %>%
     distinct(train_header, dt_origin) %>%

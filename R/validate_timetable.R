@@ -15,5 +15,6 @@ validate_timetable <- function(timetable) {
 }
 
 validate_stations <- function(stations) {
-  stop_if_not(is.list(stations))
+  stop_if_not(is.list(stations),
+              msg = "stations must be a list of character vectors.")
 }
