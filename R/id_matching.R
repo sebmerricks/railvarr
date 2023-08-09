@@ -12,7 +12,7 @@
 #' @export
 match_ids <- function(berth_events_classes, timetable_groups, match_mapping) {
   validate_berth_matching(berth_events_classes)
-  validate_timetable_matching(timetable_subset)
+  validate_timetable_matching(timetable_groups)
   validate_match_mapping(match_mapping)
 
   berth_matching <- preprocess_berth_matching(berth_events_classes,

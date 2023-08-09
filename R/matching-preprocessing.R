@@ -38,7 +38,7 @@ preprocess_timetable_matching <- function(timetable_groups, match_mapping) {
     arrange(.data$date, .data$t) %>%
     select(-"first", -"last")
 
-  timetable_wider <- timetable_matching %>%
+  timetable_wider <- timetable_subset_times %>%
     filter(.data$event %in% c("Pass", "Arrive", "Depart")) %>%
     tidyr::pivot_wider(
       id_cols = c("train_header", "dt_origin", "group", "geo", "date",
