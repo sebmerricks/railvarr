@@ -1,25 +1,8 @@
-raw_centrix1 <- readr::read_csv(testthat::test_path("fixtures/just testing/raw_events_surbiton.csv")) %>%
-  select(-Site, -'State/Transition') %>%
-  rename(asset = Channel,
-         dt = 'Date (UTC)',
-         transition = 'Up/Dn')
-raw_centrix2 <- readr::read_csv(testthat::test_path("fixtures/just testing/raw_events_walton.csv")) %>%
-  select(-Site, -'State/Transition') %>%
-  rename(asset = Channel,
-         dt = 'Date (UTC)',
-         transition = 'Up/Dn')
-
-raw_centrix <- bind_rows(raw_centrix1, raw_centrix2)
-
-asset_map <- read_rds_test("just testing/asset_map.rds")
-
-raw_centrix %>%
-  mutate(dt = lubridate::as_datetime(dt / 1000)) %>%
-  filter(stringr::str_detect(asset, '(S[0-9]+\\s[A-Z]+)|(T[A-Z]+(-[0-9])?)'))
+raw_centrix <- read_rds_test("raw_centrix.rds")
+asset_map <- read_rds_test("asset_map.rds")
 
 berth_events <- railvarr::wrangle_centrix(
   raw_centrix %>%
-    mutate(dt = lubridate::as_datetime(dt / 1000)) %>%
     filter(stringr::str_detect(asset, '(S[0-9]+\\s[A-Z]+)|(T[A-Z]+(-[0-9])?)')),
   asset_map) %>%
   mutate(across(starts_with("t_", ignore.case = FALSE),
