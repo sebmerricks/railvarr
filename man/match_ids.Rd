@@ -2,83 +2,21 @@
 % Please edit documentation in R/id_matching.R
 \name{match_ids}
 \alias{match_ids}
-\title{Match Train IDs to Train Headers based on Group Information}
+\title{Match Centrix and Timetable IDs}
 \usage{
 match_ids(berth_events_classes, timetable_groups, match_mapping)
 }
 \arguments{
-\item{timetable_groups}{A data frame containing pre-processed timetable data
-(see \code{\link[=preprocess_timetable]{preprocess_timetable()}}) with the following columns:
-\itemize{
-\item \code{train_header}: Character vector, the train header.
-\item \code{geo}: Character vector, the geographical location.
-\item \code{event}: Character vector, the type of event.
-\item \code{wtt}: \link{POSIXct}, the time according to the working timetable.
-\item \code{t}: \link{POSIXct}, the actual time of the event.
-\item \code{group}: Character vector, the group name.
-\item \code{day}: \link{Date}, the day of the journey. Used to narrow down
-the number of potential matches.
-\item \code{start_hour}: Integer, the start hour of the journey. Used to
-narrow down the number of potential matches.
-\item \code{end_hour}: Integer, the end hour of the journey. Used to
-narrow down the number of potential matches.
-}}
+\item{berth_events_classes}{Data frame containing berth-level Centrix data.}
 
-\item{berth_groups}{A data frame containing observed Centrix data that has
-been pre-processed for ID matching. See \code{\link[=preprocess_berths]{preprocess_berths()}}. This data
-should contain the following columns:
-\itemize{
-\item \code{signal}: Character vector, signal ID.
-\item \code{train_id}: Integer vector, train ID.
-\item \code{t_enters}: \link{POSIXct}, the time when the train enters the
-berth.
-\item \code{t_vacates}: \link{POSIXct}, the time when the train vacates the
-berth.
-\item \code{group}: Character vector, the group name.
-\item \code{day}: \link{Date}, the day of the journey.
-\item \code{start_hour}: Integer, the start hour of the journey.
-\item \code{end_hour}: Integer, the end hour of the journey.
-}}
+\item{timetable_groups}{Data frame containing Timetable data.}
 
-\item{group_map}{A data frame containing group-specific information about
-which geographical locations to perform ID matching:
-\itemize{
-\item \code{group}: Character vector, the group name.
-\item \code{geo}: Character vector, the geographical location.
-\item \code{event}: Character vector, the type of event. Should be either
-'Pass' if the train does not stop, or 'Stop' if the
-train does stop.
-\item \code{lb}: Numeric, the lower bound (in seconds) for what is
-considered a match. Together with \code{ub}, this defines a
-time range based on \code{berth_groups$t_enters}. If the
-actual timetable time \code{t} occurs within this range, it
-is considered a match.
-\item \code{ub}: Numeric, the upper bound (in seconds) for what is
-considered a match. Together with \code{lb}, this defines a
-time range based on \code{berth_groups$t_enters}. If the
-actual timetable time \code{t} occurs within this range, it
-is considered a match.
-}}
-
-\item{operators}{The type of matching operator to be used. It can be one of
-"fuzzy" (default) or "exact". Using "exact" will use normal mathematical
-operators \code{<} and \code{>}. Using "fuzzy" accounts for the rounding in timetable
-data.}
-
-\item{fuzzy_tolerance}{The tolerance value for fuzzy matching. This parameter
-is used when "operators" is set to "fuzzy". A higher fuzzy_tolerance will
-produce more matches.}
-
-\item{tolerance}{The tolerance value for matching. This parameter acts as a
-scalar for the bounds (\code{lb} and \code{ub}) defined in the \code{group_map}. A higher
-tolerance will produce more matches.}
+\item{match_mapping}{Data frame containing instructions for the matching.}
 }
 \value{
-A data frame containing the matched train IDs and their corresponding
-train headers. The data frame is sorted by train IDs in ascending order.
+Data frame containing a 1-1 mapping between Centrix IDs and
+Timetable IDs.
 }
 \description{
-This function matches train IDs dervied from Centrix data to corresponding
-timetable train headers. It performs the matching for each unique group in
-the data.
+Calculates matching IDs between Centrix and Timetable data.
 }

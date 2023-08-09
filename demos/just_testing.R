@@ -25,7 +25,7 @@ berth_events <- railvarr::wrangle_centrix(
   mutate(across(starts_with("t_", ignore.case = FALSE),
                 ~lubridate::with_tz(.x, tzone = "Europe/London")))
 
-berth_events_clusters <- railvarr::cluster_centrix(berth_events, k = 3L)
+berth_events_clusters <- railvarr::cluster_centrix(berth_events, k = 3L, niter = 40L)
 railvarr::plot_cluster_events(berth_events_clusters)
 
 group_labels <- dplyr::tribble(
@@ -90,3 +90,9 @@ match_mapping <- dplyr::tribble(
 
 id_matching <- railvarr::match_ids(berth_events_classes, timetable_groups,
                                    match_mapping)
+
+berth_events_matched <- berth_events_classes %>%
+  inner_join(id_matching, by = "train_id")
+
+timetable_matched <- timetable_groups %>%
+  inner_join(id_matching, by = c("train_header", "dt_origin"))
