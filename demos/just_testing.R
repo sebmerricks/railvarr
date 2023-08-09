@@ -13,7 +13,7 @@ railvarr::plot_cluster_events(berth_events_clusters)
 
 group_labels <- dplyr::tribble(
   ~cluster, ~group,
-  1, "stopping-walton",
+  1, "stopping-112",
   2, "stopping-all",
   3, "fast"
 )
