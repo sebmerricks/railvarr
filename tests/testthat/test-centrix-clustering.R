@@ -21,7 +21,7 @@ test_that("cluster_centrix works", {
   skip_on_cran()
   skip_on_ci()
   skip_if(is_checking())
-  berth_events <- read_rds_test("centrix-clustering/berth-events.rds")
+  berth_events <- read_rds_test("berth_events.rds")
   cluster_events <- cluster_centrix(berth_events, k = 2L) %>%
     dplyr::filter(!is.na(.data$T_travel))
   pclusters <- plot_cluster_events(cluster_events)
