@@ -61,8 +61,8 @@ along with calculations of TSAR and all its subcomponents.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>raw_centrix</dt>
 <dd><p>A data frame containing raw Centrix data. Strict input
-validation is applied to ensure the data adhere to the expected
-structure. The data should be in a data frame with the following columns:</p><ul><li><p><code>asset</code>: A character vector containing the asset ID. Tracks
+validation is applied to ensure the data adhere to the expected structure.
+The data should be in a data frame with the following columns:</p><ul><li><p><code>asset</code>: A character vector containing the asset ID. Tracks
 are expected to follow the regex pattern <code>"T[A-Z]+(-[0-9])?"</code>. E.g.,
 'TABC' 'TABC-1' 'TABC-2'.
 Signals are expected to follow the regex pattern <code>"S[0-9]+\s[A-Z]+"</code>.
@@ -100,8 +100,8 @@ must be one of either "enters" or "vacates".</p></li>
 
 
 <dt>state_map</dt>
-<dd><p>A data frame containing a 1-1 mapping from signal state
-to signal aspect. See <a href="state_mapping.html">state_mapping</a> (the default) for the expected
+<dd><p>A data frame containing a 1-1 mapping from signal state to
+signal aspect. See <a href="state_mapping.html">state_mapping</a> (the default) for the expected
 structure.</p></dd>
 
 </dl></div>
@@ -115,7 +115,8 @@ and all sub-components, e.g. 'T_travel' and 'T_offset'.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p>All lower-level functions that this function wraps.</p></div>
+    <div class="dont-index"><p><code><a href="preprocess_signal_events.html">preprocess_signal_events()</a></code> <code><a href="calculate_time_windows.html">calculate_time_windows()</a></code>
+<code><a href="filter_aspect_events.html">filter_aspect_events()</a></code> <code><a href="calculate_tsars.html">calculate_tsars()</a></code></p></div>
     </div>
 
     <div class="section level2">
