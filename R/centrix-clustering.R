@@ -96,6 +96,8 @@ cluster_journeys <- function(berth_events,
   return(berth_events_clusters)
 }
 
+#' Plot clustered train journeys
+#' @param cluster_events Data frame matching output from [cluster_journeys()]
 #' @import ggplot2
 #' @export
 plot_cluster_events <- function(cluster_events) {
