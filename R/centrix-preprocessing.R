@@ -14,22 +14,17 @@
 #' `preprocess_track_events()` converts the `transition` data into track entry
 #' and exit events.
 #'
-#' @param raw_events Data frame containing raw Centrix data. No input validation
-#'   is performed. The data should match the structure of Centrix data as
-#'   described in [wrangle_centrix()].
-#' @param asset_map Data frame containing a map of the track section, used to
-#'   filter the raw signal events down to only the signals specified in the
-#'   asset map. No input validation is performed. See [wrangle_centrix()] for
-#'   the expected structure.
-#' @param state_mapping Data frame containing a 1-1 mapping from signal state to
-#'   aspect. See [state_mapping] for the expected structure.
+#' @inheritParams wrangle_centrix
 #'
 #' @returns A data frame containing aspect events with columns:
-#'  * 'signal': (character) signal ID,
-#'  * 'dt': (lubridate::POSIXct) datetime,
-#'  * 'aspect': (factor) signal aspect after train enters the signal section.
-#'  * 'past_aspect': (factor) signal aspect before train enters the signal
-#'   section.
+#' \itemize{
+#'   \item{\code{signal}} (character) signal ID.
+#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
+#'   \item{\code{aspect}} (factor) signal aspect after train enters the signal
+#'    section.
+#'   \item{\code{past_aspect}} (factor) signal aspect before train enters the
+#'    signal section.
+#' }
 #'
 #' @seealso [wrangle_centrix()]
 #'
@@ -37,9 +32,13 @@
 #'   ungroup lag if_else
 #'
 #' @export
-preprocess_signal_events <- function(raw_events,
+preprocess_signal_events <- function(raw_centrix,
                                      asset_map,
-                                     state_mapping) {
+                                     state_map) {
+  validate_centrix(raw_centrix)
+  validate_asset_map(asset_map)
+  validate_state_mapping(state_map)
+
   raw_signal_events <- raw_events %>%
     filter(stringr::str_starts(.data$asset, "S"))
 
@@ -57,7 +56,7 @@ preprocess_signal_events <- function(raw_events,
   aspect_events <- signal_events %>%
     semi_join(signals, by = "signal") %>%
     inner_join(
-      state_mapping,
+      state_map,
       by = "state"
     ) %>%
     arrange(.data$signal, .data$dt) %>%
@@ -72,15 +71,21 @@ preprocess_signal_events <- function(raw_events,
 #' @inherit preprocess_signal_events
 #'
 #' @returns A data frame containing track events with columns:
-#'  * 'track': (character) track ID,
-#'  * 'dt': (lubridate::POSIXct) datetime,
-#'  * 'occupied': (logical) TRUE if train enters track, else FALSE,
-#'  * 'event': (character) 'enters' if train enters track, else 'vacates'.
+#' \itemize{
+#'   \item{\code{track}} (character) track ID.
+#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
+#'   \item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
+#'   \item{\code{event}} (character) 'enters' if train enters track, else
+#'    'vacates'.
+#' }
 #'
 #' @importFrom dplyr select mutate rename arrange semi_join if_else
 #'
 #' @export
-preprocess_track_events <- function(raw_events, asset_map) {
+preprocess_track_events <- function(raw_centrix, asset_map) {
+  validate_centrix(raw_centrix)
+  validate_asset_map(asset_map)
+
   raw_track_events <- raw_events %>%
     filter(stringr::str_starts(.data$asset, "T"))
 

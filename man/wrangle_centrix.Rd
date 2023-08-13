@@ -8,7 +8,7 @@ wrangle_centrix(raw_centrix, asset_map, state_map = state_mapping)
 }
 \arguments{
 \item{raw_centrix}{A data frame containing raw Centrix data. Strict input
-validation is #' applied to ensure the data adhere to the expected
+validation is applied to ensure the data adhere to the expected
 structure. The data should be in a data frame with the following columns:
 \itemize{
 \item{\code{asset}}: A character vector containing the asset ID. Tracks

@@ -4,29 +4,62 @@
 \alias{preprocess_signal_events}
 \title{Preprocess raw Centrix data}
 \usage{
-preprocess_signal_events(raw_events, asset_map, state_mapping)
+preprocess_signal_events(raw_centrix, asset_map, state_map)
 }
 \arguments{
-\item{raw_events}{Data frame containing raw Centrix data. No input validation
-is performed. The data should match the structure of Centrix data as
-described in \code{\link[=wrangle_centrix]{wrangle_centrix()}}.}
+\item{raw_centrix}{A data frame containing raw Centrix data. Strict input
+validation is applied to ensure the data adhere to the expected
+structure. The data should be in a data frame with the following columns:
+\itemize{
+\item{\code{asset}}: A character vector containing the asset ID. Tracks
+are expected to follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}. E.g.,
+'TABC' 'TABC-1' 'TABC-2'.
+Signals are expected to follow the regex pattern \code{"S[0-9]+\\s[A-Z]+"}.
+E.g., 'S123 HGE' 'S123 I'.
+The second part of the signal ID should be a state code referring to
+the signal aspect, e.g. 'RGE' for red or 'DGE' for green. For other
+codes see:
+\url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
+\item{\code{dt}}: A \link[lubridate:posix_utils]{lubridate::POSIXct} object representing the date
+and time at which the observation was made.
+\item{\code{transition}}: A character vector representing the state
+transition that caused the observation. A transition can be one of
+"UP to DN" or "DN to UP", anything else will be ignored. For tracks,
+"UP to DN" signifies a train entering the track, while "DN to UP" is a
+train vacating the track. For signals, "UP to DN" represents an aspect
+change. Therefore, any signals with a "DN to UP" transition will be
+ignored.
+}}
 
-\item{asset_map}{Data frame containing a map of the track section, used to
-filter the raw signal events down to only the signals specified in the
-asset map. No input validation is performed. See \code{\link[=wrangle_centrix]{wrangle_centrix()}} for
-the expected structure.}
+\item{asset_map}{A data frame containing a 1-1 mapping from signals to berths
+and a 1-many mapping from berths to tracks. The map also contains a 1-many
+mapping from tracks to events, reflecting the fact that there is an 'enter'
+and a 'vacate' event for each track. Therefore, the data frame should
+adhere to the following structure:
+\itemize{
+\item{\code{signal}}: A character vector containing the signal ID. It
+should follow the regex pattern \code{"S[0-9]+"}.
+\item{\code{berth}}: A character vector containing the berth ID. It
+should follow the regex pattern \code{"[A-Z]+"}.
+\item{\code{track}}: A character vector containing the track ID. It
+should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
+\item{\code{event}}: A character vector containing the event type. It
+must be one of either "enters" or "vacates".
+}}
 
-\item{state_mapping}{Data frame containing a 1-1 mapping from signal state to
-aspect. See \link{state_mapping} for the expected structure.}
+\item{state_map}{A data frame containing a 1-1 mapping from signal state
+to signal aspect. See \link{state_mapping} (the default) for the expected
+structure.}
 }
 \value{
 A data frame containing aspect events with columns:
 \itemize{
-\item 'signal': (character) signal ID,
-\item 'dt': (lubridate::POSIXct) datetime,
-\item 'aspect': (factor) signal aspect after train enters the signal section.
-\item 'past_aspect': (factor) signal aspect before train enters the signal
+\item{\code{signal}} (character) signal ID.
+\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
+\item{\code{aspect}} (factor) signal aspect after train enters the signal
 section.
+\item{\code{past_aspect}} (factor) signal aspect before train enters the
+signal section.
 }
 }
 \description{
