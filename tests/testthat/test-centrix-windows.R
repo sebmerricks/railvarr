@@ -36,9 +36,9 @@ test_that("find_time_windows correctly finds time windows", {
 
   out <- dplyr::tribble(
     ~window, ~interval,
-    1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    3, lubridate::interval(start = 2100, end = 88500, tzone = "UTC")
+    1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(88500, origin = "1970-01-01"), tzone = "UTC")
   )
 
   expect_equal(find_time_windows(track_events, asset_map), out)
@@ -101,13 +101,13 @@ test_that("validate_track_windows correctly filters out invalid windows", {
 
   time_windows <- dplyr::tribble(
     ~window, ~interval,
-    1, lubridate::interval(start = 100, end = 410, tzone = "UTC"),
-    2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    4, lubridate::interval(start = 3100, end = 3310, tzone = "UTC"),
-    5, lubridate::interval(start = 4100, end = 4410, tzone = "UTC"),
-    6, lubridate::interval(start = 5100, end = 5410, tzone = "UTC"),
-    7, lubridate::interval(start = 6100, end = 6410, tzone = "UTC"),
+    1, lubridate::interval(start = as.POSIXct(100, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    4, lubridate::interval(start = as.POSIXct(3100, origin = "1970-01-01"), end = as.POSIXct(3310, origin = "1970-01-01"), tzone = "UTC"),
+    5, lubridate::interval(start = as.POSIXct(4100, origin = "1970-01-01"), end = as.POSIXct(4410, origin = "1970-01-01"), tzone = "UTC"),
+    6, lubridate::interval(start = as.POSIXct(5100, origin = "1970-01-01"), end = as.POSIXct(5410, origin = "1970-01-01"), tzone = "UTC"),
+    7, lubridate::interval(start = as.POSIXct(6100, origin = "1970-01-01"), end = as.POSIXct(6410, origin = "1970-01-01"), tzone = "UTC"),
   )
 
   asset_map <- dplyr::tribble(
@@ -177,11 +177,11 @@ test_that("validate_aspect_windows correctly filters out invalid windows", {
 
   time_windows <- dplyr::tribble(
     ~window, ~interval,
-    1, lubridate::interval(start = 100, end = 410, tzone = "UTC"),
-    2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    4, lubridate::interval(start = 3100, end = 3310, tzone = "UTC"),
-    5, lubridate::interval(start = 4100, end = 4410, tzone = "UTC")
+    1, lubridate::interval(start = as.POSIXct(100, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    4, lubridate::interval(start = as.POSIXct(3100, origin = "1970-01-01"), end = as.POSIXct(3310, origin = "1970-01-01"), tzone = "UTC"),
+    5, lubridate::interval(start = as.POSIXct(4100, origin = "1970-01-01"), end = as.POSIXct(4410, origin = "1970-01-01"), tzone = "UTC")
   )
 
   asset_map <- dplyr::tribble(
@@ -349,9 +349,9 @@ test_that("calculate_time_windows correctly wraps other functions", {
 
   out <- dplyr::tribble(
     ~window, ~interval,
-    1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC")
+    1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC")
   )
 
   expect_equal(calculate_time_windows(aspect_events, track_events, asset_map),
@@ -415,9 +415,9 @@ test_that("filter_track_events correctly filters track events", {
 
   time_windows <- dplyr::tribble(
     ~window, ~interval,
-    1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC")
+    1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC")
   )
 
   asset_map <- dplyr::tribble(
@@ -432,30 +432,30 @@ test_that("filter_track_events correctly filters track events", {
 
   out <- dplyr::tribble(
     ~track, ~dt, ~occupied, ~event, ~window, ~interval,
-    "TA", lubridate::as_datetime(100), T, "enters", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "TA", lubridate::as_datetime(210), T, "vacates", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "TB", lubridate::as_datetime(200), T, "enters", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "TB", lubridate::as_datetime(310), T, "vacates", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "TC", lubridate::as_datetime(300), T, "enters", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "TC", lubridate::as_datetime(410), T, "vacates", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "TA", lubridate::as_datetime(1100), T, "enters", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "TA", lubridate::as_datetime(1210), T, "vacates", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "TB", lubridate::as_datetime(1200), T, "enters", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "TB", lubridate::as_datetime(1310), T, "vacates", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "TC", lubridate::as_datetime(1300), T, "enters", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "TC", lubridate::as_datetime(1410), T, "vacates", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "TA", lubridate::as_datetime(2100), T, "enters", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TA", lubridate::as_datetime(2210), T, "vacates", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TB", lubridate::as_datetime(2200), T, "enters", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TB", lubridate::as_datetime(2310), T, "vacates", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TC", lubridate::as_datetime(2300), T, "enters", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TC", lubridate::as_datetime(2410), T, "vacates", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TA", lubridate::as_datetime(2300), T, "enters", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TA", lubridate::as_datetime(2410), T, "vacates", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TB", lubridate::as_datetime(2400), T, "enters", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TB", lubridate::as_datetime(2510), T, "vacates", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TC", lubridate::as_datetime(2500), T, "enters", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "TC", lubridate::as_datetime(2610), T, "vacates", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC")
+    "TA", lubridate::as_datetime(100), T, "enters", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(210), T, "vacates", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(200), T, "enters", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(310), T, "vacates", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(300), T, "enters", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(410), T, "vacates", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(1100), T, "enters", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(1210), T, "vacates", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(1200), T, "enters", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(1310), T, "vacates", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(1300), T, "enters", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(1410), T, "vacates", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(2100), T, "enters", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(2210), T, "vacates", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(2200), T, "enters", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(2310), T, "vacates", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(2300), T, "enters", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(2410), T, "vacates", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(2300), T, "enters", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TA", lubridate::as_datetime(2410), T, "vacates", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(2400), T, "enters", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TB", lubridate::as_datetime(2510), T, "vacates", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(2500), T, "enters", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "TC", lubridate::as_datetime(2610), T, "vacates", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC")
   )
 
   expect_equal(filter_track_events(track_events, time_windows, asset_map), out)
@@ -513,9 +513,9 @@ test_that("filter_aspect_events correctly filters aspect events", {
 
   time_windows <- dplyr::tribble(
     ~window, ~interval,
-    1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC")
+    1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC")
   )
 
   asset_map <- dplyr::tribble(
@@ -530,30 +530,30 @@ test_that("filter_aspect_events correctly filters aspect events", {
 
   out <- dplyr::tribble(
     ~signal, ~dt, ~aspect, ~past_aspect, ~window, ~interval,
-    "S1", lubridate::as_datetime(101), "R", "G", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "S1", lubridate::as_datetime(220), "Y", "R", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "S2", lubridate::as_datetime(201), "R", "G", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "S2", lubridate::as_datetime(320), "Y", "R", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "S3", lubridate::as_datetime(301), "R", "G", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "S3", lubridate::as_datetime(420), "Y", "R", 1, lubridate::interval(start = -85990, end = 410, tzone = "UTC"),
-    "S1", lubridate::as_datetime(1101), "R", "G", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "S1", lubridate::as_datetime(1220), "Y", "R", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "S2", lubridate::as_datetime(1201), "R", "G", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "S2", lubridate::as_datetime(1320), "Y", "R", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "S3", lubridate::as_datetime(1301), "R", "G", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "S3", lubridate::as_datetime(1420), "Y", "R", 2, lubridate::interval(start = 1100, end = 1410, tzone = "UTC"),
-    "S1", lubridate::as_datetime(2101), "R", "G", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S1", lubridate::as_datetime(2220), "Y", "R", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S2", lubridate::as_datetime(2201), "R", "G", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S2", lubridate::as_datetime(2320), "Y", "R", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S3", lubridate::as_datetime(2301), "R", "G", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S3", lubridate::as_datetime(2420), "Y", "R", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S1", lubridate::as_datetime(2301), "R", "G", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S1", lubridate::as_datetime(2420), "Y", "R", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S2", lubridate::as_datetime(2401), "R", "G", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S2", lubridate::as_datetime(2520), "Y", "R", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S3", lubridate::as_datetime(2501), "R", "G", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
-    "S3", lubridate::as_datetime(2620), "Y", "R", 3, lubridate::interval(start = 2100, end = 2610, tzone = "UTC"),
+    "S1", lubridate::as_datetime(101), "R", "G", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(220), "Y", "R", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(201), "R", "G", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(320), "Y", "R", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(301), "R", "G", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(420), "Y", "R", 1, lubridate::interval(start = as.POSIXct(-85990, origin = "1970-01-01"), end = as.POSIXct(410, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(1101), "R", "G", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(1220), "Y", "R", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(1201), "R", "G", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(1320), "Y", "R", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(1301), "R", "G", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(1420), "Y", "R", 2, lubridate::interval(start = as.POSIXct(1100, origin = "1970-01-01"), end = as.POSIXct(1410, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(2101), "R", "G", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(2220), "Y", "R", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(2201), "R", "G", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(2320), "Y", "R", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(2301), "R", "G", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(2420), "Y", "R", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(2301), "R", "G", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S1", lubridate::as_datetime(2420), "Y", "R", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(2401), "R", "G", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S2", lubridate::as_datetime(2520), "Y", "R", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(2501), "R", "G", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
+    "S3", lubridate::as_datetime(2620), "Y", "R", 3, lubridate::interval(start = as.POSIXct(2100, origin = "1970-01-01"), end = as.POSIXct(2610, origin = "1970-01-01"), tzone = "UTC"),
   ) %>%
     mutate(aspect = factor(aspect, levels = c("R", "Y", "YY", "G")),
            past_aspect = factor(past_aspect, levels = c("R", "Y", "YY", "G")))

@@ -26,6 +26,5 @@ test_that("cluster_centrix works", {
                                      centers = 3L,
                                      iter.max = 200L) %>%
     dplyr::filter(!is.na(.data$T_travel))
-  pclusters <- plot_cluster_events(cluster_events)
-  expect_snapshot_plot("pclusters", plot_cluster_events(cluster_events))
+  expect_snapshot_plot("pclusters", plot_clusters(cluster_events))
 })
