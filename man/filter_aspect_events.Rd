@@ -2,39 +2,77 @@
 % Please edit documentation in R/centrix-windows.R
 \name{filter_aspect_events}
 \alias{filter_aspect_events}
-\title{Filter Aspect Events}
+\alias{filter_track_events}
+\title{Filter Centrix events by time intervals}
 \usage{
 filter_aspect_events(aspect_events, time_windows, asset_map)
+
+filter_track_events(track_events, time_windows, asset_map)
 }
 \arguments{
-\item{aspect_events}{A data frame containing pre-processed aspect events from
-Centrix data. No input validation is performed. It is assumed that the data
-frame will follow the structure return by the function
-\code{\link[=preprocess_signal_events]{preprocess_signal_events()}}.}
+\item{aspect_events}{A data frame containing pre-processed aspect events with
+columns:
+\itemize{
+\item{\code{signal}} (character) signal ID.
+\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
+\item{\code{aspect}} (factor) signal aspect after train enters the signal
+section.
+\item{\code{past_aspect}} (factor) signal aspect before train enters the
+signal section.
+}}
 
 \item{time_windows}{A data frame containing window IDs and time intervals in
 the columns:
 \itemize{
-\item window: (numeric) window ID,
-\item interval: (lubridate::interval) window time interval.
-No input validation is performed. The structure is expected to follow the
-output of \code{\link[=calculate_time_windows]{calculate_time_windows()}}
+\item{\code{window}} (numeric) window ID.
+\item{\code{interval}} (\link[lubridate:interval]{lubridate::interval}) time intervals.
+}
+Each window indicates a time interval in which the data contain valid
+observations.}
+
+\item{asset_map}{A data frame containing a 1-1 mapping from signals to berths
+and a 1-many mapping from berths to tracks. The map also contains a 1-many
+mapping from tracks to events, reflecting the fact that there is an 'enter'
+and a 'vacate' event for each track. Therefore, the data frame should
+adhere to the following structure:
+\itemize{
+\item{\code{signal}}: A character vector containing the signal ID. It
+should follow the regex pattern \code{"S[0-9]+"}.
+\item{\code{berth}}: A character vector containing the berth ID. It
+should follow the regex pattern \code{"[A-Z]+"}.
+\item{\code{track}}: A character vector containing the track ID. It
+should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
+\item{\code{event}}: A character vector containing the event type. It
+must be one of either "enters" or "vacates".
 }}
 
-\item{asset_map}{A data frame containing a map of the track section. No input
-validation is performed. See \code{\link[=wrangle_centrix]{wrangle_centrix()}} for the expected
-structure.}
-}
-\value{
-A data frame containing filtered aspect events, with additional
+\item{track_events}{A data frame containing pre-processed track events with
 columns:
 \itemize{
-\item window: (numeric) the window ID as calculated in \code{\link[=calculate_time_windows]{calculate_time_windows()}}
-\item interval: (lubridate::interval) the time interval of the window
+\item{\code{track}} (character) track ID.
+\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
+\item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
+\item{\code{event}} (character) 'enters' if train enters track, else
+'vacates'.
+}}
+}
+\value{
+A data frame containing filtered events, with additional columns:
+\itemize{
+\item{\code{window}} (numeric) the window ID.
+\item{\code{interval}} (\link[lubridate:interval]{lubridate::interval}) the time interval.
 }
 }
 \description{
-Filters Centrix aspect events to only the events that lie within the
-calculated valid time windows. Also filters to only the signals specified in
-the asset map.
+Filter Centrix events to only those that occur within the calculated valid
+time intervals.
+
+\code{filter_track_events()} filters to only the tracks specified in the asset
+map.
+
+\code{filter_aspect_events()} filters to only the signals specified in the asset
+map.
+}
+\seealso{
+\code{\link[=preprocess_track_events]{preprocess_track_events()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
 }

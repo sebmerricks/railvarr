@@ -2,37 +2,62 @@
 % Please edit documentation in R/centrix-windows.R
 \name{calculate_time_windows}
 \alias{calculate_time_windows}
-\title{Calculate Centrix Time Windows}
+\title{Calculate train journey intervals}
 \usage{
 calculate_time_windows(aspect_events, track_events, asset_map)
 }
 \arguments{
-\item{aspect_events}{A data frame containing pre-processed aspect events from
-Centrix data. No input validation is performed. It is assumed that the data
-frame will follow the structure returned by the function
-\code{\link[=preprocess_signal_events]{preprocess_signal_events()}}.}
+\item{aspect_events}{A data frame containing pre-processed aspect events with
+columns:
+\itemize{
+\item{\code{signal}} (character) signal ID.
+\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
+\item{\code{aspect}} (factor) signal aspect after train enters the signal
+section.
+\item{\code{past_aspect}} (factor) signal aspect before train enters the
+signal section.
+}}
 
-\item{track_events}{A data frame containing pre-processed track events from
-Centrix data. No input validation is performed. It is assumed that the data
-frame will follow the structure return by the function
-\code{\link[=preprocess_track_events]{preprocess_track_events()}}.}
+\item{track_events}{A data frame containing pre-processed track events with
+columns:
+\itemize{
+\item{\code{track}} (character) track ID.
+\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
+\item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
+\item{\code{event}} (character) 'enters' if train enters track, else
+'vacates'.
+}}
 
-\item{asset_map}{A data frame containing a map of the track section. No input
-validation is performed. See \code{\link[=wrangle_centrix]{wrangle_centrix()}} for the expected
-structure.}
+\item{asset_map}{A data frame containing a 1-1 mapping from signals to berths
+and a 1-many mapping from berths to tracks. The map also contains a 1-many
+mapping from tracks to events, reflecting the fact that there is an 'enter'
+and a 'vacate' event for each track. Therefore, the data frame should
+adhere to the following structure:
+\itemize{
+\item{\code{signal}}: A character vector containing the signal ID. It
+should follow the regex pattern \code{"S[0-9]+"}.
+\item{\code{berth}}: A character vector containing the berth ID. It
+should follow the regex pattern \code{"[A-Z]+"}.
+\item{\code{track}}: A character vector containing the track ID. It
+should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
+\item{\code{event}}: A character vector containing the event type. It
+must be one of either "enters" or "vacates".
+}}
 }
 \value{
 A data frame containing window IDs and time intervals in the
 columns:
 \itemize{
-\item window: (numeric) window ID,
-\item interval: (lubridate::interval) window time interval.
+\item{\code{window}} (numeric) window ID.
+\item{\code{interval}} (\link[lubridate:interval]{lubridate::interval}) time intervals.
+}
 Each window indicates a time interval in which the data contain valid
 observations.
 }
-}
 \description{
-Calculates a set of time windows containing valid Centrix observations. This
-function acts as a wrapper for a number of functions involved in the
-calculation. Returns a data frame containing the window ID and time interval.
+Calculates a set of time intervals containing valid Centrix observations.
+These observations correspond to distinct / interlaced train journeys.
+}
+\seealso{
+\code{\link[=preprocess_signal_events]{preprocess_signal_events()}}
 }

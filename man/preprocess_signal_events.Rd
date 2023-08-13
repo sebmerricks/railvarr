@@ -2,9 +2,12 @@
 % Please edit documentation in R/centrix-preprocessing.R
 \name{preprocess_signal_events}
 \alias{preprocess_signal_events}
+\alias{preprocess_track_events}
 \title{Preprocess raw Centrix data}
 \usage{
 preprocess_signal_events(raw_centrix, asset_map, state_map)
+
+preprocess_track_events(raw_centrix, asset_map)
 }
 \arguments{
 \item{raw_centrix}{A data frame containing raw Centrix data. Strict input
@@ -52,7 +55,8 @@ to signal aspect. See \link{state_mapping} (the default) for the expected
 structure.}
 }
 \value{
-A data frame containing aspect events with columns:
+\code{preprocess_signal_events} returns a data frame containing aspect
+events with columns:
 \itemize{
 \item{\code{signal}} (character) signal ID.
 \item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
@@ -60,6 +64,16 @@ A data frame containing aspect events with columns:
 section.
 \item{\code{past_aspect}} (factor) signal aspect before train enters the
 signal section.
+}
+
+\code{preprocess_track_events} returns a data frame containing track
+events with columns:
+\itemize{
+\item{\code{track}} (character) track ID.
+\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
+\item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
+\item{\code{event}} (character) 'enters' if train enters track, else
+'vacates'.
 }
 }
 \description{

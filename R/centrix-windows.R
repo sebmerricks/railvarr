@@ -1,27 +1,39 @@
-#' Calculate Centrix Time Windows
+#' Calculate train journey intervals
 #'
-#' Calculates a set of time windows containing valid Centrix observations. This
-#' function acts as a wrapper for a number of functions involved in the
-#' calculation. Returns a data frame containing the window ID and time interval.
+#' Calculates a set of time intervals containing valid Centrix observations.
+#' These observations correspond to distinct / interlaced train journeys.
 #'
-#' @param aspect_events A data frame containing pre-processed aspect events from
-#'   Centrix data. No input validation is performed. It is assumed that the data
-#'   frame will follow the structure returned by the function
-#'   [preprocess_signal_events()].
-#' @param track_events A data frame containing pre-processed track events from
-#'   Centrix data. No input validation is performed. It is assumed that the data
-#'   frame will follow the structure return by the function
-#'   [preprocess_track_events()].
-#' @param asset_map A data frame containing a map of the track section. No input
-#'   validation is performed. See [wrangle_centrix()] for the expected
-#'   structure.
+#' @param aspect_events A data frame containing pre-processed aspect events with
+#' columns:
+#' \itemize{
+#'   \item{\code{signal}} (character) signal ID.
+#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
+#'   \item{\code{aspect}} (factor) signal aspect after train enters the signal
+#'    section.
+#'   \item{\code{past_aspect}} (factor) signal aspect before train enters the
+#'    signal section.
+#' }
+#' @param track_events A data frame containing pre-processed track events with
+#' columns:
+#' \itemize{
+#'   \item{\code{track}} (character) track ID.
+#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
+#'   \item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
+#'   \item{\code{event}} (character) 'enters' if train enters track, else
+#'    'vacates'.
+#' }
+#' @inheritParams wrangle_centrix
 #'
 #' @returns A data frame containing window IDs and time intervals in the
 #'   columns:
-#'  * window: (numeric) window ID,
-#'  * interval: (lubridate::interval) window time interval.
+#'   \itemize{
+#'     \item{\code{window}} (numeric) window ID.
+#'     \item{\code{interval}} ([lubridate::interval]) time intervals.
+#'   }
 #'   Each window indicates a time interval in which the data contain valid
 #'   observations.
+#'
+#' @seealso [preprocess_signal_events()]
 #'
 #' @importFrom dplyr semi_join
 #'
@@ -39,73 +51,45 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
   return(valid_windows_with_intervals)
 }
 
-#' Filter Track Events
+#' Filter Centrix events by time intervals
 #'
-#' Filters Centrix track events to only the events that lie within the
-#' calculated valid time windows. Also filters to only the tracks specified in
-#' the asset map.
+#' @description
+#' Filter Centrix events to only those that occur within the calculated valid
+#' time intervals.
 #'
-#' @param track_events A data frame containing pre-processed track events from
-#'   Centrix data. No input validation is performed. It is assumed that the data
-#'   frame will follow the structure return by the function
-#'   [preprocess_track_events()].
+#' `filter_track_events()` filters to only the tracks specified in the asset
+#' map.
+#'
+#' `filter_aspect_events()` filters to only the signals specified in the asset
+#' map.
+#'
+#' @param aspect_events A data frame containing pre-processed aspect events with
+#' columns:
+#' \itemize{
+#'   \item{\code{signal}} (character) signal ID.
+#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
+#'   \item{\code{aspect}} (factor) signal aspect after train enters the signal
+#'    section.
+#'   \item{\code{past_aspect}} (factor) signal aspect before train enters the
+#'    signal section.
+#' }
 #' @param time_windows A data frame containing window IDs and time intervals in
 #'   the columns:
-#'  * window: (numeric) window ID,
-#'  * interval: (lubridate::interval) window time interval.
-#'   No input validation is performed. The structure is expected to follow the
-#'   output of [calculate_time_windows()]
-#' @param asset_map A data frame containing a map of the track section. No input
-#'   validation is performed. See [wrangle_centrix()] for the expected
-#'   structure.
+#'   \itemize{
+#'     \item{\code{window}} (numeric) window ID.
+#'     \item{\code{interval}} ([lubridate::interval]) time intervals.
+#'   }
+#'   Each window indicates a time interval in which the data contain valid
+#'   observations.
+#' @inheritParams calculate_time_windows
 #'
-#' @returns A data frame containing filtered track events, with additional
-#'   columns:
-#'  * window: (numeric) the window ID as calculated in [calculate_time_windows()]
-#'  * interval: (lubridate::interval) the time interval of the window
+#' @returns A data frame containing filtered events, with additional columns:
+#'   \itemize{
+#'     \item{\code{window}} (numeric) the window ID.
+#'     \item{\code{interval}} ([lubridate::interval]) the time interval.
+#'   }
 #'
-#' @importFrom dplyr inner_join mutate join_by select
-#'
-#' @export
-filter_track_events <- function(track_events, time_windows, asset_map) {
-  tracks <- asset_map %>%
-    distinct(.data$track)
-
-  valid_track_events <- inner_join(
-    track_events %>% semi_join(tracks, by = "track"),
-    time_windows %>%
-      mutate(start = lubridate::int_start(.data$interval),
-             end = lubridate::int_end(.data$interval)),
-    by = join_by(between(x$dt, y$start, y$end))
-  ) %>%
-    select(-"start", -"end")
-  return(valid_track_events)
-}
-
-#' Filter Aspect Events
-#'
-#' Filters Centrix aspect events to only the events that lie within the
-#' calculated valid time windows. Also filters to only the signals specified in
-#' the asset map.
-#'
-#' @param aspect_events A data frame containing pre-processed aspect events from
-#'   Centrix data. No input validation is performed. It is assumed that the data
-#'   frame will follow the structure return by the function
-#'   [preprocess_signal_events()].
-#' @param time_windows A data frame containing window IDs and time intervals in
-#'   the columns:
-#'  * window: (numeric) window ID,
-#'  * interval: (lubridate::interval) window time interval.
-#'   No input validation is performed. The structure is expected to follow the
-#'   output of [calculate_time_windows()]
-#' @param asset_map A data frame containing a map of the track section. No input
-#'   validation is performed. See [wrangle_centrix()] for the expected
-#'   structure.
-#'
-#' @returns A data frame containing filtered aspect events, with additional
-#'   columns:
-#'  * window: (numeric) the window ID as calculated in [calculate_time_windows()]
-#'  * interval: (lubridate::interval) the time interval of the window
+#' @seealso [preprocess_track_events()] [calculate_time_windows()]
 #'
 #' @importFrom dplyr inner_join mutate join_by select
 #'
@@ -128,6 +112,24 @@ filter_aspect_events <- function(aspect_events, time_windows, asset_map) {
   return(valid_aspect_events)
 }
 
+#' @rdname filter_aspect_events
+#' @inherit filter_aspect_events
+#' @importFrom dplyr inner_join mutate join_by select
+#' @export
+filter_track_events <- function(track_events, time_windows, asset_map) {
+  tracks <- asset_map %>%
+    distinct(.data$track)
+
+  valid_track_events <- inner_join(
+    track_events %>% semi_join(tracks, by = "track"),
+    time_windows %>%
+      mutate(start = lubridate::int_start(.data$interval),
+             end = lubridate::int_end(.data$interval)),
+    by = join_by(between(x$dt, y$start, y$end))
+  ) %>%
+    select(-"start", -"end")
+  return(valid_track_events)
+}
 
 #' @importFrom dplyr first last filter select arrange mutate lead full_join
 #'   join_by lag bind_rows distinct row_number

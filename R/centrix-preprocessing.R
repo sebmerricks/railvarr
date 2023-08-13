@@ -16,7 +16,8 @@
 #'
 #' @inheritParams wrangle_centrix
 #'
-#' @returns A data frame containing aspect events with columns:
+#' @returns `preprocess_signal_events` returns a data frame containing aspect
+#' events with columns:
 #' \itemize{
 #'   \item{\code{signal}} (character) signal ID.
 #'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
@@ -68,9 +69,11 @@ preprocess_signal_events <- function(raw_centrix,
   return(aspect_events)
 }
 
+#' @rdname preprocess_signal_events
 #' @inherit preprocess_signal_events
 #'
-#' @returns A data frame containing track events with columns:
+#' @returns `preprocess_track_events` returns a data frame containing track
+#' events with columns:
 #' \itemize{
 #'   \item{\code{track}} (character) track ID.
 #'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.

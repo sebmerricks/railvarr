@@ -5,11 +5,12 @@ template:
 reference:
  - title: Centrix
  - contents:
-   - starts_with("preprocess_")
-   - starts_with("calculate_")
-   - starts_with("filter_")
-   - cluster_centrix
+   - preprocess_signal_events
+   - calculate_time_windows
+   - filter_aspect_events
+   - calculate_tsars
    - wrangle_centrix
+   - cluster_centrix
  - title: Timetable
  - contents:
    - wrangle_timetable
