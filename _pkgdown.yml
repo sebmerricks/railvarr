@@ -10,7 +10,8 @@ reference:
    - filter_aspect_events
    - calculate_tsars
    - wrangle_centrix
-   - cluster_centrix
+   - cluster_journeys
+   - plot_clusters
  - title: Timetable
  - contents:
    - wrangle_timetable

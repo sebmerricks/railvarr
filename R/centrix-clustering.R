@@ -100,7 +100,7 @@ cluster_journeys <- function(berth_events,
 #' @param cluster_events Data frame matching output from [cluster_journeys()]
 #' @import ggplot2
 #' @export
-plot_cluster_events <- function(cluster_events) {
+plot_clusters <- function(cluster_events) {
   pclusters <- cluster_events %>%
     group_by(train_id) %>%
     mutate(x = row_number()) %>%
