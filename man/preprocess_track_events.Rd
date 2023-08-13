@@ -2,19 +2,19 @@
 % Please edit documentation in R/centrix-preprocessing.R
 \name{preprocess_track_events}
 \alias{preprocess_track_events}
-\title{Preprocess Raw Track Events}
+\title{Preprocess raw Centrix data}
 \usage{
 preprocess_track_events(raw_events, asset_map)
 }
 \arguments{
 \item{raw_events}{Data frame containing raw Centrix data. No input validation
-is performed. The data should matche the structure of Centrix data as
+is performed. The data should match the structure of Centrix data as
 described in \code{\link[=wrangle_centrix]{wrangle_centrix()}}.}
 
 \item{asset_map}{Data frame containing a map of the track section, used to
-filter the raw track events down to only the tracks specified in the asset
-map. No input validation is performed, see \code{\link[=wrangle_centrix]{wrangle_centrix()}} for the
-expected structure.}
+filter the raw signal events down to only the signals specified in the
+asset map. No input validation is performed. See \code{\link[=wrangle_centrix]{wrangle_centrix()}} for
+the expected structure.}
 }
 \value{
 A data frame containing track events with columns:
@@ -26,8 +26,18 @@ A data frame containing track events with columns:
 }
 }
 \description{
-Performs preprocessing on raw track events. Converts transition data to
-whether the train enters or vacates the track.
+\code{preprocess_signal_events()} handles only signals, defined by
+the \code{asset} string starting with the character 'S'.
+
+\code{preprocess_track_events()} handles only tracks, defined by the \code{asset}
+string starting with the character 'T'.
+}
+\details{
+\code{preprocess_signal_events()} converts the raw \code{asset} string into
+signal ID and state, furthering processing the state into a signal aspect.
+
+\code{preprocess_track_events()} converts the \code{transition} data into track entry
+and exit events.
 }
 \seealso{
 \code{\link[=wrangle_centrix]{wrangle_centrix()}}

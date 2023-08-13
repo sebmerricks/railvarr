@@ -1,7 +1,18 @@
-#' Preprocess Raw Signal Events
+#' Preprocess raw Centrix data
 #'
-#' Performs preprocessing on raw signal events. Splits raw assets into signal
-#' IDs and states. Converts signal state to aspect using the state mapping.
+#' @description
+#' `preprocess_signal_events()` handles only signals, defined by
+#' the `asset` string starting with the character 'S'.
+#'
+#' `preprocess_track_events()` handles only tracks, defined by the `asset`
+#' string starting with the character 'T'.
+#'
+#' @details
+#' `preprocess_signal_events()` converts the raw `asset` string into
+#' signal ID and state, furthering processing the state into a signal aspect.
+#'
+#' `preprocess_track_events()` converts the `transition` data into track entry
+#' and exit events.
 #'
 #' @param raw_events Data frame containing raw Centrix data. No input validation
 #'   is performed. The data should match the structure of Centrix data as
@@ -19,6 +30,8 @@
 #'  * 'aspect': (factor) signal aspect after train enters the signal section.
 #'  * 'past_aspect': (factor) signal aspect before train enters the signal
 #'   section.
+#'
+#' @seealso [wrangle_centrix()]
 #'
 #' @importFrom dplyr mutate filter select semi_join inner_join arrange group_by
 #'   ungroup lag if_else
@@ -56,26 +69,13 @@ preprocess_signal_events <- function(raw_events,
   return(aspect_events)
 }
 
-#' Preprocess Raw Track Events
-#'
-#' Performs preprocessing on raw track events. Converts transition data to
-#' whether the train enters or vacates the track.
-#'
-#' @param raw_events Data frame containing raw Centrix data. No input validation
-#'   is performed. The data should matche the structure of Centrix data as
-#'   described in [wrangle_centrix()].
-#' @param asset_map Data frame containing a map of the track section, used to
-#'   filter the raw track events down to only the tracks specified in the asset
-#'   map. No input validation is performed, see [wrangle_centrix()] for the
-#'   expected structure.
+#' @inherit preprocess_signal_events
 #'
 #' @returns A data frame containing track events with columns:
 #'  * 'track': (character) track ID,
 #'  * 'dt': (lubridate::POSIXct) datetime,
 #'  * 'occupied': (logical) TRUE if train enters track, else FALSE,
 #'  * 'event': (character) 'enters' if train enters track, else 'vacates'.
-#'
-#' @seealso [wrangle_centrix()]
 #'
 #' @importFrom dplyr select mutate rename arrange semi_join if_else
 #'

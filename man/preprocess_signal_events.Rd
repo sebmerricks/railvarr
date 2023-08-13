@@ -2,7 +2,7 @@
 % Please edit documentation in R/centrix-preprocessing.R
 \name{preprocess_signal_events}
 \alias{preprocess_signal_events}
-\title{Preprocess Raw Signal Events}
+\title{Preprocess raw Centrix data}
 \usage{
 preprocess_signal_events(raw_events, asset_map, state_mapping)
 }
@@ -30,6 +30,19 @@ section.
 }
 }
 \description{
-Performs preprocessing on raw signal events. Splits raw assets into signal
-IDs and states. Converts signal state to aspect using the state mapping.
+\code{preprocess_signal_events()} handles only signals, defined by
+the \code{asset} string starting with the character 'S'.
+
+\code{preprocess_track_events()} handles only tracks, defined by the \code{asset}
+string starting with the character 'T'.
+}
+\details{
+\code{preprocess_signal_events()} converts the raw \code{asset} string into
+signal ID and state, furthering processing the state into a signal aspect.
+
+\code{preprocess_track_events()} converts the \code{transition} data into track entry
+and exit events.
+}
+\seealso{
+\code{\link[=wrangle_centrix]{wrangle_centrix()}}
 }
