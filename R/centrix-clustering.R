@@ -27,15 +27,15 @@ kmeans_clusters <- function(berth_events, ...) {
   ))
 }
 
-#' Cluster Centrix Data
+#' Cluster train journeys
 #'
 #' Clusters Centrix data into groups based on travel times across berths.
 #'
 #' @param berth_events A data frame containing berth-level Centrix events
 #'   containing the columns: signal, berth, train_id, aspect, T_travel,
 #'   time_elapsed.
-#' @param outliers A data frame containing the train IDs for any outliers. Only
-#'   used if `outlier_detection` == "manual".
+#' @param outliers A data frame containing the train IDs for any outliers.
+#' Ignored unless `outlier_detection` == "manual".
 #' @param outlier_detection Which approach to use for outliers. Options are:
 #' \itemize{
 #'   \item{none} No outliers removed.
@@ -50,7 +50,7 @@ kmeans_clusters <- function(berth_events, ...) {
 #' @importFrom dplyr group_by mutate first select ungroup anti_join
 #'
 #' @export
-cluster_centrix <- function(berth_events,
+cluster_journeys <- function(berth_events,
                             outliers = NULL,
                             outlier_detection = "none",
                             ...) {
