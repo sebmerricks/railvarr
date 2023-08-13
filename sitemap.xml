@@ -28,9 +28,6 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/filter_aspect_events.html</loc>
   </url>
   <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/filter_track_events.html</loc>
-  </url>
-  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/index.html</loc>
   </url>
   <url>
@@ -38,9 +35,6 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/preprocess_signal_events.html</loc>
-  </url>
-  <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/preprocess_track_events.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/railvarr-package.html</loc>

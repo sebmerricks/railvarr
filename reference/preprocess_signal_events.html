@@ -51,13 +51,15 @@ string starting with the character 'T'."><!-- mathjax --><script src="https://cd
     <div class="ref-description section level2">
     <p><code>preprocess_signal_events()</code> handles only signals, defined by
 the <code>asset</code> string starting with the character 'S'.</p>
-<p><code><a href="preprocess_track_events.html">preprocess_track_events()</a></code> handles only tracks, defined by the <code>asset</code>
+<p><code>preprocess_track_events()</code> handles only tracks, defined by the <code>asset</code>
 string starting with the character 'T'.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">preprocess_signal_events</span><span class="op">(</span><span class="va">raw_centrix</span>, <span class="va">asset_map</span>, <span class="va">state_map</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">preprocess_signal_events</span><span class="op">(</span><span class="va">raw_centrix</span>, <span class="va">asset_map</span>, <span class="va">state_map</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">preprocess_track_events</span><span class="op">(</span><span class="va">raw_centrix</span>, <span class="va">asset_map</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -112,18 +114,25 @@ structure.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data frame containing aspect events with columns:</p><ul><li><p><code>signal</code> (character) signal ID.</p></li>
+<p><code>preprocess_signal_events</code> returns a data frame containing aspect
+events with columns:</p><ul><li><p><code>signal</code> (character) signal ID.</p></li>
 <li><p><code>dt</code> (lubridate::POSIXct) datetime.</p></li>
 <li><p><code>aspect</code> (factor) signal aspect after train enters the signal
 section.</p></li>
 <li><p><code>past_aspect</code> (factor) signal aspect before train enters the
 signal section.</p></li>
+</ul><p><code>preprocess_track_events</code> returns a data frame containing track
+events with columns:</p><ul><li><p><code>track</code> (character) track ID.</p></li>
+<li><p><code>dt</code> (lubridate::POSIXct) datetime.</p></li>
+<li><p><code>occcupied</code> (logical) TRUE if train enters track, else FALSE.</p></li>
+<li><p><code>event</code> (character) 'enters' if train enters track, else
+'vacates'.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>preprocess_signal_events()</code> converts the raw <code>asset</code> string into
 signal ID and state, furthering processing the state into a signal aspect.</p>
-<p><code><a href="preprocess_track_events.html">preprocess_track_events()</a></code> converts the <code>transition</code> data into track entry
+<p><code>preprocess_track_events()</code> converts the <code>transition</code> data into track entry
 and exit events.</p>
     </div>
     <div class="section level2">
