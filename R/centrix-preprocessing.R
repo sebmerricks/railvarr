@@ -1,37 +1,11 @@
-#' Split Signal and Track Events
-#'
-#' Splits a single Centrix data frame containing both signal and track events
-#' into a list containing two data frames.
-#'
-#' @param raw_events A data frame containing raw Centrix data with both signal
-#'   and track events. No input validation is performed, see [wrangle_centrix()]
-#'   for expected structure.
-#'
-#' @returns A list containing two data frames. The first data frame contains raw
-#'   signal events, the second contains raw track events.
-#'
-#' @seealso [wrangle_centrix()]
-#'
-#' @importFrom dplyr filter mutate group_by group_split
-#'
-#' @export
-split_signal_track_events <- function(raw_events) {
-  events <- raw_events %>%
-    filter(stringr::str_starts(.data$asset, "T|S")) %>%
-    mutate(is_track = stringr::str_starts(.data$asset, "T")) %>%
-    group_by(.data$is_track) %>%
-    group_split(.keep = F)
-  return(events)
-}
-
 #' Preprocess Raw Signal Events
 #'
 #' Performs preprocessing on raw signal events. Splits raw assets into signal
 #' IDs and states. Converts signal state to aspect using the state mapping.
 #'
-#' @param raw_signal_events Data frame containing raw signal events from Centrix
-#'   data. No input validation is performed. The data should match the structure
-#'   of Centrix data as described in [wrangle_centrix()].
+#' @param raw_events Data frame containing raw Centrix data. No input validation
+#'   is performed. The data should match the structure of Centrix data as
+#'   described in [wrangle_centrix()].
 #' @param asset_map Data frame containing a map of the track section, used to
 #'   filter the raw signal events down to only the signals specified in the
 #'   asset map. No input validation is performed. See [wrangle_centrix()] for
@@ -50,8 +24,12 @@ split_signal_track_events <- function(raw_events) {
 #'   ungroup lag if_else
 #'
 #' @export
-preprocess_signal_events <- function(raw_signal_events, asset_map,
+preprocess_signal_events <- function(raw_events,
+                                     asset_map,
                                      state_mapping) {
+  raw_signal_events <- raw_events %>%
+    filter(stringr::str_starts(.data$asset, "S"))
+
   signal_events <- raw_signal_events %>%
     mutate(
       signal = stringr::str_split_i(.data$asset, " ", i = 1),
@@ -83,9 +61,9 @@ preprocess_signal_events <- function(raw_signal_events, asset_map,
 #' Performs preprocessing on raw track events. Converts transition data to
 #' whether the train enters or vacates the track.
 #'
-#' @param raw_track_events Data frame containing raw track events from Centrix
-#'   data. No input validation is performed. The data should matche the
-#'   structure of Centrix data as described in [wrangle_centrix()].
+#' @param raw_events Data frame containing raw Centrix data. No input validation
+#'   is performed. The data should matche the structure of Centrix data as
+#'   described in [wrangle_centrix()].
 #' @param asset_map Data frame containing a map of the track section, used to
 #'   filter the raw track events down to only the tracks specified in the asset
 #'   map. No input validation is performed, see [wrangle_centrix()] for the
@@ -102,7 +80,10 @@ preprocess_signal_events <- function(raw_signal_events, asset_map,
 #' @importFrom dplyr select mutate rename arrange semi_join if_else
 #'
 #' @export
-preprocess_track_events <- function(raw_track_events, asset_map) {
+preprocess_track_events <- function(raw_events, asset_map) {
+  raw_track_events <- raw_events %>%
+    filter(stringr::str_starts(.data$asset, "T"))
+
   tracks <- asset_map %>%
     select("track")
 

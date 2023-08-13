@@ -4,12 +4,12 @@
 \alias{preprocess_signal_events}
 \title{Preprocess Raw Signal Events}
 \usage{
-preprocess_signal_events(raw_signal_events, asset_map, state_mapping)
+preprocess_signal_events(raw_events, asset_map, state_mapping)
 }
 \arguments{
-\item{raw_signal_events}{Data frame containing raw signal events from Centrix
-data. No input validation is performed. The data should match the structure
-of Centrix data as described in \code{\link[=wrangle_centrix]{wrangle_centrix()}}.}
+\item{raw_events}{Data frame containing raw Centrix data. No input validation
+is performed. The data should match the structure of Centrix data as
+described in \code{\link[=wrangle_centrix]{wrangle_centrix()}}.}
 
 \item{asset_map}{Data frame containing a map of the track section, used to
 filter the raw signal events down to only the signals specified in the

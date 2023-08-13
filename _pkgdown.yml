@@ -5,7 +5,6 @@ template:
 reference:
  - title: Centrix
  - contents:
-   - split_signal_track_events
    - starts_with("preprocess_")
    - starts_with("calculate_")
    - starts_with("filter_")

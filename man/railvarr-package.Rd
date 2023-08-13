@@ -12,6 +12,7 @@ Provide functionality to aid in the pre-processing and analysis of railway data,
 Useful links:
 \itemize{
   \item \url{https://github.com/sebmerricks/railvarr}
+  \item \url{https://sebmerricks.github.io/railvarr/}
   \item Report bugs at \url{https://github.com/sebmerricks/railvarr/issues}
 }
 
