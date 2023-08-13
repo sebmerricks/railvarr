@@ -22,7 +22,7 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/calculate_tsars.html</loc>
   </url>
   <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/cluster_centrix.html</loc>
+    <loc>https://sebmerricks.github.io/railvarr/reference/cluster_journeys.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/filter_aspect_events.html</loc>
@@ -32,6 +32,9 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/match_ids.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/plot_clusters.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/preprocess_signal_events.html</loc>
