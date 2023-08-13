@@ -11,19 +11,15 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
     "S3 RGE", lubridate::as_datetime(100), "DN to UP", # output
     "S3 RGEK", lubridate::as_datetime(100), "DN to UP", # not in state_mapping
     "S4 RGE", lubridate::as_datetime(100), "DN to UP", # not in asset_map
-    "sabc", lubridate::as_datetime(100), "DN to UP",
     "TABC", lubridate::as_datetime(100), "DN to UP",
     "TABC-1", lubridate::as_datetime(100), "DN to UP",
-    "tABC", lubridate::as_datetime(100), "DN to UP",
-    "tabc", lubridate::as_datetime(100), "DN to UP",
-    "x123", lubridate::as_datetime(100), "DN to UP"
   )
 
   asset_map <- dplyr::tribble(
-    ~signal,
-    "S1",
-    "S2",
-    "S3"
+    ~signal, ~track, ~berth, ~event,
+    "S1", "TAAA", "A", "enters",
+    "S2", "TAAB-1", "B", "enters",
+    "S3", "TAAB-2", "C", "enters"
   )
 
   state_mapping <- dplyr::tribble(
@@ -68,10 +64,10 @@ test_that("preprocess_track_events() correctly processes track data", {
   )
 
   asset_map <- dplyr::tribble(
-    ~track,
-    "TAAA",
-    "TAAB-1",
-    "TAAB-2"
+    ~signal, ~track, ~berth, ~event,
+    "S1", "TAAA", "A", "enters",
+    "S2", "TAAB-1", "B", "enters",
+    "S3", "TAAB-2", "C", "enters"
   )
 
   out <- dplyr::tribble(

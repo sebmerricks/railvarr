@@ -4,13 +4,7 @@
 \alias{cluster_centrix}
 \title{Cluster Centrix Data}
 \usage{
-cluster_centrix(
-  berth_events,
-  outliers = NULL,
-  outlier_detection = "none",
-  k = 3L,
-  niter = 20L
-)
+cluster_centrix(berth_events, outliers = NULL, outlier_detection = "none", ...)
 }
 \arguments{
 \item{berth_events}{A data frame containing berth-level Centrix events
@@ -27,9 +21,26 @@ used if \code{outlier_detection} == "manual".}
 \item{boxplot} Unimplemented.
 }}
 
-\item{k}{How many clusters to find.}
-
-\item{niter}{How many iterations to use for the clustering.}
+\item{...}{
+  Arguments passed on to \code{\link[stats:kmeans]{stats::kmeans}}
+  \describe{
+    \item{\code{x}}{numeric matrix of data, or an object that can be coerced to
+    such a matrix (such as a numeric vector or a data frame with all
+    numeric columns).}
+    \item{\code{centers}}{either the number of clusters, say \eqn{k}, or a set of
+    initial (distinct) cluster centres.  If a number, a random set of
+    (distinct) rows in \code{x} is chosen as the initial centres.}
+    \item{\code{iter.max}}{the maximum number of iterations allowed.}
+    \item{\code{nstart}}{if \code{centers} is a number, how many random sets
+    should be chosen?}
+    \item{\code{algorithm}}{character: may be abbreviated.  Note that
+    \code{"Lloyd"} and \code{"Forgy"} are alternative names for one
+    algorithm.}
+    \item{\code{trace}}{logical or integer number, currently only used in the
+    default method (\code{"Hartigan-Wong"}): if positive (or true),
+    tracing information on the progress of the algorithm is
+    produced.  Higher values may produce more tracing information.}
+  }}
 }
 \value{
 A data frame containing train IDs and their clusters. Clusters are

@@ -40,7 +40,7 @@ preprocess_signal_events <- function(raw_centrix,
   validate_asset_map(asset_map)
   validate_state_mapping(state_map)
 
-  raw_signal_events <- raw_events %>%
+  raw_signal_events <- raw_centrix %>%
     filter(stringr::str_starts(.data$asset, "S"))
 
   signal_events <- raw_signal_events %>%
@@ -89,7 +89,7 @@ preprocess_track_events <- function(raw_centrix, asset_map) {
   validate_centrix(raw_centrix)
   validate_asset_map(asset_map)
 
-  raw_track_events <- raw_events %>%
+  raw_track_events <- raw_centrix %>%
     filter(stringr::str_starts(.data$asset, "T"))
 
   tracks <- asset_map %>%

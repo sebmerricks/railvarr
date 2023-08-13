@@ -3,9 +3,7 @@ slope <- function(T_travel, previous_travel) {
 }
 
 #' @importFrom dplyr filter select group_by mutate ungroup
-kmeans_clusters <- function(berth_events,
-                            k = 3L,
-                            niter = 20L) {
+kmeans_clusters <- function(berth_events, ...) {
   kmeans_input <- berth_events %>%
     filter(!is.na(.data$m)) %>%
     select("train_id", "m") %>%
@@ -21,7 +19,7 @@ kmeans_clusters <- function(berth_events,
 
   out <- kmeans_input %>%
     select(-"train_id") %>%
-    stats::kmeans(centers = k, iter.max = niter, nstart = 1)
+    stats::kmeans(...)
 
   return(list(
     "clusters" = broom::augment(out, kmeans_input) %>% select("train_id", ".cluster"),
@@ -44,8 +42,7 @@ kmeans_clusters <- function(berth_events,
 #'   \item{manual} Manually remove outliers using the `outliers` parameter.
 #'   \item{boxplot} Unimplemented.
 #' }
-#' @param k How many clusters to find.
-#' @param niter How many iterations to use for the clustering.
+#' @inheritDotParams stats::kmeans
 #'
 #' @return A data frame containing train IDs and their clusters. Clusters are
 #'   ordered based on total variance, highest variance first.
@@ -56,8 +53,7 @@ kmeans_clusters <- function(berth_events,
 cluster_centrix <- function(berth_events,
                             outliers = NULL,
                             outlier_detection = "none",
-                            k = 3L,
-                            niter = 20L) {
+                            ...) {
   berth_events_slopes <- berth_events %>%
     group_by(.data$train_id) %>%
     mutate(
@@ -75,7 +71,7 @@ cluster_centrix <- function(berth_events,
     # boxplot detection (threshold)
   }
 
-  clusters <- kmeans_clusters(berth_events_slopes, k = k, niter = niter)
+  clusters <- kmeans_clusters(berth_events_slopes, ...)
 
   new_order <- clusters$centroids %>%
     tidyr::pivot_longer(
