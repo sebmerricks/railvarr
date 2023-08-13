@@ -5,8 +5,8 @@
 #' along with calculations of TSAR and all its subcomponents.
 #'
 #' @param raw_centrix A data frame containing raw Centrix data. Strict input
-#'   validation is applied to ensure the data adhere to the expected
-#'   structure. The data should be in a data frame with the following columns:
+#'   validation is applied to ensure the data adhere to the expected structure.
+#'   The data should be in a data frame with the following columns:
 #'   \itemize{
 #'     \item{\code{asset}}: A character vector containing the asset ID. Tracks
 #'        are expected to follow the regex pattern `"T[A-Z]+(-[0-9])?"`. E.g.,
@@ -42,15 +42,16 @@
 #'     \item{\code{event}}: A character vector containing the event type. It
 #'       must be one of either "enters" or "vacates".
 #'    }
-#' @param state_map A data frame containing a 1-1 mapping from signal state
-#'   to signal aspect. See [state_mapping] (the default) for the expected
+#' @param state_map A data frame containing a 1-1 mapping from signal state to
+#'   signal aspect. See [state_mapping] (the default) for the expected
 #'   structure.
 #'
 #' @returns A data frame containing the fully processed Centrix data, containing
 #'   berth-level information about signal and track events. This includes TSARs
 #'   and all sub-components, e.g. 'T_travel' and 'T_offset'.
 #'
-#' @seealso All lower-level functions that this function wraps.
+#' @seealso [preprocess_signal_events()] [calculate_time_windows()]
+#'   [filter_aspect_events()] [calculate_tsars()]
 #'
 #' @examples
 #' # This will require some example data

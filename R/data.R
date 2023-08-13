@@ -1,4 +1,4 @@
-#' Default State Mapping
+#' Default signal state to aspect mapping
 #'
 #' The default 1-1 mapping from signal state to aspect. See
 #' \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.

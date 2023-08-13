@@ -11,6 +11,15 @@ wrangle_timetable(timetable, stations)
 
 \item{stations}{List containing station names.}
 }
+\value{
+A subset of the timetable which contains trains that pass through the
+specified stations in the given order. Time zone is set to "UTC".
+}
 \description{
-Wrangle Timetable Data
+A wrapper for timetable processing functions \code{\link[=filter_relevant_services]{filter_relevant_services()}},
+\code{\link[=filter_relevant_direction]{filter_relevant_direction()}}, and \code{\link[=find_calling_patterns]{find_calling_patterns()}}.
+}
+\seealso{
+\code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=filter_relevant_direction]{filter_relevant_direction()}}
+\code{\link[=find_calling_patterns]{find_calling_patterns()}}
 }

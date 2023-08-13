@@ -11,8 +11,8 @@ preprocess_track_events(raw_centrix, asset_map)
 }
 \arguments{
 \item{raw_centrix}{A data frame containing raw Centrix data. Strict input
-validation is applied to ensure the data adhere to the expected
-structure. The data should be in a data frame with the following columns:
+validation is applied to ensure the data adhere to the expected structure.
+The data should be in a data frame with the following columns:
 \itemize{
 \item{\code{asset}}: A character vector containing the asset ID. Tracks
 are expected to follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}. E.g.,
@@ -50,8 +50,8 @@ should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
 must be one of either "enters" or "vacates".
 }}
 
-\item{state_map}{A data frame containing a 1-1 mapping from signal state
-to signal aspect. See \link{state_mapping} (the default) for the expected
+\item{state_map}{A data frame containing a 1-1 mapping from signal state to
+signal aspect. See \link{state_mapping} (the default) for the expected
 structure.}
 }
 \value{

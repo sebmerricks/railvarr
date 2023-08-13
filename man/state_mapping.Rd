@@ -3,7 +3,7 @@
 \docType{data}
 \name{state_mapping}
 \alias{state_mapping}
-\title{Default State Mapping}
+\title{Default signal state to aspect mapping}
 \format{
 \subsection{\code{state_mapping}}{
 

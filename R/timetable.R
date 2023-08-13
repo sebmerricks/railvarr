@@ -1,7 +1,15 @@
 #' Wrangle Timetable Data
 #'
+#' A wrapper for timetable processing functions [filter_relevant_services()],
+#' [filter_relevant_direction()], and [find_calling_patterns()].
+#'
 #' @param timetable Data frame containing timetable data.
 #' @param stations List containing station names.
+#' @return A subset of the timetable which contains trains that pass through the
+#'   specified stations in the given order. Time zone is set to "UTC".
+#'
+#' @seealso [filter_relevant_services()] [filter_relevant_direction()]
+#'   [find_calling_patterns()]
 #'
 #' @export
 wrangle_timetable <- function(timetable, stations) {
@@ -20,13 +28,23 @@ wrangle_timetable <- function(timetable, stations) {
            ))
 }
 
+#' Filter timetable by stations
+#' @inheritParams wrangle_timetable
+#' @returns A (usually) smaller timetable only containing trains which pass
+#'   through or stop at the specified stations.
 #' @importFrom dplyr filter mutate across
+#' @export
 filter_relevant_services <- function(timetable, stations) {
   return(timetable %>%
            filter(geo %in% unlist(stations)))
 }
 
+#' Filter timetable by direction
+#' @inheritParams wrangle_timetable
+#' @returns A (usually) smaller timetable only containing trains which pass
+#'   through or stop at the specified stations in the given order.
 #' @importFrom dplyr filter mutate first last group_by select
+#' @export
 filter_relevant_direction <- function(timetable, stations) {
   return(timetable %>%
     filter(.data$geo %in% unlist(stations)) %>%
@@ -37,8 +55,12 @@ filter_relevant_direction <- function(timetable, stations) {
     select(-"is_first", -"is_last"))
 }
 
+#' Find calling patterns from timetable
+#' @inheritParams wrangle_timetable
+#' @returns The timetable with calling patterns added.
 #' @importFrom dplyr distinct mutate filter bind_rows summarise inner_join
 #'   ungroup
+#' @export
 find_calling_patterns <- function(timetable) {
   dummy_geo <- timetable %>%
     distinct(train_header, dt_origin) %>%
