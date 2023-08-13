@@ -3,8 +3,10 @@ asset_map <- read_rds_test("asset_map.rds")
 
 berth_events <- railvarr::wrangle_centrix(raw_centrix, asset_map)
 
-berth_events_clusters <- railvarr::cluster_centrix(berth_events, k = 3L, niter = 40L)
-railvarr::plot_cluster_events(berth_events_clusters)
+berth_events_clusters <- railvarr::cluster_journeys(berth_events,
+                                                    centers = 3L,
+                                                    iter.max = 40L)
+railvarr::plot_clusters(berth_events_clusters)
 
 group_labels <- dplyr::tribble(
   ~cluster, ~group,
