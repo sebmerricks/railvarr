@@ -33,7 +33,8 @@ kmeans_clusters <- function(berth_events, ...) {
 #' function makes use of K-means clustering, which is inherently
 #' non-deterministic. Therefore, the output of this function is not always what
 #' would be expected. It is recommended to check the output visually using
-#' [plot_clusters()]
+#' [plot_clusters()]. For reproducability, clusters are ordered based on total
+#' variance, highest variance first.
 #'
 #' @param berth_events A data frame containing berth-level Centrix events
 #'   containing the columns: signal, berth, train_id, aspect, T_travel,
@@ -48,8 +49,15 @@ kmeans_clusters <- function(berth_events, ...) {
 #' }
 #' @inheritDotParams stats::kmeans
 #'
-#' @return A data frame containing train IDs and their clusters. Clusters are
-#'   ordered based on total variance, highest variance first.
+#' @return A data frame containing the columns:
+#' \itemize{
+#'   \item{`signal`}{Signal ID}
+#'   \item{`berth`}{Berth ID}
+#'   \item{`train_id`}{Train ID}
+#'   \item{`aspect`}{Signal aspect as train enters berth}
+#'   \item{`T_travel`}{Amount of time taken to travel the length of the berth}
+#'   \item{`cluster`}{Cluster ID}
+#' }
 #'
 #' @examples
 #' data(berth_events)
@@ -111,6 +119,7 @@ cluster_journeys <- function(berth_events,
 
 #' Plot clustered train journeys
 #' @param cluster_events Data frame matching output from [cluster_journeys()]
+#' @inherit cluster_journeys examples
 #' @import ggplot2
 #' @export
 plot_clusters <- function(cluster_events) {

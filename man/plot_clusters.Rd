@@ -12,3 +12,11 @@ plot_clusters(cluster_events)
 \description{
 Plot clustered train journeys
 }
+\examples{
+data(berth_events)
+berth_events_clusters <- cluster_journeys(berth_events,
+                                          centers = 3L,
+                                          iter.max = 100L)
+plot_clusters(berth_events_clusters)
+
+}

@@ -48,15 +48,23 @@ Ignored unless \code{outlier_detection} == "manual".}
   }}
 }
 \value{
-A data frame containing train IDs and their clusters. Clusters are
-ordered based on total variance, highest variance first.
+A data frame containing the columns:
+\itemize{
+\item{\code{signal}}{Signal ID}
+\item{\code{berth}}{Berth ID}
+\item{\code{train_id}}{Train ID}
+\item{\code{aspect}}{Signal aspect as train enters berth}
+\item{\code{T_travel}}{Amount of time taken to travel the length of the berth}
+\item{\code{cluster}}{Cluster ID}
+}
 }
 \description{
 Clusters Centrix data into groups based on travel times across berths. This
 function makes use of K-means clustering, which is inherently
 non-deterministic. Therefore, the output of this function is not always what
 would be expected. It is recommended to check the output visually using
-\code{\link[=plot_clusters]{plot_clusters()}}
+\code{\link[=plot_clusters]{plot_clusters()}}. For reproducability, clusters are ordered based on total
+variance, highest variance first.
 }
 \examples{
 data(berth_events)
