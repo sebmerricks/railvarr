@@ -11,7 +11,7 @@ An object of class \code{list} of length 6.
 stations
 }
 \description{
-List of example stations. This is used for timetable wrangling.
+List of example stations. This is used for timetable wrangling
 }
 \details{
 A list with 6 elements.
@@ -19,5 +19,8 @@ A list with 6 elements.
 \examples{
 stations
 
+}
+\seealso{
+\code{\link[=wrangle_timetable]{wrangle_timetable()}}
 }
 \keyword{datasets}

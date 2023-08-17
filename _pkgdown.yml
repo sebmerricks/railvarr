@@ -36,4 +36,5 @@ reference:
 - contents:
    - timetable
    - stations
+   - stopping_stations
 

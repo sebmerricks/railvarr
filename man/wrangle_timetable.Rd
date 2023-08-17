@@ -26,6 +26,13 @@ specified stations in the given order. Time zone is set to "UTC".
 A wrapper for timetable processing functions \code{\link[=filter_relevant_services]{filter_relevant_services()}},
 \code{\link[=filter_relevant_direction]{filter_relevant_direction()}}, and \code{\link[=find_calling_patterns]{find_calling_patterns()}}.
 }
+\examples{
+data(timetable, stations, stopping_stations)
+timetable
+timetable_subset <- wrangle_timetable(timetable, stations, stopping_stations)
+timetable_subset
+
+}
 \seealso{
 \code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}}
 }

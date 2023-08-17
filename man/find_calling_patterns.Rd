@@ -21,6 +21,14 @@ The timetable with calling patterns added.
 \description{
 Find calling patterns from timetable
 }
+\examples{
+data(timetable, stations, stopping_stations)
+calling_patterns <- timetable |>
+                      filter_relevant_direction(stations) |>
+                      find_calling_patterns(stopping_stations)
+calling_patterns[,c("train_header", "dt_origin", "geo", "event", "group")]
+
+}
 \seealso{
 \code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}}
 }

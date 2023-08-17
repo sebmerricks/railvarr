@@ -27,11 +27,25 @@
 
 #' Example stations
 #'
-#' List of example stations. This is used for timetable wrangling.
+#' List of example stations. This is used for timetable wrangling
 #'
 #' A list with 6 elements.
 #'
 #' @examples
 #' stations
 #'
+#' @seealso [wrangle_timetable()]
 "stations"
+
+#' Example stopping stations
+#'
+#' List containing stations at which trains stop. This is used for finding
+#' calling patterns
+#'
+#' A list with 3 elements.
+#'
+#' @examples
+#' stopping_stations
+#'
+#' @seealso [wrangle_timetable()] [find_calling_patterns()]
+"stopping_stations"

@@ -14,6 +14,12 @@
 #' @return A subset of the timetable which contains trains that pass through the
 #'   specified stations in the given order. Time zone is set to "UTC".
 #'
+#' @examples
+#' data(timetable, stations, stopping_stations)
+#' timetable
+#' timetable_subset <- wrangle_timetable(timetable, stations, stopping_stations)
+#' timetable_subset
+#'
 #' @seealso [filter_relevant_services()] [find_calling_patterns()]
 #'
 #' @export
@@ -55,6 +61,14 @@ wrangle_timetable <- function(timetable, stations, stopping_stations) {
 #'   containing trains which pass through or stop at the specified stations in
 #'   the given order.
 #'
+#' @examples
+#' data(timetable, stations)
+#' timetable
+#' timetable_services <- filter_relevant_services(timetable, stations)
+#' timetable_services
+#' timetable_direction <- filter_relevant_direction(timetable, stations)
+#' timetable_direction
+#'
 #' @importFrom dplyr filter mutate across
 #' @export
 #' @seealso [wrangle_timetable()] [find_calling_patterns()]
@@ -79,6 +93,14 @@ filter_relevant_direction <- function(timetable, stations) {
 #' Find calling patterns from timetable
 #' @inheritParams wrangle_timetable
 #' @returns The timetable with calling patterns added.
+#'
+#' @examples
+#' data(timetable, stations, stopping_stations)
+#' calling_patterns <- timetable |>
+#'                       filter_relevant_direction(stations) |>
+#'                       find_calling_patterns(stopping_stations)
+#' calling_patterns[,c("train_header", "dt_origin", "geo", "event", "group")]
+#'
 #' @importFrom dplyr distinct mutate filter bind_rows summarise inner_join
 #'   ungroup arrange first left_join if_else
 #' @export

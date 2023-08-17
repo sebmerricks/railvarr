@@ -33,6 +33,15 @@ assumed that \code{stations} is in the forward direction, i.e., the first
 element is at the start of the track section and the last element is at the
 end.
 }
+\examples{
+data(timetable, stations)
+timetable
+timetable_services <- filter_relevant_services(timetable, stations)
+timetable_services
+timetable_direction <- filter_relevant_direction(timetable, stations)
+timetable_direction
+
+}
 \seealso{
 \code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}}
 }
