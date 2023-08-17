@@ -19,14 +19,21 @@ reference:
   - wrangle_timetable
   - match_ids
 - title: Data
+- subtitle: Maps
 - contents:
    - state_mapping
-   - raw_centrix
    - asset_map
+- subtitle: Centrix
+- contents:
+   - raw_centrix
    - aspect_events
    - track_events
    - time_windows
    - valid_aspect_events
    - valid_track_events
    - berth_events
+- subtitle: Timetable
+- contents:
+   - timetable
+   - stations
 
