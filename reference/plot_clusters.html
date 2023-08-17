@@ -58,6 +58,17 @@
 
 </dl></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">berth_events</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">berth_events_clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="cluster_journeys.html">cluster_journeys</a></span><span class="op">(</span><span class="va">berth_events</span>,</span></span>
+<span class="r-in"><span>                                          centers <span class="op">=</span> <span class="fl">3L</span>,</span></span>
+<span class="r-in"><span>                                          iter.max <span class="op">=</span> <span class="fl">100L</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">plot_clusters</span><span class="op">(</span><span class="va">berth_events_clusters</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="plot_clusters-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

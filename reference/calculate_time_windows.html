@@ -58,21 +58,21 @@ These observations correspond to distinct / interlaced train journeys.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>aspect_events</dt>
 <dd><p>A data frame containing pre-processed aspect events with
-columns:</p><ul><li><p><code>signal</code> (character) signal ID.</p></li>
-<li><p><code>dt</code> (lubridate::POSIXct) datetime.</p></li>
-<li><p><code>aspect</code> (factor) signal aspect after train enters the signal
+columns:</p><ul><li><p><code>signal</code> <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> signal ID.</p></li>
+<li><p><code>dt</code> <code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> datetime.</p></li>
+<li><p><code>aspect</code> <code><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor()</a></code> signal aspect after train enters the signal
 section.</p></li>
-<li><p><code>past_aspect</code> (factor) signal aspect before train enters the
+<li><p><code>past_aspect</code> <code><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor()</a></code> signal aspect before train enters the
 signal section.</p></li>
 </ul></dd>
 
 
 <dt>track_events</dt>
 <dd><p>A data frame containing pre-processed track events with
-columns:</p><ul><li><p><code>track</code> (character) track ID.</p></li>
-<li><p><code>dt</code> (lubridate::POSIXct) datetime.</p></li>
-<li><p><code>occcupied</code> (logical) TRUE if train enters track, else FALSE.</p></li>
-<li><p><code>event</code> (character) 'enters' if train enters track, else
+columns:</p><ul><li><p><code>track</code> <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> track ID.</p></li>
+<li><p><code>dt</code> <code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> datetime.</p></li>
+<li><p><code>occcupied</code> <code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical()</a></code> TRUE if train enters track, else FALSE.</p></li>
+<li><p><code>event</code> <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> 'enters' if train enters track, else
 'vacates'.</p></li>
 </ul></dd>
 
@@ -82,13 +82,13 @@ columns:</p><ul><li><p><code>track</code> (character) track ID.</p></li>
 and a 1-many mapping from berths to tracks. The map also contains a 1-many
 mapping from tracks to events, reflecting the fact that there is an 'enter'
 and a 'vacate' event for each track. Therefore, the data frame should
-adhere to the following structure:</p><ul><li><p><code>signal</code>: A character vector containing the signal ID. It
+adhere to the following structure:</p><ul><li><p><code>signal</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the signal ID. It
 should follow the regex pattern <code>"S[0-9]+"</code>.</p></li>
-<li><p><code>berth</code>: A character vector containing the berth ID. It
+<li><p><code>berth</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the berth ID. It
 should follow the regex pattern <code>"[A-Z]+"</code>.</p></li>
-<li><p><code>track</code>: A character vector containing the track ID. It
+<li><p><code>track</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the track ID. It
 should follow the regex pattern <code>"T[A-Z]+(-[0-9])?"</code>.</p></li>
-<li><p><code>event</code>: A character vector containing the event type. It
+<li><p><code>event</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the event type. It
 must be one of either "enters" or "vacates".</p></li>
 </ul></dd>
 
@@ -98,16 +98,56 @@ must be one of either "enters" or "vacates".</p></li>
     
 
 <p>A data frame containing window IDs and time intervals in the
-columns:</p><ul><li><p><code>window</code> (numeric) window ID.</p></li>
-<li><p><code>interval</code> (<a href="https://lubridate.tidyverse.org/reference/interval.html" class="external-link">lubridate::interval</a>) time intervals.</p></li>
+columns:</p><ul><li><p><code>window</code> <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> window ID.</p></li>
+<li><p><code>interval</code> <code><a href="https://lubridate.tidyverse.org/reference/interval.html" class="external-link">lubridate::interval()</a></code> time intervals.</p></li>
 </ul><p>Each window indicates a time interval in which the data contain valid
 observations.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>A train journey across the track section begins as the train enters
+the first track specified in the <code>asset_map</code> and ends when the train
+vacates the last. If the next train to pass through is sufficiently far
+behind, there will be some period of time where the track is empty -
+between the first train leaving the last track and the next train entering
+the first track. Therefore, any events that occur in this time are invalid
+and are discarded.</p>
+<p>The time windows that this function identifies are the inverse of the
+previous intervals, defining the time periods that trains are present in
+the track section. The events within these windows are validated by the
+number of signals/tracks, the number of events, and the number of trains.
+Only valid journeys are returned, which can result in data loss of around
+1%.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="preprocess_signal_events.html">preprocess_signal_events()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">aspect_events</span>, <span class="va">track_events</span>, <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">time_windows</span> <span class="op">&lt;-</span> <span class="fu">calculate_time_windows</span><span class="op">(</span><span class="va">aspect_events</span>,</span></span>
+<span class="r-in"><span>                                       <span class="va">track_events</span>,</span></span>
+<span class="r-in"><span>                                       <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">time_windows</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 681 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    window interval                                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;Interval&gt;</span>                                      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span>      2 2000-01-01 13:07:11 UTC--2000-01-01 13:21:32 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span>      3 2000-01-01 13:22:09 UTC--2000-01-01 13:26:10 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span>      4 2000-01-01 13:27:43 UTC--2000-01-01 13:32:27 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span>      7 2000-01-01 14:07:06 UTC--2000-01-01 14:20:32 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span>      8 2000-01-01 14:26:30 UTC--2000-01-01 14:33:18 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span>      9 2000-01-01 14:34:54 UTC--2000-01-01 14:54:57 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span>     10 2000-01-01 15:06:54 UTC--2000-01-01 15:20:53 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span>     11 2000-01-01 15:37:57 UTC--2000-01-01 15:50:21 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span>     12 2000-01-01 16:07:15 UTC--2000-01-01 16:17:10 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span>     13 2000-01-01 16:37:04 UTC--2000-01-01 16:49:11 UTC</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 671 more rows</span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

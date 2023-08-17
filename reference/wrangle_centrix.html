@@ -62,18 +62,18 @@ along with calculations of TSAR and all its subcomponents.</p>
     <dl><dt>raw_centrix</dt>
 <dd><p>A data frame containing raw Centrix data. Strict input
 validation is applied to ensure the data adhere to the expected structure.
-The data should be in a data frame with the following columns:</p><ul><li><p><code>asset</code>: A character vector containing the asset ID. Tracks
-are expected to follow the regex pattern <code>"T[A-Z]+(-[0-9])?"</code>. E.g.,
-'TABC' 'TABC-1' 'TABC-2'.
+The data should be in a data frame with the following columns:</p><ul><li><p><code>asset</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the asset ID.
+Tracks are expected to follow the regex pattern <code>"T[A-Z]+(-[0-9])?"</code>.
+E.g., 'TABC' 'TABC-1' 'TABC-2'.
 Signals are expected to follow the regex pattern <code>"S[0-9]+\s[A-Z]+"</code>.
 E.g., 'S123 HGE' 'S123 I'.
 The second part of the signal ID should be a state code referring to
 the signal aspect, e.g. 'RGE' for red or 'DGE' for green. For other
 codes see:
 <a href="https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals" class="external-link">https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals</a>.</p></li>
-<li><p><code>dt</code>: A lubridate::POSIXct object representing the date
+<li><p><code>dt</code>: A <code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> object representing the date
 and time at which the observation was made.</p></li>
-<li><p><code>transition</code>: A character vector representing the state
+<li><p><code>transition</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector representing the state
 transition that caused the observation. A transition can be one of
 "UP to DN" or "DN to UP", anything else will be ignored. For tracks,
 "UP to DN" signifies a train entering the track, while "DN to UP" is a
@@ -88,13 +88,13 @@ ignored.</p></li>
 and a 1-many mapping from berths to tracks. The map also contains a 1-many
 mapping from tracks to events, reflecting the fact that there is an 'enter'
 and a 'vacate' event for each track. Therefore, the data frame should
-adhere to the following structure:</p><ul><li><p><code>signal</code>: A character vector containing the signal ID. It
+adhere to the following structure:</p><ul><li><p><code>signal</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the signal ID. It
 should follow the regex pattern <code>"S[0-9]+"</code>.</p></li>
-<li><p><code>berth</code>: A character vector containing the berth ID. It
+<li><p><code>berth</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the berth ID. It
 should follow the regex pattern <code>"[A-Z]+"</code>.</p></li>
-<li><p><code>track</code>: A character vector containing the track ID. It
+<li><p><code>track</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the track ID. It
 should follow the regex pattern <code>"T[A-Z]+(-[0-9])?"</code>.</p></li>
-<li><p><code>event</code>: A character vector containing the event type. It
+<li><p><code>event</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the event type. It
 must be one of either "enters" or "vacates".</p></li>
 </ul></dd>
 
@@ -114,16 +114,51 @@ berth-level information about signal and track events. This includes TSARs
 and all sub-components, e.g. 'T_travel' and 'T_offset'.</p>
     </div>
     <div class="section level2">
-    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="preprocess_signal_events.html">preprocess_signal_events()</a></code> <code><a href="calculate_time_windows.html">calculate_time_windows()</a></code>
-<code><a href="filter_aspect_events.html">filter_aspect_events()</a></code> <code><a href="calculate_tsars.html">calculate_tsars()</a></code></p></div>
-    </div>
+    <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
+    <p>This function wraps:</p><ul><li><p><code><a href="preprocess_signal_events.html">preprocess_signal_events()</a></code> <code><a href="preprocess_signal_events.html">preprocess_track_events()</a></code></p></li>
+<li><p><code><a href="calculate_time_windows.html">calculate_time_windows()</a></code></p></li>
+<li><p><code><a href="filter_aspect_events.html">filter_aspect_events()</a></code> <code><a href="filter_aspect_events.html">filter_track_events()</a></code></p></li>
+<li><p><code><a href="calculate_tsars.html">calculate_tsars()</a></code></p></li>
+</ul></div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># This will require some example data</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">raw_centrix</span>, <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">raw_centrix</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 110,339 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    asset   dt                  transition</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TA-1 TR 2000-01-01 <span style="color: #949494;">06:13:48</span> UP to DN  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S1 HHGE 2000-01-01 <span style="color: #949494;">06:13:49</span> UP to DN  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S1 HGE  2000-01-01 <span style="color: #949494;">06:13:49</span> UP to DN  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S1 RGE  2000-01-01 <span style="color: #949494;">06:13:49</span> DN to UP  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TA-1 TR 2000-01-01 <span style="color: #949494;">06:25:29</span> DN to UP  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TA-1 TR 2000-01-01 <span style="color: #949494;">06:25:31</span> UP to DN  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TA-1 TR 2000-01-01 <span style="color: #949494;">06:25:43</span> DN to UP  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S1 HHGE 2000-01-01 <span style="color: #949494;">06:25:48</span> DN to UP  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S1 HGE  2000-01-01 <span style="color: #949494;">06:25:48</span> DN to UP  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S1 RGE  2000-01-01 <span style="color: #949494;">06:25:48</span> UP to DN  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 110,329 more rows</span></span>
+<span class="r-in"><span><span class="va">berth_events</span> <span class="op">&lt;-</span> <span class="fu">wrangle_centrix</span><span class="op">(</span><span class="va">raw_centrix</span>, <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">berth_events</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 6,952 × 15</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    signal berth train_id aspect t_enters            t_red_on           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> S1     A            1 G      2000-01-01 <span style="color: #949494;">13:07:11</span> 2000-01-01 <span style="color: #949494;">13:07:12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S2     B            1 G      2000-01-01 <span style="color: #949494;">13:09:18</span> 2000-01-01 <span style="color: #949494;">13:09:19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S3     C            1 G      2000-01-01 <span style="color: #949494;">13:09:58</span> 2000-01-01 <span style="color: #949494;">13:09:59</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S4     D            1 G      2000-01-01 <span style="color: #949494;">13:10:41</span> 2000-01-01 <span style="color: #949494;">13:10:42</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> S5     E            1 G      2000-01-01 <span style="color: #949494;">13:12:39</span> 2000-01-01 <span style="color: #949494;">13:12:39</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> S6     F            1 G      2000-01-01 <span style="color: #949494;">13:13:18</span> 2000-01-01 <span style="color: #949494;">13:13:19</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> S7     G            1 G      2000-01-01 <span style="color: #949494;">13:15:35</span> 2000-01-01 <span style="color: #949494;">13:15:35</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S8     H            1 G      2000-01-01 <span style="color: #949494;">13:16:19</span> 2000-01-01 <span style="color: #949494;">13:16:20</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S1     A            2 G      2000-01-01 <span style="color: #949494;">13:11:58</span> 2000-01-01 <span style="color: #949494;">13:11:59</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S2     B            2 YY     2000-01-01 <span style="color: #949494;">13:12:43</span> 2000-01-01 <span style="color: #949494;">13:12:43</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6,942 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 9 more variables: t_enters_next &lt;dttm&gt;, t_vacates &lt;dttm&gt;, t_red_off &lt;dttm&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   TSAR &lt;dbl&gt;, T_onset &lt;dbl&gt;, T_clear &lt;dbl&gt;, T_offset &lt;dbl&gt;, T_travel &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_coach &lt;dbl&gt;</span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

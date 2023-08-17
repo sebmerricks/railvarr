@@ -72,19 +72,19 @@ map.</p>
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>aspect_events</dt>
 <dd><p>A data frame containing pre-processed aspect events with
-columns:</p><ul><li><p><code>signal</code> (character) signal ID.</p></li>
-<li><p><code>dt</code> (lubridate::POSIXct) datetime.</p></li>
-<li><p><code>aspect</code> (factor) signal aspect after train enters the signal
+columns:</p><ul><li><p><code>signal</code> <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> signal ID.</p></li>
+<li><p><code>dt</code> <code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> datetime.</p></li>
+<li><p><code>aspect</code> <code><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor()</a></code> signal aspect after train enters the signal
 section.</p></li>
-<li><p><code>past_aspect</code> (factor) signal aspect before train enters the
+<li><p><code>past_aspect</code> <code><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor()</a></code> signal aspect before train enters the
 signal section.</p></li>
 </ul></dd>
 
 
 <dt>time_windows</dt>
 <dd><p>A data frame containing window IDs and time intervals in
-the columns:</p><ul><li><p><code>window</code> (numeric) window ID.</p></li>
-<li><p><code>interval</code> (<a href="https://lubridate.tidyverse.org/reference/interval.html" class="external-link">lubridate::interval</a>) time intervals.</p></li>
+the columns:</p><ul><li><p><code>window</code> <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> window ID.</p></li>
+<li><p><code>interval</code> <code><a href="https://lubridate.tidyverse.org/reference/interval.html" class="external-link">lubridate::interval()</a></code> time intervals.</p></li>
 </ul><p>Each window indicates a time interval in which the data contain valid
 observations.</p></dd>
 
@@ -94,23 +94,23 @@ observations.</p></dd>
 and a 1-many mapping from berths to tracks. The map also contains a 1-many
 mapping from tracks to events, reflecting the fact that there is an 'enter'
 and a 'vacate' event for each track. Therefore, the data frame should
-adhere to the following structure:</p><ul><li><p><code>signal</code>: A character vector containing the signal ID. It
+adhere to the following structure:</p><ul><li><p><code>signal</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the signal ID. It
 should follow the regex pattern <code>"S[0-9]+"</code>.</p></li>
-<li><p><code>berth</code>: A character vector containing the berth ID. It
+<li><p><code>berth</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the berth ID. It
 should follow the regex pattern <code>"[A-Z]+"</code>.</p></li>
-<li><p><code>track</code>: A character vector containing the track ID. It
+<li><p><code>track</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the track ID. It
 should follow the regex pattern <code>"T[A-Z]+(-[0-9])?"</code>.</p></li>
-<li><p><code>event</code>: A character vector containing the event type. It
+<li><p><code>event</code>: A <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> vector containing the event type. It
 must be one of either "enters" or "vacates".</p></li>
 </ul></dd>
 
 
 <dt>track_events</dt>
 <dd><p>A data frame containing pre-processed track events with
-columns:</p><ul><li><p><code>track</code> (character) track ID.</p></li>
-<li><p><code>dt</code> (lubridate::POSIXct) datetime.</p></li>
-<li><p><code>occcupied</code> (logical) TRUE if train enters track, else FALSE.</p></li>
-<li><p><code>event</code> (character) 'enters' if train enters track, else
+columns:</p><ul><li><p><code>track</code> <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> track ID.</p></li>
+<li><p><code>dt</code> <code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> datetime.</p></li>
+<li><p><code>occcupied</code> <code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical()</a></code> TRUE if train enters track, else FALSE.</p></li>
+<li><p><code>event</code> <code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> 'enters' if train enters track, else
 'vacates'.</p></li>
 </ul></dd>
 
@@ -119,14 +119,92 @@ columns:</p><ul><li><p><code>track</code> (character) track ID.</p></li>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>A data frame containing filtered events, with additional columns:</p><ul><li><p><code>window</code> (numeric) the window ID.</p></li>
-<li><p><code>interval</code> (<a href="https://lubridate.tidyverse.org/reference/interval.html" class="external-link">lubridate::interval</a>) the time interval.</p></li>
+<p>A data frame containing filtered events, with additional columns:</p><ul><li><p><code>window</code> <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> the window ID.</p></li>
+<li><p><code>interval</code> <code><a href="https://lubridate.tidyverse.org/reference/interval.html" class="external-link">lubridate::interval()</a></code> the time interval.</p></li>
 </ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><code><a href="preprocess_signal_events.html">preprocess_track_events()</a></code> <code><a href="calculate_time_windows.html">calculate_time_windows()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">aspect_events</span>, <span class="va">time_windows</span>, <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">aspect_events</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 32,512 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    signal dt                  aspect past_aspect</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> S1     2000-01-01 <span style="color: #949494;">06:13:49</span> R      <span style="color: #BB0000;">NA</span>         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S1     2000-01-01 <span style="color: #949494;">06:25:48</span> YY     R          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S1     2000-01-01 <span style="color: #949494;">06:25:48</span> Y      YY         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S1     2000-01-01 <span style="color: #949494;">06:25:53</span> R      Y          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> S1     2000-01-01 <span style="color: #949494;">06:26:16</span> YY     R          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> S1     2000-01-01 <span style="color: #949494;">06:26:16</span> Y      YY         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> S1     2000-01-01 <span style="color: #949494;">07:44:16</span> R      Y          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S1     2000-01-01 <span style="color: #949494;">08:06:31</span> YY     R          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S1     2000-01-01 <span style="color: #949494;">08:06:31</span> Y      YY         </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S1     2000-01-01 <span style="color: #949494;">08:20:08</span> R      Y          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 32,502 more rows</span></span>
+<span class="r-in"><span><span class="va">valid_aspect_events</span> <span class="op">&lt;-</span> <span class="fu">filter_aspect_events</span><span class="op">(</span><span class="va">aspect_events</span>,</span></span>
+<span class="r-in"><span>                                            <span class="va">time_windows</span>,</span></span>
+<span class="r-in"><span>                                            <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">valid_aspect_events</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 25,834 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    signal dt                  aspect past_aspect window</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;fct&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> S1     2000-01-01 <span style="color: #949494;">13:07:12</span> R      G                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S1     2000-01-01 <span style="color: #949494;">13:09:36</span> Y      R                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S1     2000-01-01 <span style="color: #949494;">13:10:11</span> YY     Y                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S1     2000-01-01 <span style="color: #949494;">13:11:00</span> G      YY               2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> S1     2000-01-01 <span style="color: #949494;">13:11:59</span> R      G                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> S1     2000-01-01 <span style="color: #949494;">13:13:02</span> Y      R                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> S1     2000-01-01 <span style="color: #949494;">13:13:44</span> YY     Y                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S1     2000-01-01 <span style="color: #949494;">13:14:35</span> G      YY               2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S1     2000-01-01 <span style="color: #949494;">13:22:10</span> R      G                3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S1     2000-01-01 <span style="color: #949494;">13:22:58</span> Y      R                3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 25,824 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: interval &lt;Interval&gt;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co">#----------------------------------------------------------------------------</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">track_events</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">track_events</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 25,242 × 4</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    track dt                  occupied event  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TA-1  2000-01-01 <span style="color: #949494;">06:13:48</span> TRUE     enters </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:29</span> FALSE    vacates</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:31</span> TRUE     enters </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:43</span> FALSE    vacates</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:52</span> TRUE     enters </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:54</span> FALSE    vacates</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:57</span> TRUE     enters </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> TA-1  2000-01-01 <span style="color: #949494;">06:25:59</span> FALSE    vacates</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> TA-1  2000-01-01 <span style="color: #949494;">06:26:02</span> TRUE     enters </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TA-1  2000-01-01 <span style="color: #949494;">06:26:11</span> FALSE    vacates</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 25,232 more rows</span></span>
+<span class="r-in"><span><span class="va">valid_track_events</span> <span class="op">&lt;-</span> <span class="fu">filter_track_events</span><span class="op">(</span><span class="va">track_events</span>,</span></span>
+<span class="r-in"><span>                                          <span class="va">time_windows</span>,</span></span>
+<span class="r-in"><span>                                          <span class="va">asset_map</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">valid_track_events</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 24,332 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    track dt                  occupied event   window</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;lgl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> TA-1  2000-01-01 <span style="color: #949494;">13:07:11</span> TRUE     enters       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> TA-1  2000-01-01 <span style="color: #949494;">13:07:55</span> FALSE    vacates      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> TA-1  2000-01-01 <span style="color: #949494;">13:11:58</span> TRUE     enters       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> TA-1  2000-01-01 <span style="color: #949494;">13:12:34</span> FALSE    vacates      2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> TA-1  2000-01-01 <span style="color: #949494;">13:22:09</span> TRUE     enters       3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> TA-1  2000-01-01 <span style="color: #949494;">13:22:37</span> FALSE    vacates      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> TA-1  2000-01-01 <span style="color: #949494;">13:27:43</span> TRUE     enters       4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> TA-1  2000-01-01 <span style="color: #949494;">13:28:14</span> FALSE    vacates      4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> TA-1  2000-01-01 <span style="color: #949494;">14:07:06</span> TRUE     enters       7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> TA-1  2000-01-01 <span style="color: #949494;">14:07:54</span> FALSE    vacates      7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 24,322 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1 more variable: interval &lt;Interval&gt;</span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 

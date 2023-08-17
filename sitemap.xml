@@ -16,6 +16,18 @@
     <loc>https://sebmerricks.github.io/railvarr/index.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/aspect_events.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/asset_map.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/berth_events.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/berth_events_groups.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/calculate_time_windows.html</loc>
   </url>
   <url>
@@ -26,9 +38,6 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/filter_aspect_events.html</loc>
-  </url>
-  <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/filter_relevant_direction.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/filter_relevant_services.html</loc>
@@ -52,7 +61,34 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/railvarr-package.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/raw_centrix.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/state_mapping.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/stations.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/stopping_stations.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/time_windows.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/timetable.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/timetable_groups.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/track_events.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/valid_aspect_events.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/valid_track_events.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/wrangle_centrix.html</loc>

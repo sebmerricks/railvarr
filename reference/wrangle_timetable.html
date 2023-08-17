@@ -46,12 +46,12 @@ filter_relevant_direction(), and find_calling_patterns()."><!-- mathjax --><scri
 
     <div class="ref-description section level2">
     <p>A wrapper for timetable processing functions <code><a href="filter_relevant_services.html">filter_relevant_services()</a></code>,
-<code><a href="filter_relevant_direction.html">filter_relevant_direction()</a></code>, and <code><a href="find_calling_patterns.html">find_calling_patterns()</a></code>.</p>
+<code><a href="filter_relevant_services.html">filter_relevant_direction()</a></code>, and <code><a href="find_calling_patterns.html">find_calling_patterns()</a></code>.</p>
     </div>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">wrangle_timetable</span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">wrangle_timetable</span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span>, <span class="va">stopping_stations</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -61,7 +61,16 @@ filter_relevant_direction(), and find_calling_patterns()."><!-- mathjax --><scri
 
 
 <dt>stations</dt>
-<dd><p>List containing station names.</p></dd>
+<dd><p>List containing station names. Trains which do not pass
+through any of these stations will be discarded.</p></dd>
+
+
+<dt>stopping_stations</dt>
+<dd><p>a character vector containing the names of stations
+at which trains stop. Any trains which do not stop at any of these stations
+will be labeled as 'fast' (non-stopping) trains. Trains which do stop at
+these stations will either be labeled as 'stopping-all' or they will be
+labeled with the specific stations at which they stop.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -73,10 +82,50 @@ specified stations in the given order. Time zone is set to "UTC".</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
-    <div class="dont-index"><p><code><a href="filter_relevant_services.html">filter_relevant_services()</a></code> <code><a href="filter_relevant_direction.html">filter_relevant_direction()</a></code>
-<code><a href="find_calling_patterns.html">find_calling_patterns()</a></code></p></div>
+    <div class="dont-index"><p><code><a href="filter_relevant_services.html">filter_relevant_services()</a></code> <code><a href="find_calling_patterns.html">find_calling_patterns()</a></code></p></div>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span>, <span class="va">stopping_stations</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">timetable</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8,958 × 11</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    train_header dt_origin           geo    event     wtt                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo1   Originate 2000-01-01 <span style="color: #949494;">12:20:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo18  Arrive    2000-01-01 <span style="color: #949494;">12:23:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo18  Depart    2000-01-01 <span style="color: #949494;">12:24:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo2   Arrive    2000-01-01 <span style="color: #949494;">12:28:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo2   Depart    2000-01-01 <span style="color: #949494;">12:29:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo3   Arrive    2000-01-01 <span style="color: #949494;">12:35:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo3   Depart    2000-01-01 <span style="color: #949494;">12:36:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo104 Arrive    2000-01-01 <span style="color: #949494;">12:39:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo104 Depart    2000-01-01 <span style="color: #949494;">12:39:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo4   Arrive    2000-01-01 <span style="color: #949494;">12:41:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 8,948 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 6 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;</span></span>
+<span class="r-in"><span><span class="va">timetable_subset</span> <span class="op">&lt;-</span> <span class="fu">wrangle_timetable</span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span>, <span class="va">stopping_stations</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">timetable_subset</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 792 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    train_header dt_origin           geo    event  wtt                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Arrive 2000-01-01 <span style="color: #949494;">13:34:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Depart 2000-01-01 <span style="color: #949494;">13:35:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo6   Pass   2000-01-01 <span style="color: #949494;">13:37:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Arrive 2000-01-01 <span style="color: #949494;">13:39:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Depart 2000-01-01 <span style="color: #949494;">13:39:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Arrive 2000-01-01 <span style="color: #949494;">13:42:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Depart 2000-01-01 <span style="color: #949494;">13:42:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Arrive 2000-01-01 <span style="color: #949494;">13:44:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Depart 2000-01-01 <span style="color: #949494;">13:45:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo7   Arrive 2000-01-01 <span style="color: #949494;">13:48:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 782 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;, group &lt;chr&gt;</span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
