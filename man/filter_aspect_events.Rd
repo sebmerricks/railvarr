@@ -73,6 +73,24 @@ map.
 \code{filter_aspect_events()} filters to only the signals specified in the asset
 map.
 }
+\examples{
+data(aspect_events, time_windows, asset_map)
+aspect_events
+valid_aspect_events <- filter_aspect_events(aspect_events,
+                                            time_windows,
+                                            asset_map)
+valid_aspect_events
+
+#----------------------------------------------------------------------------
+
+data(track_events)
+track_events
+valid_track_events <- filter_track_events(track_events,
+                                          time_windows,
+                                          asset_map)
+valid_track_events
+
+}
 \seealso{
 \code{\link[=preprocess_track_events]{preprocess_track_events()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
 }

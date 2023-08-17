@@ -27,13 +27,14 @@
 #'
 #' @format
 #' \describe{
-#'   \item{asset}{Centrix asset ID, signal assets include state data.}
-#'   \item{dt}{Date and time of event.}
-#'   \item{transition}{Event transition data.}
+#'   \item{asset}{Centrix asset ID, signal assets include state data}
+#'   \item{dt}{Date and time of event}
+#'   \item{transition}{Event transition data}
 #' }
 #'
 #' @examples
 #' raw_centrix
+#'
 "raw_centrix"
 
 #' Example asset map
@@ -46,14 +47,15 @@
 #'
 #' @format
 #' \describe{
-#'   \item{signal}{Signal ID.}
-#'   \item{berth}{Berth ID.}
-#'   \item{track}{Track ID.}
-#'   \item{event}{Track event.}
+#'   \item{signal}{Signal ID}
+#'   \item{berth}{Berth ID}
+#'   \item{track}{Track ID}
+#'   \item{event}{Track event}
 #' }
 #'
 #' @examples
 #' asset_map
+#'
 "asset_map"
 
 #' Example aspect events
@@ -64,14 +66,15 @@
 #'
 #' @format
 #' \describe{
-#'   \item{signal}{Signal ID.}
-#'   \item{dt}{Date and time of event.}
-#'   \item{aspect}{Signal aspect caused by event.}
-#'   \item{past_aspect}{Signal aspect preceding event.}
+#'   \item{signal}{Signal ID}
+#'   \item{dt}{Date and time of event}
+#'   \item{aspect}{Signal aspect caused by event}
+#'   \item{past_aspect}{Signal aspect preceding event}
 #' }
 #'
 #' @examples
 #' aspect_events
+#'
 "aspect_events"
 
 #' Example track events
@@ -82,12 +85,67 @@
 #'
 #' @format
 #' \describe{
-#'   \item{track}{Track ID.}
-#'   \item{dt}{Date and time of event.}
-#'   \item{occupied}{TRUE if train enters track, else FALSE.}
-#'   \item{event}{'enters' if train enters track, else 'vacates'.}
+#'   \item{track}{Track ID}
+#'   \item{dt}{Date and time of event}
+#'   \item{occupied}{TRUE if train enters track, else FALSE}
+#'   \item{event}{'enters' if train enters track, else 'vacates'}
 #' }
 #'
 #' @examples
 #' track_events
+#'
 "track_events"
+
+#' Example time windows
+#'
+#' An example of time windows calculated from Centrix data denoting time
+#' intervals of valid train journeys.
+#'
+#' A data frame containing 681 rows and 2 columns
+#'
+#' @format
+#' \describe{
+#'   \item{window}{Window ID}
+#'   \item{interval}{Window time interval}
+#' }
+#'
+#' @examples
+#' time_windows
+#'
+"time_windows"
+
+#' Example of processed aspect events
+#'
+#' An example of aspect events which have been fully processed and validated by
+#' the calculated time windows.
+#'
+#' A data frame containing 25,834 rows and 6 columns
+#'
+#' @format
+#' \describe{
+#'   \item{signal}{Signal ID}
+#'   \item{dt}{Date and time of event}
+#'   \item{aspect}{Signal aspect caused by event}
+#'   \item{past_aspect}{Signal aspect preceding event}
+#'   \item{window}{Window ID}
+#'   \item{interval}{Window interval}
+#' }
+"valid_aspect_events"
+
+#' Example of processed track events
+#'
+#' An example of track events which have been fully processed and validated by
+#' the calculated time windows.
+#'
+#' A data frame containing 24,332 rows and 6 columns
+#'
+#' @format
+#' \describe{
+#'   \item{track}{Track ID}
+#'   \item{dt}{Date and time of event}
+#'   \item{occupied}{TRUE if train enters track, else FALSE}
+#'   \item{event}{'enters' if train enters track, else 'vacates'}
+#'   \item{window}{Window ID}
+#'   \item{interval}{Window interval}
+#' }
+"valid_track_events"

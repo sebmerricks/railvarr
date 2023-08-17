@@ -23,5 +23,6 @@ A data frame containing 32,512 rows and 4 columns.
 }
 \examples{
 aspect_events
+
 }
 \keyword{datasets}

@@ -23,5 +23,6 @@ A data frame containing 25,242 rows and 4 columns.
 }
 \examples{
 track_events
+
 }
 \keyword{datasets}

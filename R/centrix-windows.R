@@ -111,6 +111,23 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
 #'     \item{\code{interval}} [lubridate::interval()] the time interval.
 #'   }
 #'
+#' @examples
+#' data(aspect_events, time_windows, asset_map)
+#' aspect_events
+#' valid_aspect_events <- filter_aspect_events(aspect_events,
+#'                                             time_windows,
+#'                                             asset_map)
+#' valid_aspect_events
+#'
+#' #----------------------------------------------------------------------------
+#'
+#' data(track_events)
+#' track_events
+#' valid_track_events <- filter_track_events(track_events,
+#'                                           time_windows,
+#'                                           asset_map)
+#' valid_track_events
+#'
 #' @seealso [preprocess_track_events()] [calculate_time_windows()]
 #'
 #' @importFrom dplyr inner_join mutate join_by select

@@ -23,5 +23,6 @@ A data frame containing 110,339 rows and 3 columns.
 }
 \examples{
 raw_centrix
+
 }
 \keyword{datasets}

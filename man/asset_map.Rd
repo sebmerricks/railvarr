@@ -25,5 +25,6 @@ A data frame containing 17 rows and 4 columns.
 }
 \examples{
 asset_map
+
 }
 \keyword{datasets}
