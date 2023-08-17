@@ -27,6 +27,5 @@ A wrapper for timetable processing functions \code{\link[=filter_relevant_servic
 \code{\link[=filter_relevant_direction]{filter_relevant_direction()}}, and \code{\link[=find_calling_patterns]{find_calling_patterns()}}.
 }
 \seealso{
-\code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=filter_relevant_direction]{filter_relevant_direction()}}
-\code{\link[=find_calling_patterns]{find_calling_patterns()}}
+\code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}}
 }

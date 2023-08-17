@@ -21,3 +21,6 @@ The timetable with calling patterns added.
 \description{
 Find calling patterns from timetable
 }
+\seealso{
+\code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}}
+}

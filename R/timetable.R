@@ -14,8 +14,7 @@
 #' @return A subset of the timetable which contains trains that pass through the
 #'   specified stations in the given order. Time zone is set to "UTC".
 #'
-#' @seealso [filter_relevant_services()] [filter_relevant_direction()]
-#'   [find_calling_patterns()]
+#' @seealso [filter_relevant_services()] [find_calling_patterns()]
 #'
 #' @export
 wrangle_timetable <- function(timetable, stations, stopping_stations) {
@@ -34,21 +33,37 @@ wrangle_timetable <- function(timetable, stations, stopping_stations) {
            ))
 }
 
-#' Filter timetable by stations
+#' Filter timetable to relevant trains
+#'
+#' @description
+#'   `filter_relevant_services()` filters only by station, ignoring
+#'   direction.
+#'
+#'   `filter_relevant_direction()` filters by both station and direction. It is
+#'   assumed that `stations` is in the forward direction, i.e., the first
+#'   element is at the start of the track section and the last element is at the
+#'   end.
+#'
 #' @inheritParams wrangle_timetable
-#' @returns A (usually) smaller timetable only containing trains which pass
-#'   through or stop at the specified stations.
+#'
+#' @returns
+#'   `filter_relevant_services` returns a (usually) smaller timetable
+#'   only containing trains which pass through or stop at the specified
+#'   stations.
+#'
+#'   `filter_relevant_direction` returns a (usually) smaller timetable only
+#'   containing trains which pass through or stop at the specified stations in
+#'   the given order.
+#'
 #' @importFrom dplyr filter mutate across
 #' @export
+#' @seealso [wrangle_timetable()] [find_calling_patterns()]
 filter_relevant_services <- function(timetable, stations) {
   return(timetable %>%
            filter(geo %in% unlist(stations)))
 }
 
-#' Filter timetable by direction
-#' @inheritParams wrangle_timetable
-#' @returns A (usually) smaller timetable only containing trains which pass
-#'   through or stop at the specified stations in the given order.
+#' @rdname filter_relevant_services
 #' @importFrom dplyr filter mutate first last group_by select
 #' @export
 filter_relevant_direction <- function(timetable, stations) {
@@ -65,26 +80,27 @@ filter_relevant_direction <- function(timetable, stations) {
 #' @inheritParams wrangle_timetable
 #' @returns The timetable with calling patterns added.
 #' @importFrom dplyr distinct mutate filter bind_rows summarise inner_join
-#'   ungroup
+#'   ungroup arrange first left_join if_else
 #' @export
+#' @seealso [filter_relevant_services()] [wrangle_timetable()]
 find_calling_patterns <- function(timetable, stopping_stations) {
   dummy_geo <- timetable %>%
-    distinct(train_header, dt_origin) %>%
+    distinct(.data$train_header, .data$dt_origin) %>%
     mutate(geo = "None", event = "Arrive")
 
   calling_patterns <- timetable %>%
-    filter(event %in% c("Originate", "Arrive")) %>%
-    distinct(train_header, dt_origin, geo) %>%
+    filter(.data$event %in% c("Originate", "Arrive")) %>%
+    distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
     bind_rows(dummy_geo) %>%
-    mutate(stopping = any(geo %in% unlist(stopping_stations))) %>%
-    filter(!stopping | geo %in% unlist(stopping_stations)) %>%
+    mutate(stopping = any(.data$geo %in% unlist(stopping_stations))) %>%
+    filter(!.data$stopping | .data$geo %in% unlist(stopping_stations)) %>%
     summarise(
-      pattern = stringr::str_flatten(stringr::str_flatten(geo, collapse = "-")),
-      stopping = first(stopping),
+      pattern = stringr::str_flatten(.data$geo, collapse = "-"),
+      stopping = first(.data$stopping),
       .groups = "drop"
     ) %>%
-    arrange(dt_origin) %>%
-    mutate(pattern = stringr::str_replace(pattern, "-None", ""))
+    arrange(.data$dt_origin) %>%
+    mutate(pattern = stringr::str_replace(.data$pattern, "-None", ""))
 
   fast_trains <- dplyr::tribble(
     ~stopping, ~group,
@@ -100,12 +116,15 @@ find_calling_patterns <- function(timetable, stopping_stations) {
     left_join(fast_trains, by = "stopping") %>%
     left_join(stopping_all, by = "pattern") %>%
     mutate(group.z = if_else(
-      is.na(group.x) & is.na(group.y),
-      paste0("stopping-", pattern),
+      is.na(.data$group.x) & is.na(.data$group.y),
+      paste0("stopping-", .data$pattern),
       NA
     )) %>%
-    tidyr::unite(group, c(group.x, group.y, group.z), remove = FALSE, na.rm = TRUE) %>%
-    select(-pattern, -stopping, -group.x, -group.y, -group.z)
+    tidyr::unite("group",
+                 c("group.x", "group.y", "group.z"),
+                 remove = FALSE,
+                 na.rm = TRUE) %>%
+    select(-"pattern", -"stopping", -"group.x", -"group.y", -"group.z")
 
   return(timetable %>%
            inner_join(groups, by = c("train_header", "dt_origin")) %>%

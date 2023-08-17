@@ -2,9 +2,12 @@
 % Please edit documentation in R/timetable.R
 \name{filter_relevant_services}
 \alias{filter_relevant_services}
-\title{Filter timetable by stations}
+\alias{filter_relevant_direction}
+\title{Filter timetable to relevant trains}
 \usage{
 filter_relevant_services(timetable, stations)
+
+filter_relevant_direction(timetable, stations)
 }
 \arguments{
 \item{timetable}{Data frame containing timetable data.}
@@ -13,9 +16,23 @@ filter_relevant_services(timetable, stations)
 through any of these stations will be discarded.}
 }
 \value{
-A (usually) smaller timetable only containing trains which pass
-through or stop at the specified stations.
+\code{filter_relevant_services} returns a (usually) smaller timetable
+only containing trains which pass through or stop at the specified
+stations.
+
+\code{filter_relevant_direction} returns a (usually) smaller timetable only
+containing trains which pass through or stop at the specified stations in
+the given order.
 }
 \description{
-Filter timetable by stations
+\code{filter_relevant_services()} filters only by station, ignoring
+direction.
+
+\code{filter_relevant_direction()} filters by both station and direction. It is
+assumed that \code{stations} is in the forward direction, i.e., the first
+element is at the start of the track section and the last element is at the
+end.
+}
+\seealso{
+\code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}}
 }
