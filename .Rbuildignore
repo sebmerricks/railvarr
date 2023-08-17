@@ -3,8 +3,8 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^\.github$
-^demos$
 ^data-raw$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^demo-8-13.R
