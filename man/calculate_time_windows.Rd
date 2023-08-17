@@ -10,21 +10,21 @@ calculate_time_windows(aspect_events, track_events, asset_map)
 \item{aspect_events}{A data frame containing pre-processed aspect events with
 columns:
 \itemize{
-\item{\code{signal}} (character) signal ID.
-\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
-\item{\code{aspect}} (factor) signal aspect after train enters the signal
+\item{\code{signal}} \code{\link[=character]{character()}} signal ID.
+\item{\code{dt}} \code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} datetime.
+\item{\code{aspect}} \code{\link[=factor]{factor()}} signal aspect after train enters the signal
 section.
-\item{\code{past_aspect}} (factor) signal aspect before train enters the
+\item{\code{past_aspect}} \code{\link[=factor]{factor()}} signal aspect before train enters the
 signal section.
 }}
 
 \item{track_events}{A data frame containing pre-processed track events with
 columns:
 \itemize{
-\item{\code{track}} (character) track ID.
-\item{\code{dt}} (\link[lubridate:posix_utils]{lubridate::POSIXct}) datetime.
-\item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
-\item{\code{event}} (character) 'enters' if train enters track, else
+\item{\code{track}} \code{\link[=character]{character()}} track ID.
+\item{\code{dt}} \code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} datetime.
+\item{\code{occcupied}} \code{\link[=logical]{logical()}} TRUE if train enters track, else FALSE.
+\item{\code{event}} \code{\link[=character]{character()}} 'enters' if train enters track, else
 'vacates'.
 }}
 
@@ -48,8 +48,8 @@ must be one of either "enters" or "vacates".
 A data frame containing window IDs and time intervals in the
 columns:
 \itemize{
-\item{\code{window}} (numeric) window ID.
-\item{\code{interval}} (\link[lubridate:interval]{lubridate::interval}) time intervals.
+\item{\code{window}} \code{\link[=numeric]{numeric()}} window ID.
+\item{\code{interval}} \code{\link[lubridate:interval]{lubridate::interval()}} time intervals.
 }
 Each window indicates a time interval in which the data contain valid
 observations.
@@ -57,6 +57,30 @@ observations.
 \description{
 Calculates a set of time intervals containing valid Centrix observations.
 These observations correspond to distinct / interlaced train journeys.
+}
+\details{
+A train journey across the track section begins as the train enters
+the first track specified in the \code{asset_map} and ends when the train
+vacates the last. If the next train to pass through is sufficiently far
+behind, there will be some period of time where the track is empty -
+between the first train leaving the last track and the next train entering
+the first track. Therefore, any events that occur in this time are invalid
+and are discarded.
+
+The time windows that this function identifies are the inverse of the
+previous intervals, defining the time periods that trains are present in
+the track section. The events within these windows are validated by the
+number of signals/tracks, the number of events, and the number of trains.
+Only valid journeys are returned, which can result in data loss of around
+1\%.
+}
+\examples{
+data(aspect_events, track_events, asset_map)
+time_windows <- calculate_time_windows(aspect_events,
+                                       track_events,
+                                       asset_map)
+time_windows
+
 }
 \seealso{
 \code{\link[=preprocess_signal_events]{preprocess_signal_events()}}
