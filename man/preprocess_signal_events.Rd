@@ -90,6 +90,24 @@ aspect using the \code{state_map}..
 \code{preprocess_track_events()} converts \code{raw_centrix$transition} into track
 entry and exit events.
 }
+\examples{
+data(raw_centrix, asset_map, state_mapping)
+raw_centrix
+aspect_events <- preprocess_signal_events(raw_centrix,
+                                          asset_map,
+                                          state_mapping)
+aspect_events
+
+#----------------------------------------------------------------------------
+
+
+data(raw_centrix, asset_map)
+raw_centrix
+track_events <- preprocess_track_events(raw_centrix,
+                                        asset_map)
+track_events
+
+}
 \seealso{
 \code{\link[=wrangle_centrix]{wrangle_centrix()}}
 }

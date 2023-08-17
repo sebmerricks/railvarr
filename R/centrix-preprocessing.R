@@ -24,6 +24,16 @@
 #'   \item{\code{past_aspect}} [factor()] signal aspect preceding the event.
 #' }
 #'
+#' @examples
+#' data(raw_centrix, asset_map, state_mapping)
+#' raw_centrix
+#' aspect_events <- preprocess_signal_events(raw_centrix,
+#'                                           asset_map,
+#'                                           state_mapping)
+#' aspect_events
+#'
+#' #----------------------------------------------------------------------------
+#'
 #' @seealso [wrangle_centrix()]
 #'
 #' @importFrom dplyr mutate filter select semi_join inner_join arrange group_by
@@ -79,6 +89,13 @@ preprocess_signal_events <- function(raw_centrix,
 #'   \item{\code{event}} [character()] 'enters' if train enters track, else
 #'    'vacates'.
 #' }
+#'
+#' @examples
+#' data(raw_centrix, asset_map)
+#' raw_centrix
+#' track_events <- preprocess_track_events(raw_centrix,
+#'                                         asset_map)
+#' track_events
 #'
 #' @importFrom dplyr select mutate rename arrange semi_join if_else
 #'

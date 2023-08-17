@@ -5,13 +5,9 @@
 \alias{state_mapping}
 \title{Default signal state to aspect mapping}
 \format{
-\subsection{\code{state_mapping}}{
-
-A data frame with 4 rows and 2 columns:
 \describe{
 \item{state}{Signal state}
 \item{aspect}{Signal aspect as factor}
-}
 }
 }
 \usage{
@@ -21,6 +17,13 @@ state_mapping
 The default 1-1 mapping from signal state to aspect. See
 \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
 This is used as the default state mapping in Centrix wrangling.
+}
+\details{
+A data frame with 4 rows and 2 columns.
+}
+\examples{
+state_mapping
+
 }
 \seealso{
 \code{\link[=wrangle_centrix]{wrangle_centrix()}}
