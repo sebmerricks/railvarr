@@ -93,6 +93,7 @@ match to be made. This window can be adjusted using \code{lb} and \code{ub}.
 }
 \examples{
 # Define the matching instructions
+data(berth_events_groups, timetable_groups)
 match_mapping <- dplyr::tribble(
   ~group, ~berth, ~geo, ~lb, ~ub,
   # match fast trains at berth "A" and geo "geo6"
@@ -105,5 +106,19 @@ match_mapping <- dplyr::tribble(
   "stopping-all", "D", "geo111", 0, 0,
   "stopping-all", "F", "geo112", 0, 0
 )
+matched_ids <- match_ids(berth_events_groups, timetable_groups, match_mapping)
+matched_ids
+
+match_mapping <- dplyr::tribble(
+  ~group, ~berth, ~geo, ~lb, ~ub,
+  "fast", "A", "geo6", -240, 60,
+  # move start of window for stopping-all trains to 60 seconds before `t_enters`
+  "stopping-all", "A", "geo110", -60, 0,
+  "stopping-all", "D", "geo111", -60, 0,
+  "stopping-all", "F", "geo112", -60, 0
+)
+wider_window <- match_ids(berth_events_groups, timetable_groups, match_mapping)
+# More matches are found with the wider window
+wider_window
 
 }

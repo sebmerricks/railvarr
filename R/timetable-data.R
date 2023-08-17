@@ -8,7 +8,7 @@
 #' \describe{
 #'   \item{train_header}{Train ID. This usually contains headcode information}
 #'   \item{dt_origin}{Date and time of service origin}
-#'   \item{geo}{Name of TIPLOCs that trains pass through}
+#'   \item{geo}{Name of TIPLOCs that trains pass through or stop at}
 #'   \item{event}{Type of timetable event, e.g., 'Arrive', 'Depart', 'Pass'}
 #'   \item{wtt}{Scheduled date and time of event}
 #'   \item{t}{Actual date and time of event}
