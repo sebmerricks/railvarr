@@ -4,6 +4,14 @@
 #' processed data frame containing berth-level signal and track observations,
 #' along with calculations of TSAR and all its subcomponents.
 #'
+#' This function wraps:
+#' \itemize{
+#'   \item{[preprocess_signal_events()] [preprocess_track_events()]}
+#'   \item{[calculate_time_windows()]}
+#'   \item{[filter_aspect_events()] [filter_track_events()]}
+#'   \item{[calculate_tsars()]}
+#' }
+#'
 #' @param raw_centrix A data frame containing raw Centrix data. Strict input
 #'   validation is applied to ensure the data adhere to the expected structure.
 #'   The data should be in a data frame with the following columns:
@@ -50,11 +58,11 @@
 #'   berth-level information about signal and track events. This includes TSARs
 #'   and all sub-components, e.g. 'T_travel' and 'T_offset'.
 #'
-#' @seealso [preprocess_signal_events()] [calculate_time_windows()]
-#'   [filter_aspect_events()] [calculate_tsars()]
-#'
 #' @examples
-#' # This will require some example data
+#' data(raw_centrix, asset_map)
+#' raw_centrix
+#' berth_events <- wrangle_centrix(raw_centrix, asset_map)
+#' berth_events
 #'
 #' @export
 wrangle_centrix <- function(raw_centrix,

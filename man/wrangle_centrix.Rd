@@ -61,11 +61,19 @@ This function takes in raw Centrix data as an input and returns a fully
 processed data frame containing berth-level signal and track observations,
 along with calculations of TSAR and all its subcomponents.
 }
-\examples{
-# This will require some example data
-
+\details{
+This function wraps:
+\itemize{
+\item{\code{\link[=preprocess_signal_events]{preprocess_signal_events()}} \code{\link[=preprocess_track_events]{preprocess_track_events()}}}
+\item{\code{\link[=calculate_time_windows]{calculate_time_windows()}}}
+\item{\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=filter_track_events]{filter_track_events()}}}
+\item{\code{\link[=calculate_tsars]{calculate_tsars()}}}
 }
-\seealso{
-\code{\link[=preprocess_signal_events]{preprocess_signal_events()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
-\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=calculate_tsars]{calculate_tsars()}}
+}
+\examples{
+data(raw_centrix, asset_map)
+raw_centrix
+berth_events <- wrangle_centrix(raw_centrix, asset_map)
+berth_events
+
 }
