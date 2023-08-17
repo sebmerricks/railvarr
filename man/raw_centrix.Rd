@@ -6,9 +6,9 @@
 \title{Example Centrix data}
 \format{
 \describe{
-\item{asset}{Centrix asset ID, signal assets include state data.}
-\item{dt}{Date and time of event.}
-\item{transition}{Event transition data.}
+\item{asset}{Centrix asset ID, signal assets include state data}
+\item{dt}{Date and time of event}
+\item{transition}{Event transition data}
 }
 }
 \usage{

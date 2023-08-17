@@ -15,13 +15,25 @@ structure returned by the function \code{\link[=filter_track_events]{filter_trac
 validation is performed. It is assumed that the data frame will follow the
 structure returns by the function \code{\link[=filter_aspect_events]{filter_aspect_events()}}}
 
-\item{asset_map}{A data frame containing a map of the track section. No input
-validation is performed. See \code{\link[=wrangle_centrix]{wrangle_centrix()}} for the expected
-structure.}
+\item{asset_map}{A data frame containing a 1-1 mapping from signals to berths
+and a 1-many mapping from berths to tracks. The map also contains a 1-many
+mapping from tracks to events, reflecting the fact that there is an 'enter'
+and a 'vacate' event for each track. Therefore, the data frame should
+adhere to the following structure:
+\itemize{
+\item{\code{signal}}: A \code{\link[=character]{character()}} vector containing the signal ID. It
+should follow the regex pattern \code{"S[0-9]+"}.
+\item{\code{berth}}: A \code{\link[=character]{character()}} vector containing the berth ID. It
+should follow the regex pattern \code{"[A-Z]+"}.
+\item{\code{track}}: A \code{\link[=character]{character()}} vector containing the track ID. It
+should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
+\item{\code{event}}: A \code{\link[=character]{character()}} vector containing the event type. It
+must be one of either "enters" or "vacates".
+}}
 }
 \value{
 A data frame containing berth level observations including TSAR and
-its subcomponents. The following columns are included:
+its sub-components. The following columns are included:
 \itemize{
 \item{\code{signal}} Signal ID.
 \item{\code{berth}} Berth ID.
@@ -47,4 +59,21 @@ length.
 \description{
 Calculate berth-level information including TSAR and all sub-components,
 e.g., T_onset, T_clear, T_offset, etc.
+}
+\details{
+Combines valid track events from \code{\link[=filter_track_events]{filter_track_events()}} with valid red
+signal events from \code{\link[=filter_aspect_events]{filter_aspect_events()}} to calculate TSAR and its
+sub-components. The data frame returned by this function contains the first
+data that can be used for analysis.
+}
+\examples{
+data(valid_track_events, valid_aspect_events, asset_map)
+valid_aspect_events
+valid_track_events
+
+berth_events <- calculate_tsars(valid_track_events,
+                                valid_aspect_events,
+                                asset_map)
+berth_events
+
 }

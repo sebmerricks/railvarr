@@ -3,18 +3,21 @@
 #' Calculate berth-level information including TSAR and all sub-components,
 #' e.g., T_onset, T_clear, T_offset, etc.
 #'
+#' Combines valid track events from [filter_track_events()] with valid red
+#' signal events from [filter_aspect_events()] to calculate TSAR and its
+#' sub-components. The data frame returned by this function contains the first
+#' data that can be used for analysis.
+#'
 #' @param track_events A data frame containing windowed track events. No input
 #'   validation is performed. It is assumed that the data frame will follow the
 #'   structure returned by the function [filter_track_events()]
 #' @param red_events A data frame containing windowed red events. No input
 #'   validation is performed. It is assumed that the data frame will follow the
 #'   structure returns by the function [filter_aspect_events()]
-#' @param asset_map A data frame containing a map of the track section. No input
-#'   validation is performed. See [wrangle_centrix()] for the expected
-#'   structure.
+#' @inheritParams wrangle_centrix
 #'
 #' @return A data frame containing berth level observations including TSAR and
-#'   its subcomponents. The following columns are included:
+#'   its sub-components. The following columns are included:
 #'   \itemize{
 #'     \item{\code{signal}} Signal ID.
 #'     \item{\code{berth}} Berth ID.
@@ -36,6 +39,16 @@
 #'     \item{\code{T_coach}} Amount of time the train takes to travel its own
 #'       length.
 #'   }
+#'
+#' @examples
+#' data(valid_track_events, valid_aspect_events, asset_map)
+#' valid_aspect_events
+#' valid_track_events
+#'
+#' berth_events <- calculate_tsars(valid_track_events,
+#'                                 valid_aspect_events,
+#'                                 asset_map)
+#' berth_events
 #'
 #' @importFrom dplyr inner_join select arrange group_by mutate ungroup lead
 #'   cur_group_id

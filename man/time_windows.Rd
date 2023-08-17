@@ -6,8 +6,8 @@
 \title{Example time windows}
 \format{
 \describe{
-\item{window}{Window ID.}
-\item{interval}{Window time interval.}
+\item{window}{Window ID}
+\item{interval}{Window time interval}
 }
 }
 \usage{

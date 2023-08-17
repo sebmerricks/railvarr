@@ -6,10 +6,10 @@
 \title{Example asset map}
 \format{
 \describe{
-\item{signal}{Signal ID.}
-\item{berth}{Berth ID.}
-\item{track}{Track ID.}
-\item{event}{Track event.}
+\item{signal}{Signal ID}
+\item{berth}{Berth ID}
+\item{track}{Track ID}
+\item{event}{Track event}
 }
 }
 \usage{
