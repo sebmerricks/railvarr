@@ -10,7 +10,7 @@ railvarr::plot_clusters(berth_events_clusters)
 
 group_labels <- dplyr::tribble(
   ~cluster, ~group,
-  1, "stopping-112",
+  1, "stopping-geo112",
   2, "stopping-all",
   3, "fast"
 )
@@ -24,31 +24,12 @@ berth_events_classes <- berth_events %>%
 
 raw_timetable <- read_rds_test("timetable.rds")
 
-stations <- list(
-  "geo5",
-  "geo6",
-  "geo110",
-  "geo111",
-  "geo112",
-  c("geo7", "geo8")
-  )
+stations <- read_rds_test_raw("stations.rds")
+stopping_stations <- read_rds_test_raw("stopping_stations.rds")
 
-timetable_subset <- railvarr::wrangle_timetable(raw_timetable, stations)
-
-pattern_labels <- dplyr::tribble(
-  ~pattern, ~group,
-  "None", "fast",
-  "geo5", "fast",
-  "geo5,geo110,geo111,geo112,geo7", "stopping-all",
-  "geo5,geo8", "fast",
-  "geo5,geo8,geo7", "fast",
-  "geo8", "fast",
-  "geo8,geo7", "fast"
-)
-
-timetable_groups <- timetable_subset %>%
-  inner_join(pattern_labels, by = "pattern") %>%
-  select(-pattern)
+timetable_subset <- railvarr::wrangle_timetable(raw_timetable,
+                                                stations,
+                                                stopping_stations)
 
 match_mapping <- dplyr::tribble(
   ~group, ~berth, ~geo, ~lb, ~ub,
@@ -59,12 +40,12 @@ match_mapping <- dplyr::tribble(
 )
 
 id_matching <- railvarr::match_ids(berth_events_classes,
-                                   timetable_groups %>%
+                                   timetable_subset %>%
                                      select(train_header, dt_origin, group, geo, event, wtt, t),
                                    match_mapping)
 
 berth_events_matched <- berth_events_classes %>%
   inner_join(id_matching, by = "train_id")
 
-timetable_matched <- timetable_groups %>%
+timetable_matched <- timetable_subset %>%
   inner_join(id_matching, by = c("train_header", "dt_origin"))
