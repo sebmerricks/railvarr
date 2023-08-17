@@ -29,31 +29,44 @@ kmeans_clusters <- function(berth_events, ...) {
 
 #' Cluster train journeys
 #'
-#' Clusters Centrix data into groups based on travel times across berths.
+#' Clusters Centrix data into groups based on travel times across berths. This
+#' function makes use of K-means clustering, which is inherently
+#' non-deterministic. Therefore, the output of this function is not always what
+#' would be expected. It is recommended to check the output visually using
+#' [plot_clusters()]
 #'
 #' @param berth_events A data frame containing berth-level Centrix events
 #'   containing the columns: signal, berth, train_id, aspect, T_travel,
 #'   time_elapsed.
 #' @param outliers A data frame containing the train IDs for any outliers.
-#' Ignored unless `outlier_detection` == "manual".
+#'   Ignored unless `outlier_detection` == "manual".
 #' @param outlier_detection Which approach to use for outliers. Options are:
 #' \itemize{
-#'   \item{none} No outliers removed.
-#'   \item{manual} Manually remove outliers using the `outliers` parameter.
-#'   \item{boxplot} Unimplemented.
+#'   \item{"none"} No outliers removed.
+#'   \item{"manual"} Manually remove outliers using the `outliers` parameter.
+#'   \item{"boxplot"} Unimplemented.
 #' }
 #' @inheritDotParams stats::kmeans
 #'
 #' @return A data frame containing train IDs and their clusters. Clusters are
 #'   ordered based on total variance, highest variance first.
 #'
+#' @examples
+#' data(berth_events)
+#' berth_events_clusters <- cluster_journeys(berth_events,
+#'                                           centers = 3L,
+#'                                           iter.max = 100L)
+#' plot_clusters(berth_events_clusters)
+#'
 #' @importFrom dplyr group_by mutate first select ungroup anti_join
+#'
+#' @seealso [stats::kmeans()]
 #'
 #' @export
 cluster_journeys <- function(berth_events,
-                            outliers = NULL,
-                            outlier_detection = "none",
-                            ...) {
+                             outliers = NULL,
+                             outlier_detection = "none",
+                             ...) {
   berth_events_slopes <- berth_events %>%
     group_by(.data$train_id) %>%
     mutate(

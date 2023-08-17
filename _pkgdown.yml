@@ -28,4 +28,5 @@ reference:
    - time_windows
    - valid_aspect_events
    - valid_track_events
+   - berth_events
 

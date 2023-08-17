@@ -149,3 +149,36 @@
 #'   \item{interval}{Window interval}
 #' }
 "valid_track_events"
+
+#' Example of berth-level events
+#'
+#' An example of processed Centrix data containing TSAR and its sub-components.
+#'
+#' A data frame containing 6,952 rows and 15 columns
+#'
+#' @format
+#' \describe{
+#'   \item{signal}{Signal ID}
+#'   \item{berth}{Berth ID}
+#'   \item{train_id}{Train ID}
+#'   \item{aspect}{Signal aspect as train enters berth}
+#'   \item{t_enters}{Date and time that train enters berth}
+#'   \item{t_red_on}{Date and time that signal aspect changes to red}
+#'   \item{t_enters_next}{Date and time that train enters next berth}
+#'   \item{t_vacates}{Date and time that train vacates berth}
+#'   \item{t_red_off}{Date and time that signal aspect changes from red}
+#'   \item{TSAR}{Amount of time signal aspect is set to red}
+#'   \item{T_onset}{Time between train entering berth and signal aspect changing
+#'                  to red}
+#'   \item{T_clear}{Amount of time taken for train to fully clear the berth}
+#'   \item{T_offset}{Time between train vacating berth and signal aspect
+#'                   changing from red}
+#'   \item{T_travel}{Amount of time taken for train to travel the length of the
+#'                   berth}
+#'   \item{T_coach}{Amount of time taken for train to travel its own length}
+#' }
+#'
+#' @examples
+#' berth_events
+#'
+"berth_events"

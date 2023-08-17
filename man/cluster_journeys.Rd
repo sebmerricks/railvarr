@@ -21,9 +21,9 @@ Ignored unless \code{outlier_detection} == "manual".}
 
 \item{outlier_detection}{Which approach to use for outliers. Options are:
 \itemize{
-\item{none} No outliers removed.
-\item{manual} Manually remove outliers using the \code{outliers} parameter.
-\item{boxplot} Unimplemented.
+\item{"none"} No outliers removed.
+\item{"manual"} Manually remove outliers using the \code{outliers} parameter.
+\item{"boxplot"} Unimplemented.
 }}
 
 \item{...}{
@@ -52,5 +52,20 @@ A data frame containing train IDs and their clusters. Clusters are
 ordered based on total variance, highest variance first.
 }
 \description{
-Clusters Centrix data into groups based on travel times across berths.
+Clusters Centrix data into groups based on travel times across berths. This
+function makes use of K-means clustering, which is inherently
+non-deterministic. Therefore, the output of this function is not always what
+would be expected. It is recommended to check the output visually using
+\code{\link[=plot_clusters]{plot_clusters()}}
+}
+\examples{
+data(berth_events)
+berth_events_clusters <- cluster_journeys(berth_events,
+                                          centers = 3L,
+                                          iter.max = 100L)
+plot_clusters(berth_events_clusters)
+
+}
+\seealso{
+\code{\link[stats:kmeans]{stats::kmeans()}}
 }
