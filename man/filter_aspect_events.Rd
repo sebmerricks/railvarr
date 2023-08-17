@@ -36,13 +36,13 @@ mapping from tracks to events, reflecting the fact that there is an 'enter'
 and a 'vacate' event for each track. Therefore, the data frame should
 adhere to the following structure:
 \itemize{
-\item{\code{signal}}: A character vector containing the signal ID. It
+\item{\code{signal}}: A \code{\link[=character]{character()}} vector containing the signal ID. It
 should follow the regex pattern \code{"S[0-9]+"}.
-\item{\code{berth}}: A character vector containing the berth ID. It
+\item{\code{berth}}: A \code{\link[=character]{character()}} vector containing the berth ID. It
 should follow the regex pattern \code{"[A-Z]+"}.
-\item{\code{track}}: A character vector containing the track ID. It
+\item{\code{track}}: A \code{\link[=character]{character()}} vector containing the track ID. It
 should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
-\item{\code{event}}: A character vector containing the event type. It
+\item{\code{event}}: A \code{\link[=character]{character()}} vector containing the event type. It
 must be one of either "enters" or "vacates".
 }}
 

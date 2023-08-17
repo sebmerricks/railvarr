@@ -11,18 +11,18 @@ wrangle_centrix(raw_centrix, asset_map, state_map = state_mapping)
 validation is applied to ensure the data adhere to the expected structure.
 The data should be in a data frame with the following columns:
 \itemize{
-\item{\code{asset}}: A character vector containing the asset ID. Tracks
-are expected to follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}. E.g.,
-'TABC' 'TABC-1' 'TABC-2'.
+\item{\code{asset}}: A \code{\link[=character]{character()}} vector containing the asset ID.
+Tracks are expected to follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
+E.g., 'TABC' 'TABC-1' 'TABC-2'.
 Signals are expected to follow the regex pattern \code{"S[0-9]+\\s[A-Z]+"}.
 E.g., 'S123 HGE' 'S123 I'.
 The second part of the signal ID should be a state code referring to
 the signal aspect, e.g. 'RGE' for red or 'DGE' for green. For other
 codes see:
 \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
-\item{\code{dt}}: A \link[lubridate:posix_utils]{lubridate::POSIXct} object representing the date
+\item{\code{dt}}: A \code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} object representing the date
 and time at which the observation was made.
-\item{\code{transition}}: A character vector representing the state
+\item{\code{transition}}: A \code{\link[=character]{character()}} vector representing the state
 transition that caused the observation. A transition can be one of
 "UP to DN" or "DN to UP", anything else will be ignored. For tracks,
 "UP to DN" signifies a train entering the track, while "DN to UP" is a
@@ -37,13 +37,13 @@ mapping from tracks to events, reflecting the fact that there is an 'enter'
 and a 'vacate' event for each track. Therefore, the data frame should
 adhere to the following structure:
 \itemize{
-\item{\code{signal}}: A character vector containing the signal ID. It
+\item{\code{signal}}: A \code{\link[=character]{character()}} vector containing the signal ID. It
 should follow the regex pattern \code{"S[0-9]+"}.
-\item{\code{berth}}: A character vector containing the berth ID. It
+\item{\code{berth}}: A \code{\link[=character]{character()}} vector containing the berth ID. It
 should follow the regex pattern \code{"[A-Z]+"}.
-\item{\code{track}}: A character vector containing the track ID. It
+\item{\code{track}}: A \code{\link[=character]{character()}} vector containing the track ID. It
 should follow the regex pattern \code{"T[A-Z]+(-[0-9])?"}.
-\item{\code{event}}: A character vector containing the event type. It
+\item{\code{event}}: A \code{\link[=character]{character()}} vector containing the event type. It
 must be one of either "enters" or "vacates".
 }}
 

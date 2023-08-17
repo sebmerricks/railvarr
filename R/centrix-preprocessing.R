@@ -1,30 +1,27 @@
 #' Preprocess raw Centrix data
 #'
-#' @description
-#' `preprocess_signal_events()` handles only signals, defined by
-#' the `asset` string starting with the character 'S'.
+#' @description `preprocess_signal_events()` handles only signals, defined by
+#'   `raw_centrix$asset` starting with the character 'S'.
 #'
-#' `preprocess_track_events()` handles only tracks, defined by the `asset`
-#' string starting with the character 'T'.
+#'   `preprocess_track_events()` handles only tracks, defined by
+#'   `raw_centrix$asset` starting with the character 'T'.
 #'
-#' @details
-#' `preprocess_signal_events()` converts the raw `asset` string into
-#' signal ID and state, furthering processing the state into a signal aspect.
+#' @details `preprocess_signal_events()` converts `raw_centrix$asset` into
+#'   signal ID and signal state, the latter of which is converted to signal
+#'   aspect using the `state_map`..
 #'
-#' `preprocess_track_events()` converts the `transition` data into track entry
-#' and exit events.
+#'   `preprocess_track_events()` converts `raw_centrix$transition` into track
+#'   entry and exit events.
 #'
 #' @inheritParams wrangle_centrix
 #'
 #' @returns `preprocess_signal_events` returns a data frame containing aspect
-#' events with columns:
+#'   events with columns:
 #' \itemize{
-#'   \item{\code{signal}} (character) signal ID.
-#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
-#'   \item{\code{aspect}} (factor) signal aspect after train enters the signal
-#'    section.
-#'   \item{\code{past_aspect}} (factor) signal aspect before train enters the
-#'    signal section.
+#'   \item{\code{signal}} [character()] signal ID.
+#'   \item{\code{dt}} [lubridate::POSIXct()] datetime.
+#'   \item{\code{aspect}} [factor()] signal aspect caused by the event.
+#'   \item{\code{past_aspect}} [factor()] signal aspect preceding the event.
 #' }
 #'
 #' @seealso [wrangle_centrix()]
@@ -73,12 +70,13 @@ preprocess_signal_events <- function(raw_centrix,
 #' @inherit preprocess_signal_events
 #'
 #' @returns `preprocess_track_events` returns a data frame containing track
-#' events with columns:
+#'   events with columns:
 #' \itemize{
-#'   \item{\code{track}} (character) track ID.
-#'   \item{\code{dt}} ([lubridate::POSIXct]) datetime.
-#'   \item{\code{occcupied}} (logical) TRUE if train enters track, else FALSE.
-#'   \item{\code{event}} (character) 'enters' if train enters track, else
+#'   \item{\code{track}} [character()] track ID.
+#'   \item{\code{dt}} [lubridate::POSIXct()] datetime.
+#'   \item{\code{occcupied}} [logical()] TRUE if train enters track, else
+#'    FALSE.
+#'   \item{\code{event}} [character()] 'enters' if train enters track, else
 #'    'vacates'.
 #' }
 #'

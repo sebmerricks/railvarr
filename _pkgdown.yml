@@ -1,24 +1,23 @@
 url: https://sebmerricks.github.io/railvarr/
 template:
   bootstrap: 5
-
 reference:
- - title: Centrix
- - contents:
-   - preprocess_signal_events
-   - calculate_time_windows
-   - filter_aspect_events
-   - calculate_tsars
-   - wrangle_centrix
-   - cluster_journeys
-   - plot_clusters
- - title: Timetable
- - contents:
-   - filter_relevant_services
-   - filter_relevant_direction
-   - find_calling_patterns
-   - wrangle_timetable
-   - match_ids
- - title: Mapping
- - contents:
-   - state_mapping
+- title: Centrix
+- contents:
+  - preprocess_signal_events
+  - calculate_time_windows
+  - filter_aspect_events
+  - calculate_tsars
+  - wrangle_centrix
+  - cluster_journeys
+  - plot_clusters
+- title: Timetable
+- contents:
+  - filter_relevant_services
+  - filter_relevant_direction
+  - find_calling_patterns
+  - wrangle_timetable
+  - match_ids
+- title: Mapping
+- contents: state_mapping
+
