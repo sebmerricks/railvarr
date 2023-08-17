@@ -4,10 +4,16 @@
 \alias{find_calling_patterns}
 \title{Find calling patterns from timetable}
 \usage{
-find_calling_patterns(timetable)
+find_calling_patterns(timetable, stopping_stations)
 }
 \arguments{
 \item{timetable}{Data frame containing timetable data.}
+
+\item{stopping_stations}{a character vector containing the names of stations
+at which trains stop. Any trains which do not stop at any of these stations
+will be labeled as 'fast' (non-stopping) trains. Trains which do stop at
+these stations will either be labeled as 'stopping-all' or they will be
+labeled with the specific stations at which they stop.}
 }
 \value{
 The timetable with calling patterns added.

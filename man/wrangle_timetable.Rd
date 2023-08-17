@@ -4,12 +4,19 @@
 \alias{wrangle_timetable}
 \title{Wrangle Timetable Data}
 \usage{
-wrangle_timetable(timetable, stations)
+wrangle_timetable(timetable, stations, stopping_stations)
 }
 \arguments{
 \item{timetable}{Data frame containing timetable data.}
 
-\item{stations}{List containing station names.}
+\item{stations}{List containing station names. Trains which do not pass
+through any of these stations will be discarded.}
+
+\item{stopping_stations}{a character vector containing the names of stations
+at which trains stop. Any trains which do not stop at any of these stations
+will be labeled as 'fast' (non-stopping) trains. Trains which do stop at
+these stations will either be labeled as 'stopping-all' or they will be
+labeled with the specific stations at which they stop.}
 }
 \value{
 A subset of the timetable which contains trains that pass through the

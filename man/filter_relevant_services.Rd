@@ -9,7 +9,8 @@ filter_relevant_services(timetable, stations)
 \arguments{
 \item{timetable}{Data frame containing timetable data.}
 
-\item{stations}{List containing station names.}
+\item{stations}{List containing station names. Trains which do not pass
+through any of these stations will be discarded.}
 }
 \value{
 A (usually) smaller timetable only containing trains which pass
