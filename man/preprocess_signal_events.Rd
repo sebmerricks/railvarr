@@ -100,7 +100,6 @@ aspect_events
 
 #----------------------------------------------------------------------------
 
-
 data(raw_centrix, asset_map)
 raw_centrix
 track_events <- preprocess_track_events(raw_centrix,
