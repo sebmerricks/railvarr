@@ -22,6 +22,7 @@ reference:
 - contents:
   - calculate_journey_specifications
   - estimate_berth_lengths
+  - estimate_dwell_times
 - title: Data
 - subtitle: Maps
 - contents:

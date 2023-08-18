@@ -61,3 +61,37 @@ estimated_berth_lengths <-
                                    id_matching,
                                    distance.miles = 5.97,
                                    speed.miles = 79.6)
+
+berth_events_groups <- berth_events_classes
+
+berth_lengths <- estimated_berth_lengths %>%
+  dplyr::select(berth, L.km) %>%
+  dplyr::rename(L = L.km) %>%
+  dplyr::mutate(L = L * 1000)
+
+station_names <- dplyr::tribble(
+  ~berth, ~station,
+  "A", "geo110",
+  "D", "geo111",
+  "F", "geo112"
+)
+
+station_berth_lengths <- dplyr::tribble(
+  ~station, ~L1, ~L2,
+  "geo110", 1050, 124,
+  "geo111", 594, 420,
+  "geo112", 621, 366
+)
+
+a_brake = 0.407696
+a_tract = 0.358101
+a_brake = 0.5
+a_tract = 0.5
+dwell_times <- estimate_dwell_times(berth_events_groups,
+                                    berth_lengths,
+                                    station_names,
+                                    a_brake,
+                                    a_tract)
+summary(dwell_times$T_dwell)
+
+
