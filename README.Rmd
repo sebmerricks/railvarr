@@ -43,10 +43,10 @@ The first step is to massge your raw data into the correct structure, as railvar
 A detailed overview of what is expected for Centrix data can be found in [wrangle_centrix()](https://sebmerricks.github.io/railvarr/reference/wrangle_centrix.html). Here is an example of a valid Centrix data frame:
 ```{r raw_centrix}
 data(raw_centrix)
-head(raw_centrix, 10)
+raw_centrix
 ```
 
 ```{r raw_timetable}
 data(timetable)
-head(timetable, 10)
+timetable
 ```
