@@ -20,37 +20,65 @@ You can install the development version of railvarr from
 devtools::install_github("sebmerricks/railvarr")
 ```
 
-## Example
+## Pipeline
 
-This is a basic example which shows you how to solve a common problem:
+<figure>
+<img src="man/figures/README-pipeline.PNG"
+alt="Diagram of the processing pipeline that railvarr provides" />
+<figcaption aria-hidden="true">Diagram of the processing pipeline that
+railvarr provides</figcaption>
+</figure>
+
+## Getting Started
+
+The first step is to massge your raw data into the correct structure, as
+railvarr provides no reading functionality.
+
+### Centrix
+
+A detailed overview of what is expected for Centrix data can be found in
+[wrangle_centrix()](https://sebmerricks.github.io/railvarr/reference/wrangle_centrix.html).
+Here is an example of a valid Centrix data frame:
 
 ``` r
-library(railvarr)
-## basic example code
+data(raw_centrix)
+head(raw_centrix, 10)
+#>      asset                  dt transition
+#> 1  TA-1 TR 2000-01-01 06:13:48   UP to DN
+#> 2  S1 HHGE 2000-01-01 06:13:49   UP to DN
+#> 3   S1 HGE 2000-01-01 06:13:49   UP to DN
+#> 4   S1 RGE 2000-01-01 06:13:49   DN to UP
+#> 5  TA-1 TR 2000-01-01 06:25:29   DN to UP
+#> 6  TA-1 TR 2000-01-01 06:25:31   UP to DN
+#> 7  TA-1 TR 2000-01-01 06:25:43   DN to UP
+#> 8  S1 HHGE 2000-01-01 06:25:48   DN to UP
+#> 9   S1 HGE 2000-01-01 06:25:48   DN to UP
+#> 10  S1 RGE 2000-01-01 06:25:48   UP to DN
 ```
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+data(timetable)
+head(timetable, 10)
+#>    train_header           dt_origin    geo     event                 wtt
+#> 1          168H 2000-01-01 12:05:00   geo1 Originate 2000-01-01 12:20:00
+#> 2          168H 2000-01-01 12:05:00  geo18    Arrive 2000-01-01 12:23:00
+#> 3          168H 2000-01-01 12:05:00  geo18    Depart 2000-01-01 12:24:00
+#> 4          168H 2000-01-01 12:05:00   geo2    Arrive 2000-01-01 12:28:00
+#> 5          168H 2000-01-01 12:05:00   geo2    Depart 2000-01-01 12:29:00
+#> 6          168H 2000-01-01 12:05:00   geo3    Arrive 2000-01-01 12:35:30
+#> 7          168H 2000-01-01 12:05:00   geo3    Depart 2000-01-01 12:36:30
+#> 8          168H 2000-01-01 12:05:00 geo104    Arrive 2000-01-01 12:39:00
+#> 9          168H 2000-01-01 12:05:00 geo104    Depart 2000-01-01 12:39:30
+#> 10         168H 2000-01-01 12:05:00   geo4    Arrive 2000-01-01 12:41:30
+#>                      t delay allow allow_perf allow_path allow_eng
+#> 1  2000-01-01 12:19:00   -60     0          0          0         0
+#> 2  2000-01-01 12:23:00     0     0          0          0         0
+#> 3  2000-01-01 12:24:00     0     0          0          0         0
+#> 4  2000-01-01 12:27:00   -60     0          0          0         0
+#> 5  2000-01-01 12:28:00   -60     0          0          0         0
+#> 6  2000-01-01 12:34:00   -90    90          0          0        90
+#> 7  2000-01-01 12:35:00   -90     0          0          0         0
+#> 8  2000-01-01 12:38:00   -60     0          0          0         0
+#> 9  2000-01-01 12:38:00   -90     0          0          0         0
+#> 10 2000-01-01 12:41:00   -30     0          0          0         0
 ```
-
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/v1/examples>.
-
-You can also embed plots, for example:
-![](man/figures/README-pipeline.PNG)
-
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
