@@ -6,6 +6,11 @@
 \usage{
 calculate_journey_specifications(timetable, stations)
 }
+\arguments{
+\item{timetable}{Timetable}
+
+\item{stations}{Stations}
+}
 \description{
 Calculate journey specifications
 }

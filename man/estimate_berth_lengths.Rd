@@ -12,6 +12,17 @@ estimate_berth_lengths(
   speed.miles
 )
 }
+\arguments{
+\item{timetable_specification}{Timetable specification}
+
+\item{berth_events_groups}{Berth events groups}
+
+\item{id_matching}{Id matching}
+
+\item{distance.miles}{Distance in miles}
+
+\item{speed.miles}{Speed in miles}
+}
 \description{
 Estimate berth lengths
 }

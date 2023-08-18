@@ -1,4 +1,6 @@
 #' Calculate journey specifications
+#' @param timetable Timetable
+#' @param stations Stations
 #' @export
 calculate_journey_specifications <- function(timetable, stations) {
   timetable_filtered <- timetable %>%
