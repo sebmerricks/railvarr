@@ -28,6 +28,9 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/berth_events_groups.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/calculate_journey_specifications.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/calculate_time_windows.html</loc>
   </url>
   <url>
@@ -35,6 +38,9 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/cluster_journeys.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/estimate_berth_lengths.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/filter_aspect_events.html</loc>
