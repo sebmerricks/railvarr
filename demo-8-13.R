@@ -49,3 +49,15 @@ berth_events_matched <- berth_events_classes %>%
 
 timetable_matched <- timetable_subset %>%
   inner_join(id_matching, by = c("train_header", "dt_origin"))
+
+spec_stations <- list("geo6", "geo110", "geo111", "geo112", "geo7")
+
+timetable_specification <-
+  railvarr::calculate_journey_specifications(timetable_subset, spec_stations)
+
+estimated_berth_lengths <-
+  railvarr::estimate_berth_lengths(timetable_specification,
+                                   berth_events_classes,
+                                   id_matching,
+                                   distance.miles = 5.97,
+                                   speed.miles = 79.6)

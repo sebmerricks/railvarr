@@ -18,6 +18,10 @@ reference:
   - find_calling_patterns
   - wrangle_timetable
   - match_ids
+- title: Dwell Times
+- contents:
+  - calculate_journey_specifications
+  - estimate_berth_lengths
 - title: Data
 - subtitle: Maps
 - contents:
