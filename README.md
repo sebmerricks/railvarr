@@ -50,8 +50,7 @@ example workflow can be found here:
 <https://github.com/r-lib/actions/tree/v1/examples>.
 
 You can also embed plots, for example:
-
-<img src="man/figures/README-pressure-1.png" width="100%" />
+![](man/figures/README-pipeline.PNG)
 
 In that case, don’t forget to commit and push the resulting figure
 files, so they display on GitHub and CRAN.
