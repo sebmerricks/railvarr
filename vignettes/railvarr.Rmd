@@ -1,0 +1,203 @@
+---
+title: "railvarr"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{railvarr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(railvarr)
+```
+
+# Introduction
+
+This vignette will guide you through the `railvarr` processing pipeline from
+start to finish. It is assumed that you are already in possession of Centrix
+and timetable data.
+
+`railvarr` provides no functionality for reading raw data. Instead, you should
+massage your data to match the description of `raw_centrix` in 
+`wrangle_centrix()` and of `timetable` in `wrangle_timetable()`.
+
+# Centrix
+
+## Overview
+
+Railway tracks are separated into distinct blocks, called berths. These berths
+are protected by signals. In this example, there is a train in berth D and the
+signals are using a [4-aspect system](https://safety.networkrail.co.uk/jargon-buster/four-aspect-signal/).
+
+```{r out.width = '100%', echo = FALSE}
+knitr::include_graphics("img/berth-diagram.png")
+```
+
+Each berth is made up of one or more track sections, which are fitted with [track circuits](https://www.networkrail.co.uk/stories/track-circuits-explained/). 
+These track circuits detect the presence or absence of trains, triggering 
+changes in the signalling system.
+
+Centrix data comes from the state transitions caused by train movements, 
+detected by track circuits.
+
+```{r out.width = '100%', echo = FALSE}
+knitr::include_graphics("img/centrix-example.png")
+```
+
+Note that there is a small offset between the train entering a berth and the 
+signal changing to red. There is also an offset between the train vacating the 
+berth and the signal changing to yellow.
+
+The Centrix observations derived from these events would be as follows:
+```{r echo = FALSE}
+dplyr::tribble(
+  ~asset, ~dt, ~transition,
+  "D TR", 0, "UP to DN",
+  "S1 DGE", 1, "UP to DN",
+  "S1 RGE", 1, "DN to UP",
+  "E TR", 40, "UP to DN",
+  "D TR", 50, "DN to UP",
+  "S1 RGE", 55, "UP to DN",
+  "S1 HGE", 55, "DN to UP"
+)
+```
+
+The track (denoted by a `" TR"` suffix on the asset ID) transitions come from 
+the track circuits. Therefore, `"UP to DN"` denotes a train entering the track,
+while `"DN to UP"` denotes a train vacating the track.
+
+Signal transitions are different, with `"UP to DN"` representing a change FROM a
+state, while `"DN to UP"` represents a change TO a state. Therefore, the second
+observation says that signal `S1` changed off of green (`DGE`) at time `1`. The
+third observation correspondingly says that signal `S1` changed to red (`RGE`) 
+at time `1`. The signal state (which corresponds to its aspect) is embedded as a
+suffix to the asset ID.
+
+## Processing
+
+`railvarr` provides a number of functions to facilitate the processing of 
+Centrix data. These functions are wrapped by the function `wrangle_centrix()`.
+See the specific function documentation for more details.
+
+`wrangle_centrix()` requires raw Centrix data as described in the previous 
+section, as well as a map of the track sections of interest. This map specifies 
+which signals, tracks, and berths make up the section. Since berths can contain
+more than one track but only one signal, the map provides a 1-1 mapping from 
+signal to berth, and a 1-many mapping from berth to track. 
+
+The map also contains a column named `event`, which represents the fact that a 
+train can both enter and vacate a track. This allows for finer control over the 
+start and end of the track section. For example, if we wanted to have access to 
+the time at which the train entered berth E, we would have to include an 
+`'enters'` event for berth E in the map.
+
+The map for the previous example of berths C to E would be as follows:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~signal, ~berth, ~track, ~event,
+  "S1", "D", "TD", "enters",
+  "S1", "D", "TD", "vacates",
+  "S2", "E", "TE", "enters"
+)
+```
+
+Note that we don't need to include berth C in the map unless we wanted access to
+the time at which the train vacated that berth. To process the 7 observations 
+derived from the example, this map is sufficient.
+
+This representation of the network map is limited, as it can only handle linear
+sections of track, travelling in a single direction. More complex track layouts 
+such as junctions are not supported.
+
+With a `raw_centrix` data frame along with the `asset_map`, you can process the
+data using:
+
+```{r}
+data(raw_centrix, asset_map)
+raw_centrix
+asset_map
+railvarr::wrangle_centrix(raw_centrix, asset_map)
+```
+
+You can access these example data sets by running
+`data(raw_centrix, asset_map)`. As you can see, the resulting data frame 
+contains the timings that we saw earlier:
+
+ * `t_enters`: time the train enters the berth
+ * `t_red_on`: time the signal changes to red
+ * `t_enters_next`: time the train enters the next berth
+ * `t_vacates`: time the train vacates the berth
+ * `t_red_off`: time the signal changes from red
+ 
+The `aspect` column gives the signal aspect that the train saw as it entered the
+berth. In our previous example, the train saw a green (`G`) aspect as it entered
+berth D.
+
+The processed data frame contains calculated durations as well as timings. These 
+durations are derived from `TSAR`, which is equal to `t_red_off - t_red_on`. 
+`TSAR` stands for 'Time Signal At Red' and represents the amount of time (in 
+seconds) that the signal spent on a red aspect. The other durations calculated 
+are:
+
+ * `T_onset`: `t_red_on - t_enters` time between train entering berth and 
+                    signal changing to red
+ * `T_clear`: `t_vacates - t_enters` time taken for train to completely clear
+                    the berth
+ * `T_offset`: `t_red_off - t_vacates` time between train vacating berth and 
+                    signal changing from red
+ * `T_travel`: `t_enters_next - t_enters` time taken for train to travel the
+                    length of the berth
+ * `T_coach`: `t_vacates - t_enters_next` time taken for train to travel its own
+                    length
+
+`wrangle_centrix()` also performs data validation, potentially resulting in the 
+loss of around 5% of data points. However, this is necessary to ensure that the 
+resulting journeys contain valid data. As part of this, the function identifies 
+individual train journeys, labeling each train with a unique ID number.
+
+## Clustering
+
+Centrix data contains no information about stopping patterns. However, they can 
+be deduced from travel times. As you can see from the following plot, there are 
+obvious differences in travel times in the berths which contain stations.
+
+```{r echo = FALSE}
+plot_clusters(dplyr::mutate(berth_events, cluster = 1))
+```
+
+These differences can be categorised using K-means clustering. This is automated
+by the function `cluster_journeys()`. This data set contains 3 distinct groups 
+of trains, which can be specified using the `centers` parameter.
+
+```{r}
+berth_events_clusters <- cluster_journeys(berth_events,
+                                          centers = 3L,
+                                          iter.max = 40L)
+plot_clusters(berth_events_clusters)
+```
+
+Because K-means clustering is a stochastic algorithm, the results of 
+`cluster_journeys()` are occasionally not what would be expected. In that case, 
+simply run the clustering again. Some trains may also be miscategorised. This 
+can be diagnosed visually using `plot_clusters()`, but it is unfortunately a 
+manual process to remedy the issue.
+
+# Timetable
+
+`wrangle_timetable()`
+
+# ID Matching
+
+Clustering is a pre-requisite of the ID matching algorithm, which matches 
+Centrix data with timetabling information. Timetabling data is necessary for 
+calculating delay, and is useful in the analysis of dwell times. It is highly 
+recommended that you manually label the clusters found by `cluster_journeys()` 
+to match the calling patterns in the timetable.
