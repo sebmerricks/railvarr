@@ -38,6 +38,7 @@
 #'
 #' @importFrom dplyr mutate filter select semi_join inner_join arrange group_by
 #'   ungroup lag if_else
+#' @importFrom tidyr pivot_wider
 #'
 #' @export
 preprocess_signal_events <- function(raw_centrix,
@@ -55,25 +56,43 @@ preprocess_signal_events <- function(raw_centrix,
       signal = stringr::str_split_i(.data$asset, " ", i = 1),
       state = stringr::str_split_i(.data$asset, " ", i = 2)
     ) %>%
-    filter(.data$transition == "DN to UP") %>%
-    select("signal", "dt", "state")
-
-  signals <- asset_map %>%
-    select("signal")
-
-  aspect_events <- signal_events %>%
-    semi_join(signals, by = "signal") %>%
-    inner_join(
-      state_map,
-      by = "state"
+    inner_join(state_map, by = "state") %>%
+    semi_join(asset_map %>% select("signal"), by = "signal") %>%
+    group_by(.data$signal, .data$dt, .data$transition) %>%
+    arrange(dt, desc(state)) %>%
+    filter(row_number() == 1) %>%
+    ungroup() %>%
+    arrange(dt) %>%
+    pivot_wider(
+      id_cols = c("signal", "dt"),
+      names_from = c("transition"),
+      values_from = c("aspect")
     ) %>%
-    arrange(.data$signal, .data$dt) %>%
-    select("signal", "dt", "aspect") %>%
-    group_by(.data$signal) %>%
-    mutate(past_aspect = lag(.data$aspect)) %>%
-    ungroup()
+    rename(aspect = 'DN to UP',
+           past_aspect = 'UP to DN') %>%
+    select("signal", "dt", "aspect", "past_aspect")
 
-  return(aspect_events)
+  return(signal_events)
+
+    #filter(.data$transition == "DN to UP") %>%
+    #select("signal", "dt", "state")
+
+  # signals <- asset_map %>%
+  #   select("signal")
+  #
+  # aspect_events <- signal_events %>%
+  #   semi_join(signals, by = "signal") %>%
+  #   inner_join(
+  #     state_map,
+  #     by = "state"
+  #   ) %>%
+  #   arrange(.data$signal, .data$dt) %>%
+  #   select("signal", "dt", "aspect") %>%
+  #   group_by(.data$signal) %>%
+  #   mutate(past_aspect = lag(.data$aspect)) %>%
+  #   ungroup()
+  #
+  # return(aspect_events)
 }
 
 #' @rdname preprocess_signal_events

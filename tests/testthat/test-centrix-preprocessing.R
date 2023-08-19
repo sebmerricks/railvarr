@@ -3,11 +3,14 @@
 test_that("preprocess_signal_events() successfully converts to signal/aspect", {
   raw_signal_events <- dplyr::tribble(
     ~asset, ~dt, ~transition,
+    "S1 RGE", lubridate::as_datetime(50), "UP to DN", # output
     "S1 HGE", lubridate::as_datetime(50), "DN to UP", # output
+    "S1 HGE", lubridate::as_datetime(100), "UP to DN", # output
     "S1 RGE", lubridate::as_datetime(100), "DN to UP", # output
-    "S1 I", lubridate::as_datetime(100), "DN to UP", # not in state_mapping
-    "S1 RGE",  lubridate::as_datetime(100), "UP to DN", # incorrect transition
+    "S1 I", lubridate::as_datetime(150), "DN to UP", # not in state_mapping
+    "S2 HGE",  lubridate::as_datetime(100), "UP to DN", # output
     "S2 RGE", lubridate::as_datetime(100), "DN to UP", # output
+    "S3 HGE", lubridate::as_datetime(100), "UP to DN", # output
     "S3 RGE", lubridate::as_datetime(100), "DN to UP", # output
     "S3 RGEK", lubridate::as_datetime(100), "DN to UP", # not in state_mapping
     "S4 RGE", lubridate::as_datetime(100), "DN to UP", # not in asset_map
@@ -30,10 +33,10 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
 
   out <- dplyr::tribble(
     ~signal, ~dt, ~aspect, ~past_aspect,
-    "S1", lubridate::as_datetime(50), factor("Y", levels = c("R", "Y")), factor(NA_character_, levels = c("R", "Y")),
+    "S1", lubridate::as_datetime(50), factor("Y", levels = c("R", "Y")), factor("R", levels = c("R", "Y")),
     "S1", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y")),
-    "S2", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor(NA_character_, levels = c("R", "Y")),
-    "S3", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor(NA_character_, levels = c("R", "Y"))
+    "S2", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y")),
+    "S3", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y"))
   )
 
   expect_equal(
