@@ -3,6 +3,7 @@ new_aspect <- function(x = character(), levels = character()) {
   vctrs::new_factor(i, levels, class = "railvarr_aspect")
 }
 
+#' @export
 aspect <- function(x = character(), levels = c("R", "Y", "YY", "G")) {
   validate_aspect(new_aspect(x, levels))
 }

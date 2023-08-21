@@ -23,6 +23,7 @@ new_tsar_event <- function(t_enters = lubridate::POSIXct(),
                   class = "railvarr_tsar")
 }
 
+#' @export
 tsar_event <- function(t_enters = lubridate::POSIXct(),
                        t_red_on = lubridate::POSIXct(),
                        t_enters_next = lubridate::POSIXct(),
@@ -36,15 +37,21 @@ tsar_event <- function(t_enters = lubridate::POSIXct(),
   new_tsar_event(t_enters, t_red_on, t_enters_next, t_vacates, t_red_off)
 }
 
+#' @export
 format.railvarr_tsar <- function(x, ..., formatter = tsar_event.default) {
   formatter(x, ...)
 }
 
+#' @export
 vec_ptype_abbr.railvarr_tsar <- function(x, ...) "tsar"
+
+#' @export
 vec_ptype_full.railvarr_tsar <- function(x, ...) "tsar_event"
 
+#' @export
 vec_ptype2.railvarr_tsar.railvarr_tsar <- function(x, y, ...) new_tsar_event()
 
+#' @export
 vec_cast.railvarr_tsar.railvarr_tsar <- function(x, to, ...) x
 
 tsar_event.default <- function(x, ...) {
@@ -62,6 +69,7 @@ tsar_event.default <- function(x, ...) {
   )
 }
 
+#' @rawNamespace S3method(pillar_shaft, railvarr_tsar)
 pillar_shaft.railvarr_tsar <- function(x, ...) {
   out <- format.railvarr_tsar(x, ..., formatter = tsar_event.pillar)
   pillar::new_pillar_shaft_simple(out)

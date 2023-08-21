@@ -11,12 +11,15 @@ new_berth <- function(id = character(),
                   class = "railvarr_berth")
 }
 
+#' @importFrom zeallot %<-%
+#' @export
 berth <- function(id = character(),
                   signal = character(),
                   state = aspect(),
                   station = character(),
                   length = numeric()) {
-  c(id, signal, state, station, length) %<-% vctrs::vec_recycle_common(id, signal, state, station, length)
+  c(id, signal, state, station, length) %<-%
+    vctrs::vec_recycle_common(id, signal, state, station, length)
   new_state <- aspect(state)
   validate_berth(new_berth(id, signal, new_state, station, length))
 }
@@ -28,17 +31,24 @@ validate_berth <- function(x) {
   x
 }
 
+#' @export
 is.berth <- function(x) inherits(x, "railvarr_berth")
 
+#' @export
 format.railvarr_berth <- function(x, ..., formatter = berth.default) {
   formatter(x, ...)
 }
 
+#' @export
 vec_ptype_abbr.railvarr_berth <- function(x, ...) "berth"
+
+#' @export
 vec_ptype_full.railvarr_berth <- function(x, ...) "berth"
 
+#' @export
 vec_ptype2.railvarr_berth.railvarr_berth <- function(x, y, ...) new_berth()
 
+#' @export
 vec_cast.railvarr_berth.railvarr_berth <- function(x, to, ...) x
 
 berth.default <- function(x, ...) {
@@ -51,6 +61,7 @@ berth.default <- function(x, ...) {
   paste0(id, " ", signal, ":", state)
 }
 
+#' @rawNamespace S3method(pillar_shaft, railvarr_berth)
 pillar_shaft.railvarr_berth <- function(x, ...) {
   out <- format.railvarr_berth(x, ..., formatter = berth.pillar)
   pillar::new_pillar_shaft_simple(out)
