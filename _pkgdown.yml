@@ -46,4 +46,9 @@ reference:
 - contents:
    - berth_events_groups
    - timetable_groups
-
+- title: Objects (experimental)
+- contents:
+   - aspect
+   - berth
+   - is.berth
+   - tsar_event
