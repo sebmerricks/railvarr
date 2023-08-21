@@ -98,8 +98,7 @@ calculate_tsars <- function(track_events, red_events, asset_map) {
       aspect = dt_past_aspect_red_on,
       t_red_on = dt_dt_red_on,
       t_red_off = dt_dt_red_off
-    ) %>%
-    mutate(TSAR = lubridate::as.duration(t_red_off - t_red_on))
+    )
 
   add_red_events <- calculate_timings %>%
     inner_join(calculated_tsars, by = c("window", "signal", "window_train_id"))
@@ -111,6 +110,7 @@ calculate_tsars <- function(track_events, red_events, asset_map) {
 
   calculate_durations <- train_ids %>%
     mutate(
+      TSAR = t_red_off - t_red_on,
       T_onset = .data$t_red_on - .data$t_enters,
       T_offset = .data$t_red_off - .data$t_vacates,
       T_travel = .data$t_enters_next - .data$t_enters,

@@ -76,6 +76,14 @@ station_names <- dplyr::tribble(
   "F", "geo112"
 )
 
+stopping_patterns <- dplyr::tribble(
+  ~group, ~station,
+  "stopping-all", "geo110",
+  "stopping-all", "geo111",
+  "stopping-all", "geo112",
+  "stopping-geo112", "geo112"
+)
+
 station_berth_lengths <- dplyr::tribble(
   ~station, ~L1, ~L2,
   "geo110", 1050, 124,
@@ -90,8 +98,10 @@ a_tract = 0.5
 dwell_times <- estimate_dwell_times(berth_events_groups,
                                     berth_lengths,
                                     station_names,
+                                    stopping_patterns,
                                     a_brake,
                                     a_tract)
+
 summary(dwell_times$T_dwell)
 
 

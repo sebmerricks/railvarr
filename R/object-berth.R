@@ -11,6 +11,14 @@ new_berth <- function(id = character(),
                   class = "railvarr_berth")
 }
 
+#' Generate a new berth object
+#'
+#' @param id Berth name
+#' @param signal Signal name
+#' @param state Signal aspect
+#' @param station Station name
+#' @param length Berth length
+#'
 #' @importFrom zeallot %<-%
 #' @export
 berth <- function(id = character(),
@@ -24,6 +32,7 @@ berth <- function(id = character(),
   validate_berth(new_berth(id, signal, new_state, station, length))
 }
 
+#' @importFrom rlang abort
 validate_berth <- function(x) {
   if (!all(stringr::str_detect(vctrs::field(x, "signal"), "^S[0-9]+$"))) {
     rlang::abort("signal ID must match '^S[0-9]+$'")
