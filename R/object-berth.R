@@ -40,6 +40,8 @@ validate_berth <- function(x) {
   x
 }
 
+#' Check whether an object is a berth
+#' @param x Object to check
 #' @export
 is.berth <- function(x) inherits(x, "railvarr_berth")
 

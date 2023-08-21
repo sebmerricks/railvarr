@@ -23,6 +23,12 @@ new_tsar_event <- function(t_enters = lubridate::POSIXct(),
                   class = "railvarr_tsar")
 }
 
+#' Create a new tsar event
+#' @param t_enters Time train enters berth
+#' @param t_red_on Time signal changes to red
+#' @param t_enters_next Time train enters next berth
+#' @param t_vacates Time train vacates berth
+#' @param t_red_off Time signal changes off red
 #' @export
 tsar_event <- function(t_enters = lubridate::POSIXct(),
                        t_red_on = lubridate::POSIXct(),
