@@ -63,6 +63,7 @@ calculate_dwell_times <- function(trains) {
 preprocess_dwell_data <- function(berth_events_groups,
                                   berth_lengths,
                                   station_names,
+                                  stopping_patterns,
                                   a_brake,
                                   a_tract,
                                   station_berth_lengths = NULL) {
@@ -113,7 +114,8 @@ preprocess_dwell_data <- function(berth_events_groups,
            v_exit = if_else(is.na(v_exit), average_speed[[1]], v_exit)) %>%
     select(signal, berth, station, train_id, group,
            T_travel, v_entry, a_brake, L1, v_exit, a_tract, L2) %>%
-    filter(!is.na(station) & grepl("stopping", group))
+    semi_join(stopping_patterns,
+              by = c("group", "station"))
 
   return(dwell_data)
 }
@@ -135,6 +137,7 @@ preprocess_dwell_data <- function(berth_events_groups,
 #'   }
 #'   This provides a 1-1 mapping from berth ID to station name. The station
 #'   names should correspond to those in the timetable
+#' @param stopping_patterns Which stations trains of each group stop at
 #' @param a_brake Braking capacity in m/s^2
 #' @param a_tract Acceleration in m/s^2
 #' @param station_berth_lengths Data frame with 3 columns:
@@ -177,12 +180,14 @@ preprocess_dwell_data <- function(berth_events_groups,
 estimate_dwell_times <- function(berth_events_groups,
                                  berth_lengths,
                                  station_names,
+                                 stopping_patterns,
                                  a_brake,
                                  a_tract,
                                  station_berth_lengths = NULL) {
   dwell_data <- preprocess_dwell_data(berth_events_groups,
                                       berth_lengths,
                                       station_names,
+                                      stopping_patterns,
                                       a_brake,
                                       a_tract,
                                       station_berth_lengths)

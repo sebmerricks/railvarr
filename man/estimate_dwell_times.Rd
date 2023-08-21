@@ -8,6 +8,7 @@ estimate_dwell_times(
   berth_events_groups,
   berth_lengths,
   station_names,
+  stopping_patterns,
   a_brake,
   a_tract,
   station_berth_lengths = NULL
@@ -29,6 +30,8 @@ estimate_dwell_times(
 }
 This provides a 1-1 mapping from berth ID to station name. The station
 names should correspond to those in the timetable}
+
+\item{stopping_patterns}{Which stations trains of each group stop at}
 
 \item{a_brake}{Braking capacity in m/s^2}
 
