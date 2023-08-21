@@ -112,10 +112,11 @@ find_calling_patterns <- function(timetable, stopping_stations) {
 
   calling_patterns <- timetable %>%
     filter(.data$event %in% c("Originate", "Arrive")) %>%
-    distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
     bind_rows(dummy_geo) %>%
+    distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
     mutate(stopping = any(.data$geo %in% unlist(stopping_stations))) %>%
     filter(!.data$stopping | .data$geo %in% unlist(stopping_stations)) %>%
+    group_by(.data$train_header, .data$dt_origin) %>%
     summarise(
       pattern = stringr::str_flatten(.data$geo, collapse = "-"),
       stopping = first(.data$stopping),
