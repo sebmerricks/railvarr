@@ -8,6 +8,7 @@ estimate_dwell_times(
   berth_events_groups,
   berth_lengths,
   station_names,
+  stopping_patterns,
   a_brake,
   a_tract,
   station_berth_lengths = NULL
