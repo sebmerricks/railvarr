@@ -105,17 +105,18 @@ filter_relevant_direction <- function(timetable, stations) {
 #'   ungroup arrange first left_join if_else
 #' @export
 #' @seealso [filter_relevant_services()] [wrangle_timetable()]
-find_calling_patterns <- function(timetable, stopping_stations) {
-  dummy_geo <- timetable %>%
+find_calling_patterns <- function(timetable_raw, stopping_stations) {
+  dummy_geo <- timetable_raw %>%
     distinct(.data$train_header, .data$dt_origin) %>%
     mutate(geo = "None", event = "Arrive")
 
-  calling_patterns <- timetable %>%
+  calling_patterns <- timetable_raw %>%
     filter(.data$event %in% c("Originate", "Arrive")) %>%
-    distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
     bind_rows(dummy_geo) %>%
+    distinct(.data$train_header, .data$dt_origin, .data$geo) %>%
     mutate(stopping = any(.data$geo %in% unlist(stopping_stations))) %>%
     filter(!.data$stopping | .data$geo %in% unlist(stopping_stations)) %>%
+    group_by(.data$train_header, .data$dt_origin) %>%
     summarise(
       pattern = stringr::str_flatten(.data$geo, collapse = "-"),
       stopping = first(.data$stopping),
@@ -148,7 +149,7 @@ find_calling_patterns <- function(timetable, stopping_stations) {
                  na.rm = TRUE) %>%
     select(-"pattern", -"stopping", -"group.x", -"group.y", -"group.z")
 
-  return(timetable %>%
+  return(timetable_raw %>%
            inner_join(groups, by = c("train_header", "dt_origin")) %>%
            ungroup())
 }
