@@ -41,7 +41,9 @@ berth <- function(id = character(),
                   length = integer(),
                   L1 = integer(),
                   L2 = integer()) {
-  c(length, L1, L2) %<-% vctrs::vec_cast(c(length, L1, L2), integer())
+  length <- as.integer(length)
+  L1 <- as.integer(L1)
+  L2 <- as.integer(L2)
   c(id, signal, state, station, length, L1, L2) %<-%
     vctrs::vec_recycle_common(id, signal, state, station, length, L1, L2)
   new_state <- aspect(state)
