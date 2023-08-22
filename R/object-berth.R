@@ -2,12 +2,23 @@ new_berth <- function(id = character(),
                       signal = character(),
                       state = aspect(),
                       station = character(),
-                      length = numeric()) {
+                      length = integer(),
+                      L1 = integer(),
+                      L2 = integer()) {
+  if (!is.integer(length))
+    rlang::abort("`length` must be an integer vector representing the berth length in metres")
+  if (!is.integer(L1))
+    rlang::abort("`L1` must be an integer vector representing the distance from the start of the berth to the station in metres")
+  if (!is.integer(L2))
+    rlang::abort("`L2` must be an integer vector representing the distance from the station to the end of the berth in metres")
+
   vctrs::new_rcrd(list(berth = id,
                        signal = signal,
                        aspect = state,
                        station = station,
-                       length = length),
+                       length = length,
+                       L1 = L1,
+                       L2 = L2),
                   class = "railvarr_berth")
 }
 
@@ -17,7 +28,9 @@ new_berth <- function(id = character(),
 #' @param signal Signal name
 #' @param state Signal aspect
 #' @param station Station name
-#' @param length Berth length
+#' @param length Berth length in metres
+#' @param L1 Distance from start of berth to station in metres
+#' @param L2 Distance from station to end of berth in metres
 #'
 #' @importFrom zeallot %<-%
 #' @export
@@ -25,11 +38,14 @@ berth <- function(id = character(),
                   signal = character(),
                   state = aspect(),
                   station = character(),
-                  length = numeric()) {
-  c(id, signal, state, station, length) %<-%
-    vctrs::vec_recycle_common(id, signal, state, station, length)
+                  length = integer(),
+                  L1 = integer(),
+                  L2 = integer()) {
+  c(length, L1, L2) %<-% vctrs::vec_cast(c(length, L1, L2), integer())
+  c(id, signal, state, station, length, L1, L2) %<-%
+    vctrs::vec_recycle_common(id, signal, state, station, length, L1, L2)
   new_state <- aspect(state)
-  validate_berth(new_berth(id, signal, new_state, station, length))
+  validate_berth(new_berth(id, signal, new_state, station, length, L1, L2))
 }
 
 #' @importFrom rlang abort
@@ -37,6 +53,7 @@ validate_berth <- function(x) {
   if (!all(stringr::str_detect(vctrs::field(x, "signal"), "^S[0-9]+$"))) {
     rlang::abort("signal ID must match '^S[0-9]+$'")
   }
+
   x
 }
 

@@ -9,7 +9,9 @@ berth(
   signal = character(),
   state = aspect(),
   station = character(),
-  length = numeric()
+  length = integer(),
+  L1 = integer(),
+  L2 = integer()
 )
 }
 \arguments{
@@ -21,7 +23,11 @@ berth(
 
 \item{station}{Station name}
 
-\item{length}{Berth length}
+\item{length}{Berth length in metres}
+
+\item{L1}{Distance from start of berth to station in metres}
+
+\item{L2}{Distance from station to end of berth in metres}
 }
 \description{
 Generate a new berth object
