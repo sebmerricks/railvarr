@@ -302,6 +302,9 @@ to remedy the issue.</p>
 <div class="section level2">
 <h2 id="timetable">Timetable<a class="anchor" aria-label="anchor" href="#timetable"></a>
 </h2>
+<div class="section level3">
+<h3 id="processing-1">Processing<a class="anchor" aria-label="anchor" href="#processing-1"></a>
+</h3>
 <p>Again, <code>railvarr</code> provides no functionality for reading
 raw data. Therefore, the first step is to make sure your data lines up
 with what <code>railvarr</code> expects. A timetable is a list of
@@ -434,15 +437,224 @@ labeled as ‘stopping-geo10’.</p>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;, group &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="specifications">Specifications<a class="anchor" aria-label="anchor" href="#specifications"></a>
+</h3>
+<p>We can use the scheduled times in the timetable to calculate how long
+it should take to travel along the track. This can be calculated using
+<code><a href="../reference/calculate_journey_specifications.html">calculate_journey_specifications()</a></code>. It can be useful to
+know expected journey times, for example to inform the ID matching
+process. The function requires a timetable and a list of stations for
+which to calculate journey specifications. Using the example dataset, we
+can use the following list of stations:</p>
+<pre><code><span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] "geo6"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [1] "geo110"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] "geo111"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[4]]</span></span>
+<span><span class="co">#&gt; [1] "geo112"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[5]]</span></span>
+<span><span class="co">#&gt; [1] "geo7"</span></span></code></pre>
+<p>This list encompasses the track section contained in the Centrix
+data. However, you can alter this however you like.</p>
+</div>
+</div>
 <div class="section level2">
 <h2 id="id-matching">ID Matching<a class="anchor" aria-label="anchor" href="#id-matching"></a>
 </h2>
-<p>Clustering is a pre-requisite of the ID matching algorithm, which
-matches Centrix data with timetabling information. Timetabling data is
-necessary for calculating delay, and is useful in the analysis of dwell
-times. It is highly recommended that you manually label the clusters
-found by <code><a href="../reference/cluster_journeys.html">cluster_journeys()</a></code> to match the calling patterns
-in the timetable.</p>
+<div class="section level3">
+<h3 id="overview-1">Overview<a class="anchor" aria-label="anchor" href="#overview-1"></a>
+</h3>
+<p>Although it is possible to analyse Centrix and timetable data in its
+current, processed form, further analysis can be performed by combining
+these two datasets. To do this, Centrix train journeys must be matched
+to timetabled journeys. This is a fuzzy process, because times in
+timetables are rounded to the nearest 15/30 seconds. In the example
+dataset, times are rounded to the nearest 30 seconds. Furthermore, some
+Centrix journeys may not be present in the timetable and vice-versa. As
+a result of these issues, the ID matching process can result in a lot of
+data loss. It is recommended that you manually check your results for
+outliers and mismatches.</p>
+<p>ID matching uses the fact that berths in the Centrix data line up
+with TIPLOCs in the timetable. In the example dataset, berth A
+corresponds to TIPLOC geo110 which represents a station. Which berths
+and TIPLOCs to make use of depends on the train’s stopping pattern. A
+train which stops at geo110 and nowhere else can only be matched at that
+station. This is because these trains will likely not include any other
+information in the timetable. The only TIPLOCs (and therefore berths)
+which are included in the timetable are usually only junctions (a
+<code>Pass</code> event) and stations at which the train stops (one
+<code>Arrive</code> and one <code>Depart</code> event). There can be
+more <code>Pass</code> events, but this is not guaranteed.</p>
+</div>
+<div class="section level3">
+<h3 id="match_mapping">
+<code>match_mapping</code><a class="anchor" aria-label="anchor" href="#match_mapping"></a>
+</h3>
+<p>You can specify where to perform the ID matching using the
+<code>match_mapping</code> parameter. This is a data frame with 5
+columns:</p>
+<ul>
+<li>
+<code>group</code>: the train group, e.g. ‘fast’ or
+‘stopping-all’</li>
+<li>
+<code>berth</code>: the berth at which to match, e.g. berth ‘A’</li>
+<li>
+<code>geo</code>: the TIPLOC at which to match, e.g. ‘geo110’</li>
+<li><code>lb</code></li>
+<li><code>ub</code></li>
+</ul>
+<p>The columns <code>lb</code> and <code>ub</code> dictate the matching
+tolerance. In order to understand how they work, you have to understand
+what the algorithm is doing on the inside and what constitutes a match.
+In the Centrix data, we have two important timings for matching:
+<code>t_enters</code> and <code>t_vacates</code>. <code>t_enters</code>
+is when the train entered the berth and <code>t_vacates</code> is when
+the train vacated the berth. In the timetable, we have two slightly
+diferent timtings: <code>t_Arrive</code> and <code>t_Depart</code>.
+<code>t_Arrive</code> is the time at which the train arrived at the
+station and <code>t_Depart</code> is the time at which the train
+departed the station. We can say that a Centrix observation and a
+timetable observation match if the train entered the berth before
+arriving at the station and if the train vacated the berth after
+departing the station:</p>
+<p><code>t_enters &lt; t_Arrive &amp; t_Depart &lt; t_vacates</code></p>
+<p>Conceptually, <code>t_enters</code> and <code>t_vacates</code> define
+a window of time in which <code>t_Arrive</code> and
+<code>t_Depart</code> must exist in order for a match to be made. Due to
+the inherent fuzziness of timetable observations, you may wish to extend
+or shrink this time window. This is done using the two previously
+mentioned columns: <code>lb</code> and <code>ub</code>. These are used
+to alter the previous expression as follows:</p>
+<p><code>t_enters + lb &lt; t_Arrive &amp; t_Depart &lt; t_vacates + ub</code></p>
+<p>Therefore, if I want to match trains in the group ‘stopping-geo110’,
+I can use the following <code>match_mapping</code>:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 5</span></span></span>
+<span><span class="co">#&gt;   group           berth geo       lb    ub</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> stopping-geo110 A     geo110     0     0</span></span></code></pre>
+<p>If I want to generate more matches, I can extend the time window by
+30 seconds in both directions using the following edited
+<code>match_mapping</code>:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 5</span></span></span>
+<span><span class="co">#&gt;   group           berth geo       lb    ub</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> stopping-geo110 A     geo110   -<span style="color: #BB0000;">30</span>    30</span></span></code></pre>
+<p>In general, it is recommended to start with restrictive time windows,
+extending them if you want more data after matching. However, because ID
+matching can result in significant data loss, you can expect to increase
+the matching tolerance by extending the matching time window using
+<code>lb</code> and <code>ub</code>.</p>
+</div>
+<div class="section level3">
+<h3 id="fast-trains">Fast trains<a class="anchor" aria-label="anchor" href="#fast-trains"></a>
+</h3>
+<p>So far, we have only considered stopping trains, which can be matched
+at stations using <code>t_Arrive</code> and <code>t_Depart</code>.
+However, fast trains do not stop by definition. Yet, they still pass
+through various TIPLOCs (usually junctions) with a <code>t_Pass</code>
+timing. In the example dataset, trains pass through a junction just
+before entering the track section. Therefore, all fast trains have a
+<code>t_Pass</code> timing that occurs prior to their entry into the
+Centrix track section. In order to make use of this, it is necessary to
+know how long it should take a train to travel from the junction to the
+first Centrix berth. This can be found by using the
+<code><a href="../reference/calculate_journey_specifications.html">calculate_journey_specifications()</a></code> function.</p>
+<p>The matching expression for fast trains is slightly different:</p>
+<p><code>t_enters + lb &lt; t_Pass &amp; t_Pass &lt; t_enters + ub</code></p>
+<p>Essentially, a match can be made if the timetable observation occurs
+in-between <code>t_enters + lb</code> and <code>t_enters + ub</code>.
+Therefore, you can use <code>lb</code> and <code>ub</code> to specify
+the exact time window in which a match can occur. In our example
+dataset, it should take no more than 4 minutes (240 seconds) to travel
+from the junction to berth A. Therefore, we can set
+<code>lb = -240</code> to say that <code>t_Pass</code> should occur no
+more than 240 seconds before <code>t_enters</code>. We can use
+<code>ub</code> to specify the end of the window. For example, if we
+want relatively high tolerance, we can set <code>ub = 60</code>. This
+says that <code>t_Pass</code> can occur up to 60 seconds after
+<code>t_enters</code>. The <code>match_mapping</code> for this would
+be:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1 × 5</span></span></span>
+<span><span class="co">#&gt;   group berth geo      lb    ub</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> fast  A     geo6   -<span style="color: #BB0000;">240</span>    60</span></span></code></pre>
+<p>Note that ‘geo6’ refers to the junction prior to the Centrix berths.
+You can play around with <code>lb</code> and <code>ub</code> until the
+results look right to you.</p>
+<p>Your <code>match_mapping</code> should include details for all of
+your train groups. For example, combining <code>fast</code> and
+<code>stoping-geo110</code> trains would result in the following
+<code>match_mapping</code>:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 5</span></span></span>
+<span><span class="co">#&gt;   group           berth geo       lb    ub</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> stopping-geo110 A     geo110   -<span style="color: #BB0000;">30</span>    30</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> fast            A     geo6    -<span style="color: #BB0000;">240</span>    60</span></span></code></pre>
+</div>
+<div class="section level3">
+<h3 id="clustering-1">Clustering<a class="anchor" aria-label="anchor" href="#clustering-1"></a>
+</h3>
+<p>Because ID matching makes use of train groups, Centrix clustering is
+a pre-requisite. See <code><a href="../reference/cluster_journeys.html">cluster_journeys()</a></code>. You should make
+sure that you label your clusters to match the calling patterns in the
+timetable.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="dwell-times">Dwell Times<a class="anchor" aria-label="anchor" href="#dwell-times"></a>
+</h2>
+<p>It can be useful to separate travel times into moving time and dwell
+time. Dwell time analysis is important because stopping at stations
+represents one of the largest sources of variability in train travel
+times (citation needed?).</p>
+<div class="section level3">
+<h3 id="berth-lengths">Berth Lengths<a class="anchor" aria-label="anchor" href="#berth-lengths"></a>
+</h3>
+<p>In order to calculate dwell times from TSAR, we need to know trains’
+velocities when entering and exiting the berths. To calculate these
+velocities, we need to know the berth lengths. It appears that berth
+length data can be unreliable, so <code>railvarr</code> provides a
+function to estimate lengths based on the expected journey time and a
+known reference length.</p>
+<p>A reference length can be obtained by, for example, measuring the
+track length on Google maps. The expected journey time can be obtained
+from the timetable specification. It is recommended to look at normal
+fast trains. The function <code><a href="../reference/estimate_berth_lengths.html">estimate_berth_lengths()</a></code> finds
+trains with a scheduled journey time equal to the expected journey time.
+It then calculates the median Centrix travel time for those trains at
+each berth. Then, for each berth, it calculates the estimated berth
+length using the median travel time and expected speed. The expected
+speed is calculated using the expected journey time and the reference
+length.</p>
+<p>In our example dataset, the track length is 5.97 miles and the
+expected journey time is 270 seconds.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">timetable_specification</span>, <span class="va">id_matching</span>, <span class="va">berth_events_groups</span><span class="op">)</span></span>
+<span><span class="fu">railvarr</span><span class="fu">::</span><span class="fu"><a href="../reference/estimate_berth_lengths.html">estimate_berth_lengths</a></span><span class="op">(</span><span class="va">timetable_specification</span>,</span>
+<span>                                 <span class="va">id_matching</span>,</span>
+<span>                                 <span class="va">berth_events_groups</span>,</span>
+<span>                                 expected_journey_time <span class="op">=</span> <span class="fl">270</span>,</span>
+<span>                                 track_length <span class="op">=</span> <span class="fl">5.97</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8 × 5</span></span></span>
+<span><span class="co">#&gt;   berth median_travel v.mph L.miles  L.km</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A              32.9  79.6   0.727 1.17 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> B              25.1  79.6   0.555 0.893</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> C              27.6  79.6   0.610 0.982</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> D              24.7  79.6   0.546 0.879</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> E              24.7  79.6   0.546 0.879</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> F              28.9  79.6   0.639 1.03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> G              28.9  79.6   0.638 1.03 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> H              24.2  79.6   0.536 0.863</span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>

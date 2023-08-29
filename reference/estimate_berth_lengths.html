@@ -53,10 +53,10 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">estimate_berth_lengths</span><span class="op">(</span></span>
 <span>  <span class="va">timetable_specification</span>,</span>
-<span>  <span class="va">berth_events_groups</span>,</span>
 <span>  <span class="va">id_matching</span>,</span>
-<span>  <span class="va">distance.miles</span>,</span>
-<span>  <span class="va">speed.miles</span></span>
+<span>  <span class="va">berth_events_groups</span>,</span>
+<span>  <span class="va">expected_journey_time</span>,</span>
+<span>  <span class="va">track_length</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -66,20 +66,21 @@
 <dd><p>Timetable specification</p></dd>
 
 
-<dt>berth_events_groups</dt>
-<dd><p>Berth events groups</p></dd>
-
-
 <dt>id_matching</dt>
 <dd><p>Id matching</p></dd>
 
 
-<dt>distance.miles</dt>
-<dd><p>Distance in miles</p></dd>
+<dt>berth_events_groups</dt>
+<dd><p>Berth events groups</p></dd>
 
 
-<dt>speed.miles</dt>
-<dd><p>Speed in miles</p></dd>
+<dt>expected_journey_time</dt>
+<dd><p>Expected journey time in seconds from start of
+Centrix track to end</p></dd>
+
+
+<dt>track_length</dt>
+<dd><p>Total length of Centrix track in miles</p></dd>
 
 </dl></div>
 

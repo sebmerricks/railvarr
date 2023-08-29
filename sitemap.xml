@@ -64,6 +64,9 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/find_calling_patterns.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/id_matching.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/index.html</loc>
   </url>
   <url>
@@ -107,6 +110,9 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/timetable_groups.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/timetable_specification.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/track_event.html</loc>
