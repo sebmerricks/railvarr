@@ -53,6 +53,10 @@ new_track_event <- function(track_id = character(),
                   class = "track_event")
 }
 
+#' Create new track event
+#' @param track_id Track ID
+#' @param datetime Datetime
+#' @param event_type Event type ('enters'/'vacates')
 #' @export
 track_event <- function(track_id = character(),
                         datetime = lubridate::POSIXct(),
@@ -123,6 +127,9 @@ new_aspect <- function(x = integer(),
   vctrs::new_factor(x, levels, class = "aspect")
 }
 
+#' Create new aspect object
+#' @param x Aspect
+#' @param levels Aspect levels
 #' @export
 aspect <- function(x = integer(),
                    levels = c("G", "YY", "Y", "R")) {
@@ -133,6 +140,8 @@ aspect <- function(x = integer(),
   new_aspect(x, levels)
 }
 
+#' Check if object is of class aspect
+#' @param x Object to check
 #' @export
 is_aspect <- function(x) inherits(x, "aspect")
 
@@ -166,6 +175,11 @@ new_signal_event <- function(signal_id = character(),
                   class = "signal_event")
 }
 
+#' Create new signal event object
+#' @param signal_id Signal ID
+#' @param datetime Datetime
+#' @param previous_aspect Previous aspect
+#' @param new_aspect New aspect
 #' @export
 signal_event <- function(signal_id = character(),
                          datetime = lubridate::POSIXct(),

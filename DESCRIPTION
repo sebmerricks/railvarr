@@ -25,7 +25,6 @@ Imports:
     broom,
     magrittr,
     pillar,
-    zeallot,
     rlang
 Suggests: 
     knitr,

@@ -46,3 +46,9 @@ reference:
 - contents:
    - berth_events_groups
    - timetable_groups
+- subtitle: Objects (Experimental)
+- contents:
+   - track_event
+   - aspect
+   - is_aspect
+   - signal_event

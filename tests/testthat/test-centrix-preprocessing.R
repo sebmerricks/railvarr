@@ -33,10 +33,10 @@ test_that("preprocess_signal_events() successfully converts to signal/aspect", {
 
   out <- dplyr::tribble(
     ~signal, ~dt, ~aspect, ~past_aspect,
-    "S1", lubridate::as_datetime(50), factor("Y", levels = c("R", "Y")), factor("R", levels = c("R", "Y")),
+    "S1", lubridate::as_datetime(50), factor("Y", levels = c("R", "Y")), factor(NA, levels = c("R", "Y")),
     "S1", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y")),
-    "S2", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y")),
-    "S3", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor("Y", levels = c("R", "Y"))
+    "S2", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor(NA, levels = c("R", "Y")),
+    "S3", lubridate::as_datetime(100), factor("R", levels = c("R", "Y")), factor(NA, levels = c("R", "Y"))
   )
 
   expect_equal(
