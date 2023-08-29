@@ -52,3 +52,18 @@
 #'   \item{group}{Group name corresponding to calling pattern}
 #' }
 "berth_events_groups"
+
+#' Example ID Matching
+#'
+#' Data frame containing matched Centrix and timetable IDs
+#'
+#' Data frame with 42 rows and 3 columns
+#'
+#' @format
+#' \describe{
+#'   \item{train_id}{Centrix train ID}
+#'   \item{train_header}{Timetable ID}
+#'   \item{dt_origin}{Datetime that train originated}
+#' }
+#'
+"id_matching"
