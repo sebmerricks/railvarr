@@ -4,23 +4,23 @@ template:
 reference:
 - title: Centrix
 - contents:
+  - wrangle_centrix
   - preprocess_signal_events
   - calculate_time_windows
   - filter_aspect_events
   - calculate_tsars
-  - wrangle_centrix
   - cluster_journeys
   - plot_clusters
 - title: Timetable
 - contents:
+  - wrangle_timetable
   - filter_relevant_services
   - filter_relevant_direction
   - find_calling_patterns
-  - wrangle_timetable
+  - calculate_journey_specifications
   - match_ids
 - title: Dwell Times
 - contents:
-  - calculate_journey_specifications
   - estimate_berth_lengths
   - estimate_dwell_times
 - title: Data

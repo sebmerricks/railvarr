@@ -29,5 +29,5 @@ time of event}
 \description{
 Uses scheduled times in the timetable to calculate how long it should take to
 travel along the track. Calculates journey times between stations specified
-in the \code{stations} parameter.
+in the \code{spec_stations} parameter.
 }
