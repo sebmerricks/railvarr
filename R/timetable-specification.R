@@ -2,7 +2,7 @@
 #'
 #' Uses scheduled times in the timetable to calculate how long it should take to
 #' travel along the track. Calculates journey times between stations specified
-#' in the `stations` parameter.
+#' in the `spec_stations` parameter.
 #'
 #' @inheritParams wrangle_timetable
 #' @param spec_stations List of stations for which to calculate journey times.
@@ -11,7 +11,7 @@
 calculate_journey_specifications <- function(timetable, spec_stations) {
   timetable_filtered <- timetable %>%
     select("train_header", "dt_origin", "geo", "event", "wtt", "group") %>%
-    filter(.data$geo %in% unlist(stations))
+    filter(.data$geo %in% unlist(spec_stations))
 
   journeys <- timetable_filtered %>%
     group_by(.data$train_header, .data$dt_origin) %>%
