@@ -218,6 +218,32 @@ that delays can be expected and aren't necessarily problematic. For further
 information on the expected structure of a raw timetable, see 
 `wrangle_timetable()`.
 
+Once your timetable is in the correct structure, you can go ahead and use the
+`wrangle_timetable()` function. This function wraps three processing functions:
+
+ * `filter_relevant_services()`
+ * `filter_relevant_direction()`
+ * `find_calling_patterns()`
+
+There are two extra parameters required for `wrangle_timetable()`: `stations`
+and `stopping_stations`.
+
+`stations` should be a list of TIPLOCs (`geo`) through which trains pass. This 
+list is used to work out which trains travel through the track section of 
+interest. For example, there could be a fork in the track, where trains can 
+travel to the left or to the right. If you want to only look at trains which 
+turn to the left, `stations` would include all the TIPLOCs of interest which 
+are situated along the left track. Any trains which do not pass through any
+of the TIPLOCs specified in `stations` will be discarded.
+
+`stopping_stations` should be a subset of `stations`, which specifies which 
+TIPLOCs trains can stop at. This is used for calculating calling patterns. 
+Therefore, any train which does not stop at any of the stations specified in 
+`stopping_stations` will be labeled as a 'fast' train. Trains which do stop at
+these stations will be labeled with 'stopping-', with the specific stations at 
+which they stop attached as suffixes. For example, if a train stops at 'geo10', 
+its calling pattern will be labeled as 'stopping-geo10'.
+
 # ID Matching
 
 Clustering is a pre-requisite of the ID matching algorithm, which matches 

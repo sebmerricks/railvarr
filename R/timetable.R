@@ -1,10 +1,10 @@
-#' Wrangle Timetable Data
+#'Wrangle Timetable Data
 #'
-#' A wrapper for timetable processing functions [filter_relevant_services()],
-#' [filter_relevant_direction()], and [find_calling_patterns()].
+#'A wrapper for timetable processing functions [filter_relevant_services()],
+#'[filter_relevant_direction()], and [find_calling_patterns()].
 #'
-#' @param timetable Data frame containing timetable data. Strict input
-#'   validation is performed. Must be a data frame with the following columns:
+#'@param timetable Data frame containing timetable data. Strict input validation
+#'  is performed. Must be a data frame with the following columns:
 #'   \itemize{
 #'     \item{`train_header`}{[character()] Train identifier}
 #'     \item{`dt_origin`}{[lubridate::POSIXct()] Datetime at which the train
@@ -19,15 +19,22 @@
 #'        time of event}
 #'     \item{`allow`}{[numeric()] Timetabled delay allowance}
 #'   }
-#' @param stations List containing station names. Trains which do not pass
-#'   through any of these stations will be discarded.
-#' @param stopping_stations a character vector containing the names of stations
-#'   at which trains stop. Any trains which do not stop at any of these stations
-#'   will be labeled as 'fast' (non-stopping) trains. Trains which do stop at
-#'   these stations will either be labeled as 'stopping-all' or they will be
-#'   labeled with the specific stations at which they stop.
-#' @return A subset of the timetable which contains trains that pass through the
-#'   specified stations in the given order. Time zone is set to "UTC".
+#'@param stations A list of TIPLOCs (`geo`) through which trains pass. This list
+#'  is used to work out which trains travel through the track section of
+#'  interest. For example, there could be a fork in the track, where trains can
+#'  travel to the left or to the right. If you want to only look at trains which
+#'  turn to the left, `stations` would include all the TIPLOCs of interest which
+#'  are situated along the left track. Any trains which do not pass through any
+#'  of the TIPLOCs specified in `stations` will be discarded.
+#'@param stopping_stations A subset of `stations`, which specifies which TIPLOCs
+#'  trains can stop at. This is used for calculating calling patterns.
+#'  Therefore, any train which does not stop at any of the stations specified in
+#'  `stopping_stations` will be labeled as a 'fast' train. Trains which do stop
+#'  at these stations will be labeled with 'stopping-', with the specific
+#'  stations at which they stop attached as suffixes. For example, if a train
+#'  stops at 'geo10', its calling pattern will be labeled as 'stopping-geo10'.
+#'@return A subset of the timetable which contains trains that pass through the
+#'  specified stations in the given order. Time zone is set to "UTC".
 #'
 #' @examples
 #' data(timetable, stations, stopping_stations)
@@ -35,9 +42,9 @@
 #' timetable_subset <- wrangle_timetable(timetable, stations, stopping_stations)
 #' timetable_subset
 #'
-#' @seealso [filter_relevant_services()] [find_calling_patterns()]
+#'@seealso [filter_relevant_services()] [find_calling_patterns()]
 #'
-#' @export
+#'@export
 wrangle_timetable <- function(timetable, stations, stopping_stations) {
   validate_timetable(timetable)
   validate_stations(stations)

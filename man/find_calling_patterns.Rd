@@ -7,8 +7,8 @@
 find_calling_patterns(timetable, stopping_stations)
 }
 \arguments{
-\item{timetable}{Data frame containing timetable data. Strict input
-validation is performed. Must be a data frame with the following columns:
+\item{timetable}{Data frame containing timetable data. Strict input validation
+is performed. Must be a data frame with the following columns:
 \itemize{
 \item{\code{train_header}}{\code{\link[=character]{character()}} Train identifier}
 \item{\code{dt_origin}}{\code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} Datetime at which the train
@@ -24,11 +24,13 @@ time of event}
 \item{\code{allow}}{\code{\link[=numeric]{numeric()}} Timetabled delay allowance}
 }}
 
-\item{stopping_stations}{a character vector containing the names of stations
-at which trains stop. Any trains which do not stop at any of these stations
-will be labeled as 'fast' (non-stopping) trains. Trains which do stop at
-these stations will either be labeled as 'stopping-all' or they will be
-labeled with the specific stations at which they stop.}
+\item{stopping_stations}{A subset of \code{stations}, which specifies which TIPLOCs
+trains can stop at. This is used for calculating calling patterns.
+Therefore, any train which does not stop at any of the stations specified in
+\code{stopping_stations} will be labeled as a 'fast' train. Trains which do stop
+at these stations will be labeled with 'stopping-', with the specific
+stations at which they stop attached as suffixes. For example, if a train
+stops at 'geo10', its calling pattern will be labeled as 'stopping-geo10'.}
 }
 \value{
 The timetable with calling patterns added.

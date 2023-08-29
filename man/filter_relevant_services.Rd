@@ -10,8 +10,8 @@ filter_relevant_services(timetable, stations)
 filter_relevant_direction(timetable, stations)
 }
 \arguments{
-\item{timetable}{Data frame containing timetable data. Strict input
-validation is performed. Must be a data frame with the following columns:
+\item{timetable}{Data frame containing timetable data. Strict input validation
+is performed. Must be a data frame with the following columns:
 \itemize{
 \item{\code{train_header}}{\code{\link[=character]{character()}} Train identifier}
 \item{\code{dt_origin}}{\code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} Datetime at which the train
@@ -27,8 +27,13 @@ time of event}
 \item{\code{allow}}{\code{\link[=numeric]{numeric()}} Timetabled delay allowance}
 }}
 
-\item{stations}{List containing station names. Trains which do not pass
-through any of these stations will be discarded.}
+\item{stations}{A list of TIPLOCs (\code{geo}) through which trains pass. This list
+is used to work out which trains travel through the track section of
+interest. For example, there could be a fork in the track, where trains can
+travel to the left or to the right. If you want to only look at trains which
+turn to the left, \code{stations} would include all the TIPLOCs of interest which
+are situated along the left track. Any trains which do not pass through any
+of the TIPLOCs specified in \code{stations} will be discarded.}
 }
 \value{
 \code{filter_relevant_services} returns a (usually) smaller timetable
