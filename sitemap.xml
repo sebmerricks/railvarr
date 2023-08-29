@@ -31,9 +31,6 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/asset_map.html</loc>
   </url>
   <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/berth.html</loc>
-  </url>
-  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/berth_events.html</loc>
   </url>
   <url>
@@ -70,7 +67,7 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/index.html</loc>
   </url>
   <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/is.berth.html</loc>
+    <loc>https://sebmerricks.github.io/railvarr/reference/is_aspect.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/match_ids.html</loc>
@@ -91,6 +88,9 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/raw_centrix.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/signal_event.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/state_mapping.html</loc>
   </url>
   <url>
@@ -109,10 +109,10 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/timetable_groups.html</loc>
   </url>
   <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/track_events.html</loc>
+    <loc>https://sebmerricks.github.io/railvarr/reference/track_event.html</loc>
   </url>
   <url>
-    <loc>https://sebmerricks.github.io/railvarr/reference/tsar_event.html</loc>
+    <loc>https://sebmerricks.github.io/railvarr/reference/track_events.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/valid_aspect_events.html</loc>

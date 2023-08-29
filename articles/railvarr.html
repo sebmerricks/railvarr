@@ -302,7 +302,137 @@ to remedy the issue.</p>
 <div class="section level2">
 <h2 id="timetable">Timetable<a class="anchor" aria-label="anchor" href="#timetable"></a>
 </h2>
-<p><code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code></p>
+<p>Again, <code>railvarr</code> provides no functionality for reading
+raw data. Therefore, the first step is to make sure your data lines up
+with what <code>railvarr</code> expects. A timetable is a list of
+events. Each event belongs to a train, denoted by its <a href="https://www.rail-record.co.uk/understanding-a-headcode/" class="external-link">headcode</a>
+(<code>train_header</code>) and the time and date at which it originated
+(<code>dt_origin</code>). An event also takes place at a geographical
+location, commonly known as a <a href="http://www.railwaycodes.org.uk/crs/crs0.shtm" class="external-link">TIPLOC</a>. In
+<code>railvarr</code> timetables, TIPLOCs live in the <code>geo</code>
+column. We then also have the type of event, which is contained in the
+<code>event</code> column. An event can have one of the following
+types:</p>
+<ul>
+<li>
+<code>Pass</code> train passes without stopping</li>
+<li>
+<code>Arrive</code> train arrives at a station</li>
+<li>
+<code>Depart</code> train departs a station</li>
+<li>
+<code>Originate</code> where the train originates from</li>
+<li>
+<code>Terminate</code> where the train will terminate</li>
+</ul>
+<p>Each event has a scheduled time (<code>wtt</code>) and an actual time
+(<code>t</code>), as well as a delay (<code>delay</code>) which is
+simply the difference between the actual and scheduled times. There is a
+further column named <code>allow</code>, which is used for any
+timetabled delay allowance. This is commonly used for ECS trains
+(headcode starts with ‘5’) as they often incur delays waiting for
+passenger services. The allowance means that delays can be expected and
+aren’t necessarily problematic. For further information on the expected
+structure of a raw timetable, see <code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code>.</p>
+<p>Once your timetable is in the correct structure, you can go ahead and
+use the <code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code> function. This function wraps
+three processing functions:</p>
+<ul>
+<li><code><a href="../reference/filter_relevant_services.html">filter_relevant_services()</a></code></li>
+<li><code><a href="../reference/filter_relevant_services.html">filter_relevant_direction()</a></code></li>
+<li><code><a href="../reference/find_calling_patterns.html">find_calling_patterns()</a></code></li>
+</ul>
+<p>There are two extra parameters required for
+<code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code>: <code>stations</code> and
+<code>stopping_stations</code>.</p>
+<p><code>stations</code> should be a list of TIPLOCs (<code>geo</code>)
+through which trains pass. This list is used to work out which trains
+travel through the track section of interest. For example, there could
+be a fork in the track, where trains can travel to the left or to the
+right. If you want to only look at trains which turn to the left,
+<code>stations</code> would include all the TIPLOCs of interest which
+are situated along the left track. Any trains which do not pass through
+any of the TIPLOCs specified in <code>stations</code> will be
+discarded.</p>
+<p><code>stopping_stations</code> should be a subset of
+<code>stations</code>, which specifies which TIPLOCs trains can stop at.
+This is used for calculating calling patterns. Therefore, any train
+which does not stop at any of the stations specified in
+<code>stopping_stations</code> will be labeled as a ‘fast’ train. Trains
+which do stop at these stations will be labeled with ‘stopping-’, with
+the specific stations at which they stop attached as suffixes. For
+example, if a train stops at ‘geo10’, its calling pattern will be
+labeled as ‘stopping-geo10’.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Load example data from railvarr</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span>, <span class="va">stopping_stations</span><span class="op">)</span></span>
+<span><span class="co"># Raw timetable: note the number of observations and that none of the TIPLOCs </span></span>
+<span><span class="co"># (`geo`) appear in the list of stations</span></span>
+<span><span class="va">timetable</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 8,958 × 11</span></span></span>
+<span><span class="co">#&gt;    train_header dt_origin           geo    event     wtt                </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo1   Originate 2000-01-01 <span style="color: #949494;">12:20:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo18  Arrive    2000-01-01 <span style="color: #949494;">12:23:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo18  Depart    2000-01-01 <span style="color: #949494;">12:24:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo2   Arrive    2000-01-01 <span style="color: #949494;">12:28:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo2   Depart    2000-01-01 <span style="color: #949494;">12:29:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo3   Arrive    2000-01-01 <span style="color: #949494;">12:35:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo3   Depart    2000-01-01 <span style="color: #949494;">12:36:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo104 Arrive    2000-01-01 <span style="color: #949494;">12:39:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo104 Depart    2000-01-01 <span style="color: #949494;">12:39:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 168H         2000-01-01 <span style="color: #949494;">12:05:00</span> geo4   Arrive    2000-01-01 <span style="color: #949494;">12:41:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 8,948 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 6 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;</span></span></span>
+<span><span class="co"># List of TIPLOCs defining the track section of interest</span></span>
+<span><span class="va">stations</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] "geo5"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [1] "geo6"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] "geo110"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[4]]</span></span>
+<span><span class="co">#&gt; [1] "geo111"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[5]]</span></span>
+<span><span class="co">#&gt; [1] "geo112"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[6]]</span></span>
+<span><span class="co">#&gt; [1] "geo7" "geo8"</span></span>
+<span><span class="co"># List of stations in the track section at which trains stop</span></span>
+<span><span class="va">stopping_stations</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] "geo110"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [1] "geo111"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] "geo112"</span></span>
+<span><span class="co"># Processed timetable: not how few observations persist, fewer than 10%; note </span></span>
+<span><span class="co"># also that all the TIPLOCs apear in stations</span></span>
+<span><span class="fu">railvarr</span><span class="fu">::</span><span class="fu"><a href="../reference/wrangle_timetable.html">wrangle_timetable</a></span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span>, <span class="va">stopping_stations</span><span class="op">)</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 792 × 12</span></span></span>
+<span><span class="co">#&gt;    train_header dt_origin           geo    event  wtt                </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Arrive 2000-01-01 <span style="color: #949494;">13:34:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Depart 2000-01-01 <span style="color: #949494;">13:35:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo6   Pass   2000-01-01 <span style="color: #949494;">13:37:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Arrive 2000-01-01 <span style="color: #949494;">13:39:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Depart 2000-01-01 <span style="color: #949494;">13:39:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Arrive 2000-01-01 <span style="color: #949494;">13:42:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Depart 2000-01-01 <span style="color: #949494;">13:42:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Arrive 2000-01-01 <span style="color: #949494;">13:44:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Depart 2000-01-01 <span style="color: #949494;">13:45:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo7   Arrive 2000-01-01 <span style="color: #949494;">13:48:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 782 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;, group &lt;chr&gt;</span></span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="id-matching">ID Matching<a class="anchor" aria-label="anchor" href="#id-matching"></a>

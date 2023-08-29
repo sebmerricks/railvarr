@@ -74,12 +74,30 @@ end.</p>
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>timetable</dt>
-<dd><p>Data frame containing timetable data.</p></dd>
+<dd><p>Data frame containing timetable data. Strict input validation
+is performed. Must be a data frame with the following columns:</p><ul><li><p><code>train_header</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Train identifier</p></li>
+<li><p><code>dt_origin</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Datetime at which the train
+originated</p></li>
+<li><p><code>geo</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Name of event location</p></li>
+<li><p><code>event</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Type of event, must only contain the
+following values: <code>Pass</code>, <code>Arrive</code>, <code>Depart</code>, <code>Originate</code>,
+<code>Terminate</code></p></li>
+<li><p><code>wtt</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Scheduled datetime of event</p></li>
+<li><p><code>t</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Actual datetime of event</p></li>
+<li><p><code>delay</code><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> Difference between actual time and scheduled
+time of event</p></li>
+<li><p><code>allow</code><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> Timetabled delay allowance</p></li>
+</ul></dd>
 
 
 <dt>stations</dt>
-<dd><p>List containing station names. Trains which do not pass
-through any of these stations will be discarded.</p></dd>
+<dd><p>A list of TIPLOCs (<code>geo</code>) through which trains pass. This list
+is used to work out which trains travel through the track section of
+interest. For example, there could be a fork in the track, where trains can
+travel to the left or to the right. If you want to only look at trains which
+turn to the left, <code>stations</code> would include all the TIPLOCs of interest which
+are situated along the left track. Any trains which do not pass through any
+of the TIPLOCs specified in <code>stations</code> will be discarded.</p></dd>
 
 </dl></div>
     <div class="section level2">

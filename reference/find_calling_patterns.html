@@ -57,15 +57,30 @@
     <div class="section level2">
     <h2 id="arguments">Arguments<a class="anchor" aria-label="anchor" href="#arguments"></a></h2>
     <dl><dt>timetable</dt>
-<dd><p>Data frame containing timetable data.</p></dd>
+<dd><p>Data frame containing timetable data. Strict input validation
+is performed. Must be a data frame with the following columns:</p><ul><li><p><code>train_header</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Train identifier</p></li>
+<li><p><code>dt_origin</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Datetime at which the train
+originated</p></li>
+<li><p><code>geo</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Name of event location</p></li>
+<li><p><code>event</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Type of event, must only contain the
+following values: <code>Pass</code>, <code>Arrive</code>, <code>Depart</code>, <code>Originate</code>,
+<code>Terminate</code></p></li>
+<li><p><code>wtt</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Scheduled datetime of event</p></li>
+<li><p><code>t</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Actual datetime of event</p></li>
+<li><p><code>delay</code><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> Difference between actual time and scheduled
+time of event</p></li>
+<li><p><code>allow</code><code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric()</a></code> Timetabled delay allowance</p></li>
+</ul></dd>
 
 
 <dt>stopping_stations</dt>
-<dd><p>a character vector containing the names of stations
-at which trains stop. Any trains which do not stop at any of these stations
-will be labeled as 'fast' (non-stopping) trains. Trains which do stop at
-these stations will either be labeled as 'stopping-all' or they will be
-labeled with the specific stations at which they stop.</p></dd>
+<dd><p>A subset of <code>stations</code>, which specifies which TIPLOCs
+trains can stop at. This is used for calculating calling patterns.
+Therefore, any train which does not stop at any of the stations specified in
+<code>stopping_stations</code> will be labeled as a 'fast' train. Trains which do stop
+at these stations will be labeled with 'stopping-', with the specific
+stations at which they stop attached as suffixes. For example, if a train
+stops at 'geo10', its calling pattern will be labeled as 'stopping-geo10'.</p></dd>
 
 </dl></div>
     <div class="section level2">
