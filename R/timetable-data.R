@@ -49,3 +49,30 @@
 #'
 #' @seealso [wrangle_timetable()] [find_calling_patterns()]
 "stopping_stations"
+
+#' Example timetable specification
+#'
+#' Timetable specification containing information about expected journey times
+#'
+#' Data frame with 281 rows and 10 columns
+#'
+#' @format
+#' \describe{
+#'   \item{train_header}{Train ID. This usually contains headcode information}
+#'   \item{dt_origin}{Date and time of service origin}
+#'   \item{wtt}{Scheduled date and time of event}
+#'   \item{group}{Group name}
+#'   \item{xi}{Start point}
+#'   \item{xk}{End point}
+#'   \item{duration}{Scheduled time between `xi` and `xk`}
+#'   \item{type}{Type of travel, `moving` or `dwell`}
+#'   \item{j}{Segment ID}
+#'   \item{T_journey}{Total journey time across track section}
+#' }
+#'
+#' @examples
+#' timetable_specification
+#'
+#' @seealso [calculate_journey_specifications()]
+#'
+"timetable_specification"
