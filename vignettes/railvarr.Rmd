@@ -192,7 +192,31 @@ manual process to remedy the issue.
 
 # Timetable
 
-`wrangle_timetable()`
+Again, `railvarr` provides no functionality for reading raw data. Therefore, the
+first step is to make sure your data lines up with what `railvarr` expects. A
+timetable is a list of events. Each event belongs to a train, denoted by its
+[headcode](https://www.rail-record.co.uk/understanding-a-headcode/) 
+(`train_header`) and the time and date at which it originated (`dt_origin`). An 
+event also takes place at a geographical location, commonly known as a 
+[TIPLOC](http://www.railwaycodes.org.uk/crs/crs0.shtm). In `railvarr` 
+timetables, TIPLOCs live in the `geo` column. We then also have the type of 
+event, which is contained in the `event` column. An event can have one of the
+following types:
+
+ * `Pass`       train passes without stopping
+ * `Arrive`     train arrives at a station
+ * `Depart`     train departs a station
+ * `Originate`  where the train originates from
+ * `Terminate`  where the train will terminate
+ 
+Each event has a scheduled time (`wtt`) and an actual time (`t`), as well as a 
+delay (`delay`) which is simply the difference between the actual and scheduled
+times. There is a further column named `allow`, which is used for any timetabled
+delay allowance. This is commonly used for ECS trains (headcode starts with '5')
+as they often incur delays waiting for passenger services. The allowance means 
+that delays can be expected and aren't necessarily problematic. For further
+information on the expected structure of a raw timetable, see 
+`wrangle_timetable()`.
 
 # ID Matching
 

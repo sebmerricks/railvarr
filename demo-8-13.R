@@ -1,3 +1,5 @@
+# Centrix ----------------------------------------------------------------------
+
 raw_centrix <- read_rds_test("raw_centrix.rds")
 asset_map <- read_rds_test("asset_map.rds")
 
@@ -22,6 +24,8 @@ berth_events_classes <- berth_events %>%
   inner_join(group_labels, by = "cluster") %>%
   select(-cluster)
 
+# Timetable --------------------------------------------------------------------
+
 raw_timetable <- read_rds_test("timetable.rds")
 
 stations <- read_rds_test_raw("stations.rds")
@@ -30,6 +34,8 @@ stopping_stations <- read_rds_test_raw("stopping_stations.rds")
 timetable_subset <- railvarr::wrangle_timetable(raw_timetable,
                                                 stations,
                                                 stopping_stations)
+
+# ID Matching ------------------------------------------------------------------
 
 match_mapping <- dplyr::tribble(
   ~group, ~berth, ~geo, ~lb, ~ub,
@@ -50,6 +56,8 @@ berth_events_matched <- berth_events_classes %>%
 timetable_matched <- timetable_subset %>%
   inner_join(id_matching, by = c("train_header", "dt_origin"))
 
+# Berth Lengths ----------------------------------------------------------------
+
 spec_stations <- list("geo6", "geo110", "geo111", "geo112", "geo7")
 
 timetable_specification <-
@@ -61,6 +69,8 @@ estimated_berth_lengths <-
                                    id_matching,
                                    distance.miles = 5.97,
                                    speed.miles = 79.6)
+
+# Dwell Times ------------------------------------------------------------------
 
 berth_events_groups <- berth_events_classes
 
