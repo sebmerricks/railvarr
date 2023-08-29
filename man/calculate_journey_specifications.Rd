@@ -4,13 +4,30 @@
 \alias{calculate_journey_specifications}
 \title{Calculate journey specifications}
 \usage{
-calculate_journey_specifications(timetable, stations)
+calculate_journey_specifications(timetable, spec_stations)
 }
 \arguments{
-\item{timetable}{Timetable}
+\item{timetable}{Data frame containing timetable data. Strict input validation
+is performed. Must be a data frame with the following columns:
+\itemize{
+\item{\code{train_header}}{\code{\link[=character]{character()}} Train identifier}
+\item{\code{dt_origin}}{\code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} Datetime at which the train
+originated}
+\item{\code{geo}}{\code{\link[=character]{character()}} Name of event location}
+\item{\code{event}}{\code{\link[=character]{character()}} Type of event, must only contain the
+following values: \code{Pass}, \code{Arrive}, \code{Depart}, \code{Originate},
+\code{Terminate}}
+\item{\code{wtt}}{\code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} Scheduled datetime of event}
+\item{\code{t}}{\code{\link[lubridate:posix_utils]{lubridate::POSIXct()}} Actual datetime of event}
+\item{\code{delay}}{\code{\link[=numeric]{numeric()}} Difference between actual time and scheduled
+time of event}
+\item{\code{allow}}{\code{\link[=numeric]{numeric()}} Timetabled delay allowance}
+}}
 
-\item{stations}{Stations}
+\item{spec_stations}{List of stations for which to calculate journey times.}
 }
 \description{
-Calculate journey specifications
+Uses scheduled times in the timetable to calculate how long it should take to
+travel along the track. Calculates journey times between stations specified
+in the \code{stations} parameter.
 }
