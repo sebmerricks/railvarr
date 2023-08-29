@@ -412,4 +412,37 @@ Because ID matching makes use of train groups, Centrix clustering is a
 pre-requisite. See `cluster_journeys()`. You should make sure that you label
 your clusters to match the calling patterns in the timetable.
 
-# Berth Lengths
+# Dwell Times
+
+It can be useful to separate travel times into moving time and dwell time. Dwell
+time analysis is important because stopping at stations represents one of the 
+largest sources of variability in train travel times (citation needed?). 
+
+## Berth Lengths
+
+In order to calculate dwell times from TSAR, we need to know trains' velocities 
+when entering and exiting the berths. To calculate these velocities, we need to
+know the berth lengths. It appears that berth length data can be unreliable, so
+`railvarr` provides a function to estimate lengths based on the expected journey 
+time and a known reference length.
+
+A reference length can be obtained by, for example, measuring the track length 
+on Google maps. The expected journey time can be obtained from the timetable
+specification. It is recommended to look at normal fast trains. The function 
+`estimate_berth_lengths()` finds trains with a scheduled journey time equal to 
+the expected journey time. It then calculates the median Centrix travel time for
+those trains at each berth. Then, for each berth, it calculates the estimated
+berth length using the median travel time and expected speed. The expected speed
+is calculated using the expected journey time and the reference length.
+
+In our example dataset, the track length is 5.97 miles and the expected journey
+time is 270 seconds. 
+
+```{r}
+data(timetable_specification, id_matching, berth_events_groups)
+railvarr::estimate_berth_lengths(timetable_specification,
+                                 id_matching,
+                                 berth_events_groups,
+                                 expected_journey_time = 270,
+                                 track_length = 5.97)
+```
