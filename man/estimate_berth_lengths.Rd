@@ -6,22 +6,23 @@
 \usage{
 estimate_berth_lengths(
   timetable_specification,
-  berth_events_groups,
   id_matching,
-  distance.miles,
-  speed.miles
+  berth_events_groups,
+  expected_journey_time,
+  track_length
 )
 }
 \arguments{
 \item{timetable_specification}{Timetable specification}
 
-\item{berth_events_groups}{Berth events groups}
-
 \item{id_matching}{Id matching}
 
-\item{distance.miles}{Distance in miles}
+\item{berth_events_groups}{Berth events groups}
 
-\item{speed.miles}{Speed in miles}
+\item{expected_journey_time}{Expected journey time in seconds from start of
+Centrix track to end}
+
+\item{track_length}{Total length of Centrix track in miles}
 }
 \description{
 Estimate berth lengths

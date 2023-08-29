@@ -64,11 +64,11 @@ timetable_matched <- timetable_subset %>%
 # Berth Lengths ----------------------------------------------------------------
 
 estimated_berth_lengths <-
-  railvarr::estimate_berth_lengths(timetable_specification,
-                                   berth_events_classes,
-                                   id_matching,
-                                   distance.miles = 5.97,
-                                   speed.miles = 79.6)
+  railvarr::estimate_berth_lengths_new(timetable_specification,
+                                     id_matching,
+                                     berth_events_classes,
+                                     expected_journey_time = 270,
+                                     track_length = 5.97)
 
 # Dwell Times ------------------------------------------------------------------
 
