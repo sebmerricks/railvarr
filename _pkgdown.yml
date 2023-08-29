@@ -42,10 +42,12 @@ reference:
    - timetable
    - stations
    - stopping_stations
+   - timetable_specification
 - subtitle: Matching
 - contents:
    - berth_events_groups
    - timetable_groups
+   - id_matching
 - subtitle: Objects (Experimental)
 - contents:
    - track_event
