@@ -244,6 +244,21 @@ these stations will be labeled with 'stopping-', with the specific stations at
 which they stop attached as suffixes. For example, if a train stops at 'geo10', 
 its calling pattern will be labeled as 'stopping-geo10'.
 
+```{r}
+# Load example data from railvarr
+data(timetable, stations, stopping_stations)
+# Raw timetable: note the number of observations and that none of the TIPLOCs 
+# (`geo`) appear in the list of stations
+timetable
+# List of TIPLOCs defining the track section of interest
+stations
+# List of stations in the track section at which trains stop
+stopping_stations
+# Processed timetable: not how few observations persist, fewer than 10%; note 
+# also that all the TIPLOCs apear in stations
+railvarr::wrangle_timetable(timetable, stations, stopping_stations)
+```
+
 # ID Matching
 
 Clustering is a pre-requisite of the ID matching algorithm, which matches 
