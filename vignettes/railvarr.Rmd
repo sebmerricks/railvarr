@@ -192,6 +192,8 @@ manual process to remedy the issue.
 
 # Timetable
 
+## Processing
+
 Again, `railvarr` provides no functionality for reading raw data. Therefore, the
 first step is to make sure your data lines up with what `railvarr` expects. A
 timetable is a list of events. Each event belongs to a train, denoted by its
@@ -259,10 +261,155 @@ stopping_stations
 railvarr::wrangle_timetable(timetable, stations, stopping_stations)
 ```
 
+## Specifications
+
+We can use the scheduled times in the timetable to calculate how long it should
+take to travel along the track. This can be calculated using 
+`calculate_journey_specifications()`. It can be useful to know expected journey
+times, for example to inform the ID matching process. The function requires a 
+timetable and a list of stations for which to calculate journey specifications.
+Using the example dataset, we can use the following list of stations:
+
+```{r echo = FALSE}
+list("geo6", "geo110", "geo111", "geo112", "geo7")
+```
+
+This list encompasses the track section contained in the Centrix data. However,
+you can alter this however you like.
+
 # ID Matching
 
-Clustering is a pre-requisite of the ID matching algorithm, which matches 
-Centrix data with timetabling information. Timetabling data is necessary for 
-calculating delay, and is useful in the analysis of dwell times. It is highly 
-recommended that you manually label the clusters found by `cluster_journeys()` 
-to match the calling patterns in the timetable.
+## Overview
+
+Although it is possible to analyse Centrix and timetable data in its current, 
+processed form, further analysis can be performed by combining these two 
+datasets. To do this, Centrix train journeys must be matched to timetabled 
+journeys. This is a fuzzy process, because times in timetables are rounded to 
+the nearest 15/30 seconds. In the example dataset, times are rounded to the 
+nearest 30 seconds. Furthermore, some Centrix journeys may not be present in the
+timetable and vice-versa. As a result of these issues, the ID matching process 
+can result in a lot of data loss. It is recommended that you manually check your
+results for outliers and mismatches.
+
+ID matching uses the fact that berths in the Centrix data line up with TIPLOCs 
+in the timetable. In the example dataset, berth A corresponds to TIPLOC geo110 
+which represents a station. Which berths and TIPLOCs to make use of depends on 
+the train's stopping pattern. A train which stops at geo110 and nowhere else can
+only be matched at that station. This is because these trains will likely not
+include any other information in the timetable. The only TIPLOCs (and therefore
+berths) which are included in the timetable are usually only junctions (a `Pass`
+event) and stations at which the train stops (one `Arrive` and one `Depart` 
+event). There can be more `Pass` events, but this is not guaranteed.
+
+## `match_mapping`
+
+You can specify where to perform the ID matching using the `match_mapping` 
+parameter. This is a data frame with 5 columns:
+
+ * `group`: the train group, e.g. 'fast' or 'stopping-all'
+ * `berth`: the berth at which to match, e.g. berth 'A'
+ * `geo`: the TIPLOC at which to match, e.g. 'geo110'
+ * `lb`
+ * `ub`
+ 
+The columns `lb` and `ub` dictate the matching tolerance. In order to understand
+how they work, you have to understand what the algorithm is doing on the inside 
+and what constitutes a match. In the Centrix data, we have two important timings
+for matching: `t_enters` and `t_vacates`. `t_enters` is when the train entered 
+the berth and `t_vacates` is when the train vacated the berth. In the timetable,
+we have two slightly diferent timtings: `t_Arrive` and `t_Depart`. `t_Arrive` is
+the time at which the train arrived at the station and `t_Depart` is the time at
+which the train departed the station. We can say that a Centrix observation and 
+a timetable observation match if the train entered the berth before arriving at
+the station and if the train vacated the berth after departing the station:
+
+`t_enters < t_Arrive & t_Depart < t_vacates`
+
+Conceptually, `t_enters` and `t_vacates` define a window of time in which 
+`t_Arrive` and `t_Depart` must exist in order for a match to be made. Due to the
+inherent fuzziness of timetable observations, you may wish to extend or shrink
+this time window. This is done using the two previously mentioned columns: `lb`
+and `ub`. These are used to alter the previous expression as follows:
+
+`t_enters + lb < t_Arrive & t_Depart < t_vacates + ub`
+
+Therefore, if I want to match trains in the group 'stopping-geo110', I can use
+the following `match_mapping`:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~group, ~berth, ~geo, ~lb, ~ub,
+  "stopping-geo110", "A", "geo110", 0, 0
+)
+```
+
+If I want to generate more matches, I can extend the time window by 30 seconds
+in both directions using the following edited `match_mapping`:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~group, ~berth, ~geo, ~lb, ~ub,
+  "stopping-geo110", "A", "geo110", -30, 30
+)
+```
+
+In general, it is recommended to start with restrictive time windows, extending 
+them if you want more data after matching. However, because ID matching can 
+result in significant data loss, you can expect to increase the matching 
+tolerance by extending the matching time window using `lb` and `ub`.
+
+## Fast trains
+
+So far, we have only considered stopping trains, which can be matched at 
+stations using `t_Arrive` and `t_Depart`. However, fast trains do not stop by
+definition. Yet, they still pass through various TIPLOCs (usually junctions) 
+with a `t_Pass` timing. In the example dataset, trains pass through a junction 
+just before entering the track section. Therefore, all fast trains have a 
+`t_Pass` timing that occurs prior to their entry into the Centrix track section.
+In order to make use of this, it is necessary to know how long it should take a
+train to travel from the junction to the first Centrix berth. This can be found
+by using the `calculate_journey_specifications()` function.
+
+The matching expression for fast trains is slightly different:
+
+`t_enters + lb < t_Pass & t_Pass < t_enters + ub`
+
+Essentially, a match can be made if the timetable observation occurs in-between
+`t_enters + lb` and `t_enters + ub`. Therefore, you can use `lb` and `ub` to 
+specify the exact time window in which a match can occur. In our example 
+dataset, it should take no more than 4 minutes (240 seconds) to travel from the 
+junction to berth A. Therefore, we can set `lb = -240` to say that `t_Pass` 
+should occur no more than 240 seconds before `t_enters`. We can use `ub` to 
+specify the end of the window. For example, if we want relatively high 
+tolerance, we can set `ub = 60`. This says that `t_Pass` can occur up to 60
+seconds after `t_enters`. The `match_mapping` for this would be:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~group, ~berth, ~geo, ~lb, ~ub,
+  "fast", "A", "geo6", -240, 60
+)
+```
+
+Note that 'geo6' refers to the junction prior to the Centrix berths. You can 
+play around with `lb` and `ub` until the results look right to you.
+
+Your `match_mapping` should include details for all of your train groups. For 
+example, combining `fast` and `stoping-geo110` trains would result in the 
+following `match_mapping`:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~group, ~berth, ~geo, ~lb, ~ub,
+  "stopping-geo110", "A", "geo110", -30, 30,
+  "fast", "A", "geo6", -240, 60
+)
+```
+
+## Clustering
+
+Because ID matching makes use of train groups, Centrix clustering is a 
+pre-requisite. See `cluster_journeys()`. You should make sure that you label
+your clusters to match the calling patterns in the timetable.
+
+# Berth Lengths
