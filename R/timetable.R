@@ -3,7 +3,22 @@
 #' A wrapper for timetable processing functions [filter_relevant_services()],
 #' [filter_relevant_direction()], and [find_calling_patterns()].
 #'
-#' @param timetable Data frame containing timetable data.
+#' @param timetable Data frame containing timetable data. Strict input
+#'   validation is performed. Must be a data frame with the following columns:
+#'   \itemize{
+#'     \item{`train_header`}{[character()] Train identifier}
+#'     \item{`dt_origin`}{[lubridate::POSIXct()] Datetime at which the train
+#'        originated}
+#'     \item{`geo`}{[character()] Name of event location}
+#'     \item{`event`}{[character()] Type of event, must only contain the
+#'        following values: `Pass`, `Arrive`, `Depart`, `Originate`,
+#'        `Terminate`}
+#'     \item{`wtt`}{[lubridate::POSIXct()] Scheduled datetime of event}
+#'     \item{`t`}{[lubridate::POSIXct()] Actual datetime of event}
+#'     \item{`delay`}{[numeric()] Difference between actual time and scheduled
+#'        time of event}
+#'     \item{`allow`}{[numeric()] Timetabled delay allowance}
+#'   }
 #' @param stations List containing station names. Trains which do not pass
 #'   through any of these stations will be discarded.
 #' @param stopping_stations a character vector containing the names of stations
