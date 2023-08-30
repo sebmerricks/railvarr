@@ -32,7 +32,7 @@ An example of a data frame containing estimated delays
 A data frame containing 66 row and 8 columns
 }
 \examples{
-delay
+delays
 
 }
 \keyword{datasets}

@@ -83,6 +83,6 @@
 #' }
 #'
 #' @examples
-#' delay
+#' delays
 #'
 "delays"
