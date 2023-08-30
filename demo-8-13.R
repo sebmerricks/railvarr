@@ -52,7 +52,10 @@ match_mapping <- dplyr::tribble(
 
 id_matching <- railvarr::match_ids(berth_events_classes,
                                    timetable_subset %>%
-                                     select(train_header, dt_origin, group, geo, event, wtt, t),
+                                     select(train_header, dt_origin, group, geo,
+                                            event, wtt, t) %>%
+                                     filter(event %in%
+                                              c("Arrive", "Depart", "Pass")),
                                    match_mapping)
 
 berth_events_matched <- berth_events_classes %>%
@@ -65,19 +68,12 @@ timetable_matched <- timetable_subset %>%
 
 estimated_berth_lengths <-
   railvarr::estimate_berth_lengths_new(timetable_specification,
-                                     id_matching,
-                                     berth_events_classes,
-                                     expected_journey_time = 270,
-                                     track_length = 5.97)
+                                       id_matching,
+                                       berth_events_classes,
+                                       expected_journey_time = 270,
+                                       track_length = 5.97)
 
 # Dwell Times ------------------------------------------------------------------
-
-berth_events_groups <- berth_events_classes
-
-berth_lengths <- estimated_berth_lengths %>%
-  dplyr::select(berth, L.km) %>%
-  dplyr::rename(L = L.km) %>%
-  dplyr::mutate(L = L * 1000)
 
 station_names <- dplyr::tribble(
   ~berth, ~station,
@@ -101,11 +97,9 @@ station_berth_lengths <- dplyr::tribble(
   "geo112", 621, 366
 )
 
-a_brake = 0.407696
-a_tract = 0.358101
-a_brake = 0.5
-a_tract = 0.5
-dwell_times <- estimate_dwell_times(berth_events_groups,
+a_brake = 0.4
+a_tract = 0.35
+dwell_times <- estimate_dwell_times(berth_events_classes,
                                     berth_lengths,
                                     station_names,
                                     stopping_patterns,
