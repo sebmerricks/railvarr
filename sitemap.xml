@@ -37,6 +37,9 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/berth_events_groups.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/berth_lengths.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/calculate_journey_specifications.html</loc>
   </url>
   <url>
@@ -47,6 +50,9 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/cluster_journeys.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/dwell_times.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/estimate_berth_lengths.html</loc>
@@ -113,6 +119,9 @@
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/timetable_specification.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/timetable_subset.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/track_event.html</loc>

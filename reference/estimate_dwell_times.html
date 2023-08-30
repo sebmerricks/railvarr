@@ -82,7 +82,9 @@ names should correspond to those in the timetable</p></dd>
 
 
 <dt>stopping_patterns</dt>
-<dd><p>Which stations trains of each group stop at</p></dd>
+<dd><p>Data frame with 2 columns:</p><ul><li><p><code>group</code>Group name</p></li>
+<li><p><code>station</code>Station name</p></li>
+</ul><p>This provides a list of stations that each group stops at.</p></dd>
 
 
 <dt>a_brake</dt>
@@ -94,7 +96,7 @@ names should correspond to those in the timetable</p></dd>
 
 
 <dt>station_berth_lengths</dt>
-<dd><p>Data frame with 3 columns:</p><ul><li><p><code>station</code>Station name</p></li>
+<dd><p>(Optional) Data frame with 3 columns:</p><ul><li><p><code>station</code>Station name</p></li>
 <li><p><code>L1</code>Distance from start of berth to station</p></li>
 <li><p><code>L2</code>Distance from station to end of berth</p></li>
 </ul><p>If station_berth_lengths is NULL (the default), then L1 and L2 will be
@@ -130,6 +132,67 @@ vacating berth</p></li>
 <li><p><code>T_dwell</code>Dwell time at station</p></li>
 </ul></div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">berth_events_groups</span>, <span class="va">berth_lengths</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Set up station mapping</span></span></span>
+<span class="r-in"><span><span class="va">station_names</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="op">~</span><span class="va">berth</span>, <span class="op">~</span><span class="va">station</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"A"</span>, <span class="st">"geo110"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"D"</span>, <span class="st">"geo111"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"F"</span>, <span class="st">"geo112"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Specify stopping patterns</span></span></span>
+<span class="r-in"><span><span class="va">stopping_patterns</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="op">~</span><span class="va">group</span>, <span class="op">~</span><span class="va">station</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"stopping-all"</span>, <span class="st">"geo110"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"stopping-all"</span>, <span class="st">"geo111"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"stopping-all"</span>, <span class="st">"geo112"</span>,</span></span>
+<span class="r-in"><span>  <span class="st">"stopping-geo112"</span>, <span class="st">"geo112"</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Define braking and accelerating capacities</span></span></span>
+<span class="r-in"><span><span class="va">a_brake</span> <span class="op">=</span> <span class="fl">0.4</span></span></span>
+<span class="r-in"><span><span class="va">a_tract</span> <span class="op">=</span> <span class="fl">0.35</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Calculate dwell times</span></span></span>
+<span class="r-in"><span><span class="va">dwell_times</span> <span class="op">&lt;-</span> <span class="fu">estimate_dwell_times</span><span class="op">(</span><span class="va">berth_events_groups</span>,</span></span>
+<span class="r-in"><span>                                    <span class="va">berth_lengths</span>,</span></span>
+<span class="r-in"><span>                                    <span class="va">station_names</span>,</span></span>
+<span class="r-in"><span>                                    <span class="va">stopping_patterns</span>,</span></span>
+<span class="r-in"><span>                                    <span class="va">a_brake</span>,</span></span>
+<span class="r-in"><span>                                    <span class="va">a_tract</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># View dwell times</span></span></span>
+<span class="r-in"><span><span class="va">dwell_times</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,581 × 21</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    signal berth station train_id group     T_travel v_entry a_brake    L1 v_exit</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> S1     A     geo110         1 stopping…     127.    23.5     0.4  585.   22.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S4     D     geo111         1 stopping…     118.    22.6     0.4  439.   22.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S6     F     geo112         1 stopping…     137.    22.4     0.4  514.   23.2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S1     A     geo110         5 stopping…     128.    23.5     0.4  585.   21.8</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> S4     D     geo111         5 stopping…     111.    21.4     0.4  439.   20.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> S6     F     geo112         5 stopping…     141.    20.6     0.4  514.   23.7</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> S1     A     geo110        11 stopping…     125.    23.5     0.4  585.   21.0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S4     D     geo111        11 stopping…     111.    19.6     0.4  439.   20.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S6     F     geo112        11 stopping…     127.    20.6     0.4  514.   21.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S1     A     geo110        13 stopping…     110.    23.5     0.4  585.   22.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1,571 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 11 more variables: a_tract &lt;dbl&gt;, L2 &lt;dbl&gt;, T_brake &lt;dbl&gt;, S_brake &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_const_one &lt;dbl&gt;, T_move_one &lt;dbl&gt;, T_tract &lt;dbl&gt;, S_tract &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_const_two &lt;dbl&gt;, T_move_two &lt;dbl&gt;, T_dwell &lt;dbl&gt;</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Summarise dwell times</span></span></span>
+<span class="r-in"><span><span class="co"># There are some negative values, which indicate outliers and potentially invalid observations</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dwell_times</span><span class="op">$</span><span class="va">T_dwell</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  -50.25   14.82   21.67   29.08   33.13  113.56 </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
