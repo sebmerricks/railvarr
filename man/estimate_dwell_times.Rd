@@ -87,7 +87,7 @@ data(berth_events_groups, berth_lengths)
 
 # Set up station mapping
 station_names <- dplyr::tribble(
-  ~berth, ~station
+  ~berth, ~station,
   "A", "geo110",
   "D", "geo111",
   "F", "geo112"
@@ -113,5 +113,12 @@ dwell_times <- estimate_dwell_times(berth_events_groups,
                                     stopping_patterns,
                                     a_brake,
                                     a_tract)
+
+# View dwell times
+dwell_times
+
+# Summarise dwell times
+# There are some negative values, which indicate outliers and potentially invalid observations
+summary(dwell_times$T_dwell)
 
 }

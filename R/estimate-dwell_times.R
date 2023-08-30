@@ -186,7 +186,7 @@ preprocess_dwell_data <- function(berth_events_groups,
 #'
 #' # Set up station mapping
 #' station_names <- dplyr::tribble(
-#'   ~berth, ~station
+#'   ~berth, ~station,
 #'   "A", "geo110",
 #'   "D", "geo111",
 #'   "F", "geo112"
@@ -212,6 +212,13 @@ preprocess_dwell_data <- function(berth_events_groups,
 #'                                     stopping_patterns,
 #'                                     a_brake,
 #'                                     a_tract)
+#'
+#' # View dwell times
+#' dwell_times
+#'
+#' # Summarise dwell times
+#' # There are some negative values, which indicate outliers and potentially invalid observations
+#' summary(dwell_times$T_dwell)
 #'
 #' @export
 #'
