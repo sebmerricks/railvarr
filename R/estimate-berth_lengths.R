@@ -26,7 +26,8 @@ estimate_berth_lengths <- function(timetable_specification,
     mutate(
       v.mph = expected_speed,
       L.miles = expected_speed * (median_travel / 3600),
-      L.km = L.miles / 0.6213712
+      L.km = L.miles / 0.6213712,
+      L = L.km * 1000
     )
 
   return(estimated_berth_lengths)

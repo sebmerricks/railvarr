@@ -137,10 +137,15 @@ preprocess_dwell_data <- function(berth_events_groups,
 #'   }
 #'   This provides a 1-1 mapping from berth ID to station name. The station
 #'   names should correspond to those in the timetable
-#' @param stopping_patterns Which stations trains of each group stop at
+#' @param stopping_patterns Data frame with 2 columns:
+#'   \itemize{
+#'     \item{`group`}{Group name}
+#'     \item{`station`}{Station name}
+#'   }
+#'   This provides a list of stations that each group stops at.
 #' @param a_brake Braking capacity in m/s^2
 #' @param a_tract Acceleration in m/s^2
-#' @param station_berth_lengths Data frame with 3 columns:
+#' @param station_berth_lengths (Optional) Data frame with 3 columns:
 #'   \itemize{
 #'     \item{`station`}{Station name}
 #'     \item{`L1`}{Distance from start of berth to station}
@@ -176,7 +181,40 @@ preprocess_dwell_data <- function(berth_events_groups,
 #'     \item{`T_dwell`}{Dwell time at station}
 #'   }
 #'
+#' @examples
+#' data(berth_events_groups, berth_lengths)
+#'
+#' # Set up station mapping
+#' station_names <- dplyr::tribble(
+#'   ~berth, ~station
+#'   "A", "geo110",
+#'   "D", "geo111",
+#'   "F", "geo112"
+#' )
+#'
+#' # Specify stopping patterns
+#' stopping_patterns <- dplyr::tribble(
+#'   ~group, ~station,
+#'   "stopping-all", "geo110",
+#'   "stopping-all", "geo111",
+#'   "stopping-all", "geo112",
+#'   "stopping-geo112", "geo112"
+#' )
+#'
+#' # Define braking and accelerating capacities
+#' a_brake = 0.4
+#' a_tract = 0.35
+#'
+#' # Calculate dwell times
+#' dwell_times <- estimate_dwell_times(berth_events_groups,
+#'                                     berth_lengths,
+#'                                     station_names,
+#'                                     stopping_patterns,
+#'                                     a_brake,
+#'                                     a_tract)
+#'
 #' @export
+#'
 estimate_dwell_times <- function(berth_events_groups,
                                  berth_lengths,
                                  station_names,

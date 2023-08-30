@@ -5,7 +5,7 @@
 \alias{berth_lengths}
 \title{Example berth lengths}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 8 rows and 5 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 8 rows and 6 columns.
 }
 \usage{
 berth_lengths
