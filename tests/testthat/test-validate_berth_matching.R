@@ -35,3 +35,7 @@ test_that("validate_berth_matching errors for incorrect inputs", {
 
   expect_error(validate_berth_matching(test_group))
 })
+
+test_that("validate_berth_matching doesn't error for correct input", {
+  expect_no_error(validate_berth_matching(railvarr::berth_events_groups))
+})
