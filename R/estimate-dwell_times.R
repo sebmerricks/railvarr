@@ -100,7 +100,7 @@ preprocess_dwell_data <- function(berth_events_groups,
 
   average_speed <- speeds %>%
     select(signal, berth, station, train_id, group,
-           v_entry, v_L, v_exit) %>%
+           t_enters, v_entry, v_L, v_exit) %>%
     filter(is.na(station)) %>%
     filter(grepl("stopping", group)) %>%
     summarise(median.v_L = median(v_L))
@@ -112,7 +112,7 @@ preprocess_dwell_data <- function(berth_events_groups,
   dwell_data <- acceleration %>%
     mutate(v_entry = if_else(is.na(v_entry), average_speed[[1]], v_entry),
            v_exit = if_else(is.na(v_exit), average_speed[[1]], v_exit)) %>%
-    select(signal, berth, station, train_id, group,
+    select(signal, berth, station, train_id, group, t_enters,
            T_travel, v_entry, a_brake, L1, v_exit, a_tract, L2) %>%
     semi_join(stopping_patterns,
               by = c("group", "station"))
@@ -154,13 +154,14 @@ preprocess_dwell_data <- function(berth_events_groups,
 #'   If station_berth_lengths is NULL (the default), then L1 and L2 will be
 #'   equal to the berth length halved
 #'
-#' @return Data frame with 21 columns:
+#' @return Data frame with 22 columns:
 #'   \itemize{
 #'     \item{`signal`}{Signal ID}
 #'     \item{`berth`}{Berth ID}
 #'     \item{`station`}{Station name}
 #'     \item{`train_id`}{Train ID}
 #'     \item{`group`}{Group name}
+#'     \item{`t_enters`}{Date and time that train enters berth}
 #'     \item{`T_travel`}{Berth travel time}
 #'     \item{`v_entry`}{Velocity at entry to berth in m/s}
 #'     \item{`a_brake`}{Braking capacity in m/s^2}

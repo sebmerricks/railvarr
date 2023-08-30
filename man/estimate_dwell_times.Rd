@@ -52,13 +52,14 @@ If station_berth_lengths is NULL (the default), then L1 and L2 will be
 equal to the berth length halved}
 }
 \value{
-Data frame with 21 columns:
+Data frame with 22 columns:
 \itemize{
 \item{\code{signal}}{Signal ID}
 \item{\code{berth}}{Berth ID}
 \item{\code{station}}{Station name}
 \item{\code{train_id}}{Train ID}
 \item{\code{group}}{Group name}
+\item{\code{t_enters}}{Date and time that train enters berth}
 \item{\code{T_travel}}{Berth travel time}
 \item{\code{v_entry}}{Velocity at entry to berth in m/s}
 \item{\code{a_brake}}{Braking capacity in m/s^2}

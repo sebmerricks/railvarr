@@ -23,7 +23,7 @@
 #'
 #' An example of a data frame containing estimated dwell times
 #'
-#' A data frame containing 1,581 rows and 21 columns
+#' A data frame containing 1,581 rows and 22 columns
 #'
 #' @format
 #' \describe{
@@ -32,6 +32,7 @@
 #'   \item{station}{Station name}
 #'   \item{train_id}{Train ID}
 #'   \item{group}{Group name}
+#'   \item{t_enters}{Date and time that train enters berth}
 #'   \item{T_travel}{Berth travel time}
 #'   \item{v_entry}{Velocity at entry to berth in m/s}
 #'   \item{a_brake}{Braking capacity in m/s^2}
