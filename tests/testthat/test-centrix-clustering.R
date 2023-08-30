@@ -21,8 +21,7 @@ test_that("cluster_centrix works", {
   skip_on_cran()
   skip_on_ci()
   skip_if(is_checking())
-  berth_events <- read_rds_test("berth_events.rds")
-  cluster_events <- cluster_journeys(berth_events,
+  cluster_events <- cluster_journeys(railvarr::berth_events,
                                      centers = 3L,
                                      iter.max = 200L) %>%
     dplyr::filter(!is.na(.data$T_travel))

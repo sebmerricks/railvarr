@@ -76,3 +76,6 @@
 #' @seealso [calculate_journey_specifications()]
 #'
 "timetable_specification"
+
+#' Example timetable subset
+"timetable_subset"
