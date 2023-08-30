@@ -23,6 +23,7 @@ reference:
 - contents:
   - estimate_berth_lengths
   - estimate_dwell_times
+  - estimate_delays
 - title: Data
 - subtitle: Maps
 - contents:

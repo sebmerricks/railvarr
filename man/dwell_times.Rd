@@ -39,7 +39,7 @@ dwell_times
 An example of a data frame containing estimated dwell times
 }
 \details{
-A data frame containing 1,581 rows and 21 columns
+A data frame containing 1,581 rows and 22 columns
 }
 \examples{
 dwell_times
