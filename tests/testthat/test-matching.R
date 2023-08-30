@@ -8,7 +8,8 @@ test_that("match_ids works", {
   )
 
   id_matching <- match_ids(railvarr::berth_events_groups,
-                           railvarr::timetable_groups,
+                           railvarr::timetable_subset %>%
+                             filter(event %in% c("Arrive", "Depart", "Pass")),
                            match_mapping)
 
   expect_equal(id_matching, railvarr::id_matching)
@@ -22,7 +23,8 @@ test_that("match_ids works", {
   )
 
   looser_matching <- match_ids(railvarr::berth_events_groups,
-                               railvarr::timetable_groups,
+                               railvarr::timetable_subset %>%
+                                 filter(event %in% c("Arrive", "Depart", "Pass")),
                                match_mapping)
 
   expect_gt(nrow(looser_matching), nrow(id_matching))

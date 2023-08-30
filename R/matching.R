@@ -58,8 +58,8 @@
 #'                    calling pattern}
 #'     \item{`geo`}{[character()] Name of TIPLOCs that trains pass through or
 #'                  stop at}
-#'     \item{`event`}{[character()] Type of timetable event, e.g., 'Arrive',
-#'                    'Depart', 'Pass'}
+#'     \item{`event`}{[character()] Type of timetable event, every element must
+#'                    be one of 'Arrive', 'Depart', or 'Pass'}
 #'     \item{`wtt`}{[lubridate::POSIXct()] Scheduled date and time of event}
 #'     \item{`t`}{[lubridate::POSIXct()] Actual date and time of event}
 #'   }
@@ -81,7 +81,7 @@
 #'
 #' @examples
 #' # Define the matching instructions
-#' data(berth_events_groups, timetable_groups)
+#' data(berth_events_groups, timetable_subset)
 #' match_mapping <- dplyr::tribble(
 #'   ~group, ~berth, ~geo, ~lb, ~ub,
 #'   # match fast trains at berth "A" and geo "geo6"
@@ -94,6 +94,10 @@
 #'   "stopping-all", "D", "geo111", 0, 0,
 #'   "stopping-all", "F", "geo112", 0, 0
 #' )
+#'
+#' timetable_groups <- dplyr::filter(timetable_subset,
+#'                                   event %in% c("Arrive", "Depart", "Pass"))
+#'
 #' matched_ids <- match_ids(berth_events_groups, timetable_groups, match_mapping)
 #' matched_ids
 #'

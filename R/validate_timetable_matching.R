@@ -12,6 +12,8 @@ validate_timetable_matching <- function(timetable) {
               msg = "column 'geo' must be of type character()")
   stop_if_not(is.character(timetable$event),
               msg = "column 'event' must be of type character()")
+  stop_if_not(all(timetable$event %in% c("Pass", "Arrive", "Depart")),
+              msg = "every element in column 'event' must be one of 'Pass', 'Arrive', or 'Depart'")
   stop_if_not(lubridate::is.POSIXct(timetable$wtt),
               msg = "column 'wtt' must be of type POSIXct()")
   stop_if_not(lubridate::is.POSIXct(timetable$t),
