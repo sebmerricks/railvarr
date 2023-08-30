@@ -446,3 +446,96 @@ railvarr::estimate_berth_lengths(timetable_specification,
                                  expected_journey_time = 270,
                                  track_length = 5.97)
 ```
+
+## Dwell Times
+
+Once in possession of berth lengths, it is possible to estimate dwell times. 
+Unless you are interested in delays, ID matching is not necessary for dwell time
+estimation. This is helpful as it does not expose dwell times to the data loss
+caused by the ID matching process. Estimating dwell times is easy using the 
+`estimate_dwell_times()` function. This function takes 6 parameters, with an 
+optional seventh.
+
+The first parameter is the grouped Centrix data obtained from the clustering 
+process. Second, you need the berth lengths. This can be from the previous
+estimation step, or from your own data.
+
+The third parameter is a 1-1 mapping from berth to station name. This is 
+attached to the Centrix data. It must be a data frame with two columns named 
+`berth` and `station`. Using our example data, we have the following mapping:
+
+```{r echo = FALSE}
+station_names <- dplyr::tribble(
+  ~berth, ~station,
+  "A", "geo110",
+  "D", "geo111",
+  "F", "geo112"
+)
+station_names
+```
+
+Fourth, we need to specify the stations at which each group stops. This is used 
+to filter the data, ensuring that dwell times are only calculated when trains 
+actually stop at a station. This parameter must be a data frame with two columns
+named `group` and `station`. For our example data, we have the following:
+
+```{r echo = FALSE}
+stopping_patterns <- dplyr::tribble(
+  ~group, ~station,
+  "stopping-all", "geo110",
+  "stopping-all", "geo111",
+  "stopping-all", "geo112",
+  "stopping-geo112", "geo112"
+)
+stopping_patterns
+```
+
+Next, we need to specify the braking and acceleration capacities. Here, we use 
+values of 0.4 m/s^2 for braking and 0.35 m/s^2 for acceleration.
+
+```{r}
+a_brake = 0.4
+a_tract = 0.35
+```
+
+Optionally, you can specify where the stations are situated in each berth. If 
+you don't include this, it will be assumed that stations are situated in the
+centre of the berth. This parameter should therefore either be ignored or should
+be a data frame with three columns: `station`, `L1`, and `L2`. `station` is 
+simply the station name, `L1` is the distance from the start of the berth to the
+station, while `L2` is the distance from the station to the end of the berth. 
+For example:
+
+```{r echo = FALSE}
+station_berth_lengths <- dplyr::tribble(
+  ~station, ~L1, ~L2,
+  "geo110", 1050, 124,
+  "geo111", 594, 420,
+  "geo112", 621, 366
+)
+station_berth_lengths
+```
+
+Once your parameters have been set up, simply call the function:
+
+```{r}
+dwell_times <- estimate_dwell_times(berth_events_groups,
+                                    berth_lengths,
+                                    station_names,
+                                    stopping_patterns,
+                                    a_brake,
+                                    a_tract)
+dwell_times
+```
+
+You can easily overview the dwell time distribution using:
+
+```{r}
+summary(dwell_times$T_dwell)
+```
+
+The fact that some of our dwell times are negative indicates that there are some
+outliers in the data, as dwell times can not be negative. It's also possible 
+that these negative values are caused by incorrect clustering. However, this 
+would likely require manual adjustments to the output of the clustering 
+algorithm.
