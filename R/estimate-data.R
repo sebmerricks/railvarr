@@ -57,3 +57,32 @@
 #' dwell_times
 #'
 "dwell_times"
+
+#' Example delays
+#'
+#' An example of a data frame containing estimated delays
+#'
+#' A data frame containing 66 row and 8 columns
+#'
+#' @format
+#' \describe{
+#'   \item{`signal`}{Signal ID}
+#'   \item{`train_id`}{Train ID (Centrix)}
+#'   \item{`station`}{Station name}
+#'   \item{`T_dwell`}{Dwell time in seconds}
+#'   \item{`arrival_delay`}{Arrival delay in seconds, can be negative if the
+#'                          train arrives early}
+#'   \item{`departure_delay`}{Departure delay in seconds, can be negative if
+#'                            the train departs early}
+#'   \item{`excess_dwell_time`}{Difference between actual dwell time and
+#'                              scheduled dwell time. Can be negative if the
+#'                              train spends less time in the station than
+#'                              scheduled}
+#'   \item{`early`}{Logical vector indicating whether the train arrived at the
+#'                  station earlier than scheduled}
+#' }
+#'
+#' @examples
+#' delay
+#'
+"delays"

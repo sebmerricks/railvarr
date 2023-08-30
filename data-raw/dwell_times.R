@@ -24,3 +24,7 @@ dwell_times <- estimate_dwell_times(railvarr::berth_events_groups,
                                     a_tract)
 
 usethis::use_data(dwell_times, overwrite = TRUE)
+
+delays <- estimate_delays(dwell_times, timetable_subset, id_matching)
+
+usethis::use_data(delays, overwrite = TRUE)
