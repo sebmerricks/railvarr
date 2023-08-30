@@ -96,8 +96,8 @@ originated</p></li>
 calling pattern</p></li>
 <li><p><code>geo</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Name of TIPLOCs that trains pass through or
 stop at</p></li>
-<li><p><code>event</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Type of timetable event, e.g., 'Arrive',
-'Depart', 'Pass'</p></li>
+<li><p><code>event</code><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character()</a></code> Type of timetable event, every element must
+be one of 'Arrive', 'Depart', or 'Pass'</p></li>
 <li><p><code>wtt</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Scheduled date and time of event</p></li>
 <li><p><code>t</code><code><a href="https://lubridate.tidyverse.org/reference/posix_utils.html" class="external-link">lubridate::POSIXct()</a></code> Actual date and time of event</p></li>
 </ul></dd>
@@ -153,7 +153,7 @@ match to be made. This window can be adjusted using <code>lb</code> and <code>ub
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Define the matching instructions</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">berth_events_groups</span>, <span class="va">timetable_groups</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">berth_events_groups</span>, <span class="va">timetable_subset</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">match_mapping</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="op">~</span><span class="va">group</span>, <span class="op">~</span><span class="va">berth</span>, <span class="op">~</span><span class="va">geo</span>, <span class="op">~</span><span class="va">lb</span>, <span class="op">~</span><span class="va">ub</span>,</span></span>
 <span class="r-in"><span>  <span class="co"># match fast trains at berth "A" and geo "geo6"</span></span></span>
@@ -166,6 +166,10 @@ match to be made. This window can be adjusted using <code>lb</code> and <code>ub
 <span class="r-in"><span>  <span class="st">"stopping-all"</span>, <span class="st">"D"</span>, <span class="st">"geo111"</span>, <span class="fl">0</span>, <span class="fl">0</span>,</span></span>
 <span class="r-in"><span>  <span class="st">"stopping-all"</span>, <span class="st">"F"</span>, <span class="st">"geo112"</span>, <span class="fl">0</span>, <span class="fl">0</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">timetable_groups</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">timetable_subset</span>,</span></span>
+<span class="r-in"><span>                                  <span class="va">event</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Arrive"</span>, <span class="st">"Depart"</span>, <span class="st">"Pass"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">matched_ids</span> <span class="op">&lt;-</span> <span class="fu">match_ids</span><span class="op">(</span><span class="va">berth_events_groups</span>, <span class="va">timetable_groups</span>, <span class="va">match_mapping</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">matched_ids</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 42 × 3</span></span>
