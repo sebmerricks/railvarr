@@ -107,11 +107,12 @@ equal to the berth length halved</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>Data frame with 21 columns:</p><ul><li><p><code>signal</code>Signal ID</p></li>
+<p>Data frame with 22 columns:</p><ul><li><p><code>signal</code>Signal ID</p></li>
 <li><p><code>berth</code>Berth ID</p></li>
 <li><p><code>station</code>Station name</p></li>
 <li><p><code>train_id</code>Train ID</p></li>
 <li><p><code>group</code>Group name</p></li>
+<li><p><code>t_enters</code>Date and time that train enters berth</p></li>
 <li><p><code>T_travel</code>Berth travel time</p></li>
 <li><p><code>v_entry</code>Velocity at entry to berth in m/s</p></li>
 <li><p><code>a_brake</code>Braking capacity in m/s^2</p></li>
@@ -167,23 +168,24 @@ vacating berth</p></li>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># View dwell times</span></span></span>
 <span class="r-in"><span><span class="va">dwell_times</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,581 × 21</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    signal berth station train_id group     T_travel v_entry a_brake    L1 v_exit</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> S1     A     geo110         1 stopping…     127.    23.5     0.4  585.   22.3</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S4     D     geo111         1 stopping…     118.    22.6     0.4  439.   22.4</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S6     F     geo112         1 stopping…     137.    22.4     0.4  514.   23.2</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S1     A     geo110         5 stopping…     128.    23.5     0.4  585.   21.8</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> S4     D     geo111         5 stopping…     111.    21.4     0.4  439.   20.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> S6     F     geo112         5 stopping…     141.    20.6     0.4  514.   23.7</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> S1     A     geo110        11 stopping…     125.    23.5     0.4  585.   21.0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S4     D     geo111        11 stopping…     111.    19.6     0.4  439.   20.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S6     F     geo112        11 stopping…     127.    20.6     0.4  514.   21.6</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S1     A     geo110        13 stopping…     110.    23.5     0.4  585.   22.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1,581 × 22</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    signal berth station train_id group      t_enters            T_travel v_entry</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> S1     A     geo110         1 stopping-… 2000-01-01 <span style="color: #949494;">13:07:11</span>     127.    23.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> S4     D     geo111         1 stopping-… 2000-01-01 <span style="color: #949494;">13:10:41</span>     118.    22.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> S6     F     geo112         1 stopping-… 2000-01-01 <span style="color: #949494;">13:13:18</span>     137.    22.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> S1     A     geo110         5 stopping-… 2000-01-01 <span style="color: #949494;">14:07:06</span>     128.    23.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> S4     D     geo111         5 stopping-… 2000-01-01 <span style="color: #949494;">14:10:40</span>     111.    21.4</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> S6     F     geo112         5 stopping-… 2000-01-01 <span style="color: #949494;">14:13:14</span>     141.    20.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> S1     A     geo110        11 stopping-… 2000-01-01 <span style="color: #949494;">14:40:42</span>     125.    23.5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> S4     D     geo111        11 stopping-… 2000-01-01 <span style="color: #949494;">14:44:20</span>     111.    19.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> S6     F     geo112        11 stopping-… 2000-01-01 <span style="color: #949494;">14:46:53</span>     127.    20.6</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> S1     A     geo110        13 stopping-… 2000-01-01 <span style="color: #949494;">15:06:54</span>     110.    23.5</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 1,571 more rows</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 11 more variables: a_tract &lt;dbl&gt;, L2 &lt;dbl&gt;, T_brake &lt;dbl&gt;, S_brake &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_const_one &lt;dbl&gt;, T_move_one &lt;dbl&gt;, T_tract &lt;dbl&gt;, S_tract &lt;dbl&gt;,</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_const_two &lt;dbl&gt;, T_move_two &lt;dbl&gt;, T_dwell &lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 14 more variables: a_brake &lt;dbl&gt;, L1 &lt;dbl&gt;, v_exit &lt;dbl&gt;, a_tract &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   L2 &lt;dbl&gt;, T_brake &lt;dbl&gt;, S_brake &lt;dbl&gt;, T_const_one &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_move_one &lt;dbl&gt;, T_tract &lt;dbl&gt;, S_tract &lt;dbl&gt;, T_const_two &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   T_move_two &lt;dbl&gt;, T_dwell &lt;dbl&gt;</span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Summarise dwell times</span></span></span>
 <span class="r-in"><span><span class="co"># There are some negative values, which indicate outliers and potentially invalid observations</span></span></span>

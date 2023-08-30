@@ -52,10 +52,16 @@
     <loc>https://sebmerricks.github.io/railvarr/reference/cluster_journeys.html</loc>
   </url>
   <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/delays.html</loc>
+  </url>
+  <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/dwell_times.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/estimate_berth_lengths.html</loc>
+  </url>
+  <url>
+    <loc>https://sebmerricks.github.io/railvarr/reference/estimate_delays.html</loc>
   </url>
   <url>
     <loc>https://sebmerricks.github.io/railvarr/reference/estimate_dwell_times.html</loc>

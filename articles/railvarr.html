@@ -655,6 +655,100 @@ expected journey time is 270 seconds.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span> G              28.9  79.6   0.638 1.03  <span style="text-decoration: underline;">1</span>027.</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span> H              24.2  79.6   0.536 0.863  863.</span></span></code></pre></div>
 </div>
+<div class="section level3">
+<h3 id="dwell-times-1">Dwell Times<a class="anchor" aria-label="anchor" href="#dwell-times-1"></a>
+</h3>
+<p>Once in possession of berth lengths, it is possible to estimate dwell
+times. Unless you are interested in delays, ID matching is not necessary
+for dwell time estimation. This is helpful as it does not expose dwell
+times to the data loss caused by the ID matching process. Estimating
+dwell times is easy using the <code><a href="../reference/estimate_dwell_times.html">estimate_dwell_times()</a></code>
+function. This function takes 6 parameters, with an optional
+seventh.</p>
+<p>The first parameter is the grouped Centrix data obtained from the
+clustering process. Second, you need the berth lengths. This can be from
+the previous estimation step, or from your own data.</p>
+<p>The third parameter is a 1-1 mapping from berth to station name. This
+is attached to the Centrix data. It must be a data frame with two
+columns named <code>berth</code> and <code>station</code>. Using our
+example data, we have the following mapping:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 2</span></span></span>
+<span><span class="co">#&gt;   berth station</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> A     geo110 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> D     geo111 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> F     geo112</span></span></code></pre>
+<p>Fourth, we need to specify the stations at which each group stops.
+This is used to filter the data, ensuring that dwell times are only
+calculated when trains actually stop at a station. This parameter must
+be a data frame with two columns named <code>group</code> and
+<code>station</code>. For our example data, we have the following:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 4 × 2</span></span></span>
+<span><span class="co">#&gt;   group           station</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> stopping-all    geo110 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> stopping-all    geo111 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> stopping-all    geo112 </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> stopping-geo112 geo112</span></span></code></pre>
+<p>Next, we need to specify the braking and acceleration capacities.
+Here, we use values of 0.4 m/s^2 for braking and 0.35 m/s^2 for
+acceleration.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">a_brake</span> <span class="op">=</span> <span class="fl">0.4</span></span>
+<span><span class="va">a_tract</span> <span class="op">=</span> <span class="fl">0.35</span></span></code></pre></div>
+<p>Optionally, you can specify where the stations are situated in each
+berth. If you don’t include this, it will be assumed that stations are
+situated in the centre of the berth. This parameter should therefore
+either be ignored or should be a data frame with three columns:
+<code>station</code>, <code>L1</code>, and <code>L2</code>.
+<code>station</code> is simply the station name, <code>L1</code> is the
+distance from the start of the berth to the station, while
+<code>L2</code> is the distance from the station to the end of the
+berth. For example:</p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 3 × 3</span></span></span>
+<span><span class="co">#&gt;   station    L1    L2</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> geo110   <span style="text-decoration: underline;">1</span>050   124</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> geo111    594   420</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> geo112    621   366</span></span></code></pre>
+<p>Once your parameters have been set up, simply call the function:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">dwell_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dwell_times.html">estimate_dwell_times</a></span><span class="op">(</span><span class="va">berth_events_groups</span>,</span>
+<span>                                    <span class="va">berth_lengths</span>,</span>
+<span>                                    <span class="va">station_names</span>,</span>
+<span>                                    <span class="va">stopping_patterns</span>,</span>
+<span>                                    <span class="va">a_brake</span>,</span>
+<span>                                    <span class="va">a_tract</span><span class="op">)</span></span>
+<span><span class="va">dwell_times</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,581 × 22</span></span></span>
+<span><span class="co">#&gt;    signal berth station train_id group      t_enters            T_travel v_entry</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> S1     A     geo110         1 stopping-… 2000-01-01 <span style="color: #949494;">13:07:11</span>     127.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> S4     D     geo111         1 stopping-… 2000-01-01 <span style="color: #949494;">13:10:41</span>     118.    22.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> S6     F     geo112         1 stopping-… 2000-01-01 <span style="color: #949494;">13:13:18</span>     137.    22.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> S1     A     geo110         5 stopping-… 2000-01-01 <span style="color: #949494;">14:07:06</span>     128.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> S4     D     geo111         5 stopping-… 2000-01-01 <span style="color: #949494;">14:10:40</span>     111.    21.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> S6     F     geo112         5 stopping-… 2000-01-01 <span style="color: #949494;">14:13:14</span>     141.    20.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> S1     A     geo110        11 stopping-… 2000-01-01 <span style="color: #949494;">14:40:42</span>     125.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> S4     D     geo111        11 stopping-… 2000-01-01 <span style="color: #949494;">14:44:20</span>     111.    19.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> S6     F     geo112        11 stopping-… 2000-01-01 <span style="color: #949494;">14:46:53</span>     127.    20.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> S1     A     geo110        13 stopping-… 2000-01-01 <span style="color: #949494;">15:06:54</span>     110.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1,571 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 14 more variables: a_brake &lt;dbl&gt;, L1 &lt;dbl&gt;, v_exit &lt;dbl&gt;, a_tract &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   L2 &lt;dbl&gt;, T_brake &lt;dbl&gt;, S_brake &lt;dbl&gt;, T_const_one &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   T_move_one &lt;dbl&gt;, T_tract &lt;dbl&gt;, S_tract &lt;dbl&gt;, T_const_two &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   T_move_two &lt;dbl&gt;, T_dwell &lt;dbl&gt;</span></span></span></code></pre></div>
+<p>You can easily overview the dwell time distribution using:</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dwell_times</span><span class="op">$</span><span class="va">T_dwell</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
+<span><span class="co">#&gt;  -50.25   14.82   21.67   29.08   33.13  113.56</span></span></code></pre></div>
+<p>The fact that some of our dwell times are negative indicates that
+there are some outliers in the data, as dwell times can not be negative.
+It’s also possible that these negative values are caused by incorrect
+clustering. However, this would likely require manual adjustments to the
+output of the clustering algorithm.</p>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
