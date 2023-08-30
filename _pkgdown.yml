@@ -47,7 +47,6 @@ reference:
 - subtitle: Matching
 - contents:
    - berth_events_groups
-   - timetable_groups
    - id_matching
 - subtitle: Dwell Times
 - contents:
