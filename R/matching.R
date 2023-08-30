@@ -110,6 +110,7 @@
 #' wider_window
 #'
 #' @export
+#'
 match_ids <- function(berth_events_groups, timetable_groups, match_mapping) {
   validate_berth_matching(berth_events_groups)
   validate_timetable_matching(timetable_groups)
