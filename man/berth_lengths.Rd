@@ -5,12 +5,26 @@
 \alias{berth_lengths}
 \title{Example berth lengths}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 8 rows and 6 columns.
+\describe{
+\item{berth}{Berth ID}
+\item{median_travel}{Median travel time for each berth}
+\item{v.mph}{Expected speed across berth}
+\item{L.miles}{Estimated berth length in miles}
+\item{L.km}{Estimated berth length in kilometres}
+\item{L}{Estimated berth length in metres}
+}
 }
 \usage{
 berth_lengths
 }
 \description{
-Example berth lengths
+An example of a data frame containing estimated berth lengths.
+}
+\details{
+A data frame containing 8 rows and 6 columns
+}
+\examples{
+berth_lengths
+
 }
 \keyword{datasets}
