@@ -108,4 +108,6 @@ dwell_times <- estimate_dwell_times(berth_events_classes,
 
 summary(dwell_times$T_dwell)
 
+delays <- estimate_delays(dwell_times, timetable_subset, id_matching)
 
+delays

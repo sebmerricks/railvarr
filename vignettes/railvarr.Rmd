@@ -566,4 +566,20 @@ algorithm.
 
 ## Delays
 
+Once you have calculated dwell times, you can combine them with the timetable
+to calculate delays. These delay calculations are very useful, but it is 
+important to remember that they are only estimates. Furthermore, due to the 
+large amount of data lost in the ID matching process, you will end up with far
+less delay data than dwell time data. Nevertheless, this can still be helpful.
+Assuming you have already run other parts of the analysis, calculating delays
+is trivial using 
+[estimate_delays()](https://sebmerricks.github.io/railvarr/reference/estimate_delays.html):
 
+```{r}
+data(dwell_times, timetable_subset, id_matching)
+dwell_times
+timetable_subset
+id_matching
+delays <- estimate_delays(dwell_times, timetable_subset, id_matching)
+delays
+```
