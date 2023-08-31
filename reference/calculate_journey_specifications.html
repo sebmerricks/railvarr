@@ -80,10 +80,76 @@ time of event</p></li>
 
 
 <dt>spec_stations</dt>
-<dd><p>List of stations for which to calculate journey times.</p></dd>
+<dd><p>List of stations for which to calculate journey times.
+Calculates the total journey time from the first station in the list to the
+last station in the list, as well as every component of that journey.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
 
+<p>Journey times as specified by <code>spec_stations</code>. A data frame with 10
+columns:</p><ul><li><p><code>train_header</code>Train identifier</p></li>
+<li><p><code>dt_origin</code>Datetime at which the train originated</p></li>
+<li><p><code>wtt</code>Scheduled datetime of event</p></li>
+<li><p><code>group</code>Calling pattern</p></li>
+<li><p><code>xi</code>Start of journey component</p></li>
+<li><p><code>xk</code>End of journey component</p></li>
+<li><p><code>duration</code>Duration of journey component</p></li>
+<li><p><code>type</code>Type of component, either <code>moving</code> for sections in-between
+stations, or <code>dwell</code> when the component represents a stop
+at a station</p></li>
+<li><p><code>j</code>Component ID</p></li>
+<li><p><code>T_journey</code>Total journey time across all components</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="wrangle_timetable.html">wrangle_timetable()</a></code> <code><a href="match_ids.html">match_ids()</a></code> <code><a href="estimate_berth_lengths.html">estimate_berth_lengths()</a></code>
+<a href="timetable_subset.html">timetable_subset</a> <a href="timetable_specification.html">timetable_specification</a></p></div>
+    </div>
+
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">timetable_subset</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">timetable_subset</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 792 × 12</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    train_header dt_origin           geo    event  wtt                </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Arrive 2000-01-01 <span style="color: #949494;">13:34:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Depart 2000-01-01 <span style="color: #949494;">13:35:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo6   Pass   2000-01-01 <span style="color: #949494;">13:37:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Arrive 2000-01-01 <span style="color: #949494;">13:39:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Depart 2000-01-01 <span style="color: #949494;">13:39:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Arrive 2000-01-01 <span style="color: #949494;">13:42:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Depart 2000-01-01 <span style="color: #949494;">13:42:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Arrive 2000-01-01 <span style="color: #949494;">13:44:30</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Depart 2000-01-01 <span style="color: #949494;">13:45:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo7   Arrive 2000-01-01 <span style="color: #949494;">13:48:00</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 782 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 7 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;, group &lt;chr&gt;</span></span>
+<span class="r-in"><span><span class="co"># spec_stations contains stations that completely encompass the Centrix track</span></span></span>
+<span class="r-in"><span><span class="va">spec_stations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"geo6"</span>, <span class="st">"geo110"</span>, <span class="st">"geo111"</span>, <span class="st">"geo112"</span>, <span class="st">"geo7"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">calculate_journey_specifications</span><span class="op">(</span><span class="va">timetable_subset</span>, <span class="va">spec_stations</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 281 × 10</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    train_header dt_origin           wtt                 group        xi    xk   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:39:00</span> stopping-all geo6  geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:39:30</span> stopping-all geo1… geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:42:00</span> stopping-all geo1… geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:42:30</span> stopping-all geo1… geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:44:30</span> stopping-all geo1… geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:45:00</span> stopping-all geo1… geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:48:00</span> stopping-all geo1… geo7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> 2000-01-01 <span style="color: #949494;">13:49:00</span> stopping-all geo7  geo7 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 109H         2000-01-01 <span style="color: #949494;">13:25:00</span> 2000-01-01 <span style="color: #949494;">14:09:00</span> stopping-all geo6  geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 109H         2000-01-01 <span style="color: #949494;">13:25:00</span> 2000-01-01 <span style="color: #949494;">14:09:30</span> stopping-all geo1… geo1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 271 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 4 more variables: duration &lt;Duration&gt;, type &lt;chr&gt;, j &lt;int&gt;, T_journey &lt;dbl&gt;</span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
