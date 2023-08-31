@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/sebmerricks/railvarr/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/sebmerricks/railvarr/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-The goal of railvarr is to ...
+The goal of `railvarr` is to ...
 
 ## Installation
 
@@ -32,11 +32,49 @@ devtools::install_github("sebmerricks/railvarr")
 
 ## Pipeline
 
+`railvarr` implements 5 key processing steps for the analysis of Centrix data.
+
+### 1. Centrix Processing
+
+In this step, the raw Centrix data are converted into human-readable berth-level
+observations. This step also removes anomalies and invalid data. Up to around 5%
+of the data can be lost. There are three inputs for this step:
+
+#### 1. Raw Centrix data
+
+Centrix observations consist of four data points:
+
+ * `asset` a character string containing the asset ID
+ * `state` a character string representing the state of the asset
+ * `dt` the date and time at which the event took place
+ * `transition` the state transition that caused the event
+
+For example, a train entering track `'TA-1'` on the 2nd January 2020 at 17:03 
+would produce the following Centrix observation:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~asset, ~state, ~dt, ~transition,
+  "TA-1", "TR", lubridate::as_datetime("2020-01-02 17:03:00"), "UP to DN"
+)
+```
+
+The state `'TR'` is simply a placeholder, because this observation relates to a
+track asset. The state component is only relevant for signal events, in which 
+case it represents the signal aspect. The transition `'UP to DN'` represents a
+train entering the track, while a transition of `'DN to UP'` would represent a 
+train exiting the track.
+
+#### 2. Asset mapping
+
+
+#### 3. State mapping
+
 ![Diagram of the processing pipeline that railvarr provides](man/figures/README-pipeline.PNG)
 
 ## Getting Started
 
-The first step is to massge your raw data into the correct structure, as railvarr provides no reading functionality.
+The first step is to massage your raw data into the correct structure, as railvarr provides no reading functionality.
 
 ### Centrix
 
