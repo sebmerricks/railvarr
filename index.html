@@ -194,7 +194,7 @@
 <h4 id="id_3-stopping-stations">3. Stopping Stations<a class="anchor" aria-label="anchor" href="#id_3-stopping-stations"></a>
 </h4>
 <p>This is a list of only those stations which are covered by the Centrix data. For example, imagine you have the following track layout:</p>
-<p><code>|---------[Station 1]----------(Centrix starts)|------------[Station 2]--------------|(Centrix ends)-----------[Station 3]--------------|</code></p>
+<p>|———<span class="math display"><em>S</em><em>t</em><em>a</em><em>t</em><em>i</em><em>o</em><em>n</em>1</span>———-(Centrix starts)|————<span class="math display"><em>S</em><em>t</em><em>a</em><em>t</em><em>i</em><em>o</em><em>n</em>2</span>————–|(Centrix ends)———–<span class="math display"><em>S</em><em>t</em><em>a</em><em>t</em><em>i</em><em>o</em><em>n</em>3</span>————–|</p>
 <p>The first list should include all three stations in order to capture all trains which use the track included in the Centrix data. However, because only Station 2 is actually included in the Centrix data, this second list should contain only this station. This second list is used to calculate calling patterns, so any trains which do not stop at any of the stations in the list will be labeled as <code>'fast'</code> trains. In the above example, trains which stop at Station 1 and Station 3, but not Station 2, would be labeled as <code>'fast'</code>.</p>
 </div>
 </div>
