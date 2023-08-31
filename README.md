@@ -132,7 +132,7 @@ You should provide a list of stations that you are interested in. For example, a
 
 This is a list of only those stations which are covered by the Centrix data. For example, imagine you have the following track layout:
 
-\|---------$$Stop 1$$----------(Centrix start)\|------------$$Stop 2$$------------\|(Centrix end)-----------$$Stop 3$$------------\|
+\|--------$$Stop 1$$--------(Centrix start)\|----------$$Stop 2$$-----------\|(Centrix end)-----------$$Stop 3$$------------\|
 
 The first list should include all three stations in order to capture all trains which use the track included in the Centrix data. However, because only Station 2 is actually included in the Centrix data, this second list should contain only this station. This second list is used to calculate calling patterns, so any trains which do not stop at any of the stations in the list will be labeled as `'fast'` trains. In the above example, trains which stop at Station 1 and Station 3, but not Station 2, would be labeled as `'fast'`.
 
