@@ -68,7 +68,8 @@ and all sub-components, e.g. 'T_travel' and 'T_offset'.
 \description{
 This function takes in raw Centrix data as an input and returns a fully
 processed data frame containing berth-level signal and track observations,
-along with calculations of TSAR and all its subcomponents.
+along with calculations of TSAR and all its subcomponents. For more
+information, see the \href{https://sebmerricks.github.io/railvarr/articles/railvarr.html#centrix}{Get Started page}
 }
 \details{
 This function wraps:

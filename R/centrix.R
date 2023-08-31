@@ -2,7 +2,9 @@
 #'
 #' This function takes in raw Centrix data as an input and returns a fully
 #' processed data frame containing berth-level signal and track observations,
-#' along with calculations of TSAR and all its subcomponents.
+#' along with calculations of TSAR and all its subcomponents. For more
+#' information, see the [Get Started
+#' page](https://sebmerricks.github.io/railvarr/articles/railvarr.html#centrix)
 #'
 #' This function wraps:
 #' \itemize{
