@@ -125,7 +125,7 @@ sections of track, travelling in a single direction. More complex track layouts
 such as junctions are not supported.
 
 With a `raw_centrix` data frame along with the `asset_map`, you can process the
-data using:
+data using the following code (using `railvarr`'s example data):
 
 ```{r}
 data(raw_centrix, asset_map)
