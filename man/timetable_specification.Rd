@@ -32,6 +32,7 @@ timetable_specification
 
 }
 \seealso{
-\code{\link[=calculate_journey_specifications]{calculate_journey_specifications()}}
+\code{\link[=calculate_journey_specifications]{calculate_journey_specifications()}} \code{\link[=match_ids]{match_ids()}}
+\code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}}
 }
 \keyword{datasets}

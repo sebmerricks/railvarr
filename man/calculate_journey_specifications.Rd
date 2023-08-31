@@ -60,5 +60,6 @@ calculate_journey_specifications(timetable_subset, spec_stations)
 
 }
 \seealso{
-\code{\link[=wrangle_timetable]{wrangle_timetable()}} \link{timetable_specification}
+\code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=match_ids]{match_ids()}} \code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}}
+\link{timetable_subset} \link{timetable_specification}
 }

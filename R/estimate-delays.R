@@ -64,7 +64,7 @@
 #' delays
 #'
 #' @seealso [estimate_dwell_times()] [wrangle_timetable()] [match_ids()]
-#'   [dwell_times]
+#'   [delays]
 #'
 #' @importFrom dplyr filter inner_join select mutate
 #' @importFrom tidyr pivot_wider

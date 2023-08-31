@@ -124,5 +124,6 @@ summary(dwell_times$T_dwell)
 
 }
 \seealso{
-\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}} \link{dwell_times}
+\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}} \code{\link[=estimate_delays]{estimate_delays()}}
+\link{dwell_times}
 }

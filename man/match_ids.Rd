@@ -50,46 +50,45 @@ matching window}
 }}
 }
 \value{
-Data frame containing a 1-1 mapping between Centrix IDs and Timetable
-IDs.
+Data frame containing a 1-1 mapping between Centrix IDs and
+Timetable IDs.
 }
 \description{
 \code{match_ids()} matches Centrix observations with timetabling
 information. The result is a data set that contains a 1-1 mapping between
 Centrix IDs and timetable IDs. This is a necessary step because the timings
-used in the timetable are rounded to the nearest 30 seconds, resulting in much
-lower granularity. There may also be other inaccuracies with the timetable.
-This function results in data loss, the amount of which depends on how
-accurate the matching needs to be.
+used in the timetable are rounded to the nearest 30 seconds, resulting in
+much lower granularity. There may also be other inaccuracies with the
+timetable. This function results in data loss, the amount of which depends
+on how accurate the matching needs to be.
 }
 \details{
 There are two methods for matching Centrix data with timetable data.
-The method that is used depends on whether the train is a fast train (does not
-stop at any stations present in the Centrix data set) or not.
+The method that is used depends on whether the train is a fast train (does
+not stop at any stations present in the Centrix data set) or not.
 
-For fast trains, matches must be found at the nearest TIPLOC, e.g., a junction
-preceding the Centrix track section. For these trains, the \code{lb} and \code{ub}
-columns of the \code{match_mapping} control what is considered a match. If the
-train passed through the junction at time \code{t_Pass} and the train entered the
-Centrix track at time \code{t_enters}, a match is made if: \cr
-\code{t_Pass > t_enters + lb & t_Pass < t_enters + ub} \cr
-I.e., a match is made if the train passed through the junction less than \code{lb}
-seconds before \code{t_enters} (assuming that \code{lb} is negative) and if the train
-passed through the junction earlier than \code{t_enters + ub}. Thus, \code{lb} and \code{ub}
-define a time window based on \code{t_enters} in which \code{t_Pass} must occur for a
-match to be made.
+For fast trains, matches must be found at the nearest TIPLOC, e.g., a
+junction preceding the Centrix track section. For these trains, the \code{lb}
+and \code{ub} columns of the \code{match_mapping} control what is considered a match.
+If the train passed through the junction at time \code{t_Pass} and the train
+entered the Centrix track at time \code{t_enters}, a match is made if: \cr
+\code{t_Pass > t_enters + lb & t_Pass < t_enters + ub} \cr I.e., a match is made
+if the train passed through the junction less than \code{lb} seconds before
+\code{t_enters} (assuming that \code{lb} is negative) and if the train passed through
+the junction earlier than \code{t_enters + ub}. Thus, \code{lb} and \code{ub} define a
+time window based on \code{t_enters} in which \code{t_Pass} must occur for a match to
+be made.
 
 For stopping trains, matches can be made at stations, which is conceptually
 simpler. Let's take the example of a train which stops at only one station.
 The train enters the station's berth at time \code{t_enters}, arrives at the
 station at \code{t_Arrive}, departs the station at \code{t_Depart} and vacates the
-berth at time \code{t_vacates}. A match is made if: \cr
-\code{t_enters + lb < t_Arrive & t_Depart < t_vacates + ub} \cr
-I.e., a match is made if the train arrives at the station
-after it enters the berth and if the train departs the station before it
-vacates the berth. Similar to the fast trains, \code{t_enters} and \code{t_vacates}
-define a time window in which \code{t_Arrive} and \code{t_Depart} must occur for a
-match to be made. This window can be adjusted using \code{lb} and \code{ub}.
+berth at time \code{t_vacates}. A match is made if: \cr \code{t_enters + lb < t_Arrive & t_Depart < t_vacates + ub} \cr I.e., a match is made if the
+train arrives at the station after it enters the berth and if the train
+departs the station before it vacates the berth. Similar to the fast
+trains, \code{t_enters} and \code{t_vacates} define a time window in which \code{t_Arrive}
+and \code{t_Depart} must occur for a match to be made. This window can be
+adjusted using \code{lb} and \code{ub}.
 }
 \examples{
 # Define the matching instructions
@@ -127,5 +126,7 @@ wider_window
 
 }
 \seealso{
-\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}} \link{id_matching}
+\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}}
+\code{\link[=calculate_journey_specifications]{calculate_journey_specifications()}} \code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}}
+\link{id_matching}
 }

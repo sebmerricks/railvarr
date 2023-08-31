@@ -76,5 +76,6 @@ plot_clusters(berth_events_clusters)
 }
 \seealso{
 \code{\link[stats:kmeans]{stats::kmeans()}} \code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=plot_clusters]{plot_clusters()}}
+\code{\link[=match_ids]{match_ids()}} \code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}} \code{\link[=estimate_dwell_times]{estimate_dwell_times()}}
 \link{berth_events} \link{berth_events_groups}
 }

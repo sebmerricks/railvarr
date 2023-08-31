@@ -76,7 +76,8 @@
 #' @examples
 #' timetable_specification
 #'
-#' @seealso [calculate_journey_specifications()]
+#' @seealso [calculate_journey_specifications()] [match_ids()]
+#'   [estimate_berth_lengths()]
 #'
 "timetable_specification"
 
@@ -85,9 +86,10 @@
 #' Processed timetable containing only relevant services travelling in one
 #' direction specified by the Centrix data
 #'
-#' @seealso [wrangle_timetable()]
+#' @seealso [wrangle_timetable()] [calculate_journey_specifications()]
+#'   [match_ids()]
 #'
-#' Data frame with 792 rows and 12 columns
+#'   Data frame with 792 rows and 12 columns
 #'
 #' @format
 #' \describe{

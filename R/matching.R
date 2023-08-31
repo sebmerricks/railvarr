@@ -1,40 +1,40 @@
 #' Match Centrix and Timetable IDs
 #'
 #' @description `match_ids()` matches Centrix observations with timetabling
-#' information. The result is a data set that contains a 1-1 mapping between
-#' Centrix IDs and timetable IDs. This is a necessary step because the timings
-#' used in the timetable are rounded to the nearest 30 seconds, resulting in much
-#' lower granularity. There may also be other inaccuracies with the timetable.
-#' This function results in data loss, the amount of which depends on how
-#' accurate the matching needs to be.
+#'   information. The result is a data set that contains a 1-1 mapping between
+#'   Centrix IDs and timetable IDs. This is a necessary step because the timings
+#'   used in the timetable are rounded to the nearest 30 seconds, resulting in
+#'   much lower granularity. There may also be other inaccuracies with the
+#'   timetable. This function results in data loss, the amount of which depends
+#'   on how accurate the matching needs to be.
 #'
 #' @details There are two methods for matching Centrix data with timetable data.
-#' The method that is used depends on whether the train is a fast train (does not
-#' stop at any stations present in the Centrix data set) or not.
+#'   The method that is used depends on whether the train is a fast train (does
+#'   not stop at any stations present in the Centrix data set) or not.
 #'
-#' For fast trains, matches must be found at the nearest TIPLOC, e.g., a junction
-#' preceding the Centrix track section. For these trains, the `lb` and `ub`
-#' columns of the `match_mapping` control what is considered a match. If the
-#' train passed through the junction at time `t_Pass` and the train entered the
-#' Centrix track at time `t_enters`, a match is made if: \cr
-#' `t_Pass > t_enters + lb & t_Pass < t_enters + ub` \cr
-#' I.e., a match is made if the train passed through the junction less than `lb`
-#' seconds before `t_enters` (assuming that `lb` is negative) and if the train
-#' passed through the junction earlier than `t_enters + ub`. Thus, `lb` and `ub`
-#' define a time window based on `t_enters` in which `t_Pass` must occur for a
-#' match to be made.
+#'   For fast trains, matches must be found at the nearest TIPLOC, e.g., a
+#'   junction preceding the Centrix track section. For these trains, the `lb`
+#'   and `ub` columns of the `match_mapping` control what is considered a match.
+#'   If the train passed through the junction at time `t_Pass` and the train
+#'   entered the Centrix track at time `t_enters`, a match is made if: \cr
+#'   `t_Pass > t_enters + lb & t_Pass < t_enters + ub` \cr I.e., a match is made
+#'   if the train passed through the junction less than `lb` seconds before
+#'   `t_enters` (assuming that `lb` is negative) and if the train passed through
+#'   the junction earlier than `t_enters + ub`. Thus, `lb` and `ub` define a
+#'   time window based on `t_enters` in which `t_Pass` must occur for a match to
+#'   be made.
 #'
-#' For stopping trains, matches can be made at stations, which is conceptually
-#' simpler. Let's take the example of a train which stops at only one station.
-#' The train enters the station's berth at time `t_enters`, arrives at the
-#' station at `t_Arrive`, departs the station at `t_Depart` and vacates the
-#' berth at time `t_vacates`. A match is made if: \cr
-#' `t_enters + lb < t_Arrive & t_Depart < t_vacates + ub` \cr
-#' I.e., a match is made if the train arrives at the station
-#' after it enters the berth and if the train departs the station before it
-#' vacates the berth. Similar to the fast trains, `t_enters` and `t_vacates`
-#' define a time window in which `t_Arrive` and `t_Depart` must occur for a
-#' match to be made. This window can be adjusted using `lb` and `ub`.
+#'   For stopping trains, matches can be made at stations, which is conceptually
+#'   simpler. Let's take the example of a train which stops at only one station.
+#'   The train enters the station's berth at time `t_enters`, arrives at the
+#'   station at `t_Arrive`, departs the station at `t_Depart` and vacates the
+#'   berth at time `t_vacates`. A match is made if: \cr `t_enters + lb <
+#'   t_Arrive & t_Depart < t_vacates + ub` \cr I.e., a match is made if the
+#'   train arrives at the station after it enters the berth and if the train
+#'   departs the station before it vacates the berth. Similar to the fast
+#'   trains, `t_enters` and `t_vacates` define a time window in which `t_Arrive`
+#'   and `t_Depart` must occur for a match to be made. This window can be
+#'   adjusted using `lb` and `ub`.
 #'
 #' @param berth_events_groups Data frame containing berth-level Centrix data.
 #'   The structure is expected to conform to the following:
@@ -76,8 +76,8 @@
 #'                 matching window}
 #'   }
 #'
-#' @returns Data frame containing a 1-1 mapping between Centrix IDs and Timetable
-#'   IDs.
+#' @returns Data frame containing a 1-1 mapping between Centrix IDs and
+#'   Timetable IDs.
 #'
 #' @examples
 #' # Define the matching instructions
@@ -113,7 +113,9 @@
 #' # More matches are found with the wider window
 #' wider_window
 #'
-#' @seealso [cluster_journeys()] [wrangle_timetable()] [id_matching]
+#' @seealso [cluster_journeys()] [wrangle_timetable()]
+#'   [calculate_journey_specifications()] [estimate_berth_lengths()]
+#'   [id_matching]
 #'
 #' @export
 #'

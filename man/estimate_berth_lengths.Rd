@@ -55,5 +55,5 @@ estimate_berth_lengths(timetable_specification,
 }
 \seealso{
 \code{\link[=calculate_journey_specifications]{calculate_journey_specifications()}} \code{\link[=match_ids]{match_ids()}}
-\code{\link[=cluster_journeys]{cluster_journeys()}} \link{berth_lengths}
+\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=estimate_dwell_times]{estimate_dwell_times()}} \link{berth_lengths}
 }

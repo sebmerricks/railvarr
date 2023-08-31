@@ -34,7 +34,7 @@
 #'                        track_length = 5.97)
 #'
 #' @seealso [calculate_journey_specifications()] [match_ids()]
-#'   [cluster_journeys()] [berth_lengths]
+#'   [cluster_journeys()] [estimate_dwell_times()] [berth_lengths]
 #'
 #' @importFrom dplyr filter inner_join select group_by summarise mutate
 #'

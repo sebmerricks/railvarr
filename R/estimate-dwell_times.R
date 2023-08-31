@@ -221,7 +221,8 @@ preprocess_dwell_data <- function(berth_events_groups,
 #' # There are some negative values, which indicate outliers and potentially invalid observations
 #' summary(dwell_times$T_dwell)
 #'
-#' @seealso [cluster_journeys()] [estimate_berth_lengths()] [dwell_times]
+#' @seealso [cluster_journeys()] [estimate_berth_lengths()] [estimate_delays()]
+#'   [dwell_times]
 #'
 #' @export
 #'

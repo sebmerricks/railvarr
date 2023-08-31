@@ -33,7 +33,8 @@
 #' spec_stations <- list("geo6", "geo110", "geo111", "geo112", "geo7")
 #' calculate_journey_specifications(timetable_subset, spec_stations)
 #'
-#' @seealso [wrangle_timetable()] [timetable_specification]
+#' @seealso [wrangle_timetable()] [match_ids()] [estimate_berth_lengths()]
+#'   [timetable_subset] [timetable_specification]
 #'
 #' @export
 calculate_journey_specifications <- function(timetable, spec_stations) {

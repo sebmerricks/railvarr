@@ -42,7 +42,8 @@
 #' timetable_subset <- wrangle_timetable(timetable, stations, stopping_stations)
 #' timetable_subset
 #'
-#'@seealso [filter_relevant_services()] [find_calling_patterns()] [timetable]
+#'@seealso [filter_relevant_services()] [find_calling_patterns()]
+#'  [calculate_journey_specifications()] [match_ids()] [timetable]
 #'  [timetable_subset]
 #'
 #'@export

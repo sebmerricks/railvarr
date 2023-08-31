@@ -77,5 +77,5 @@ delays
 }
 \seealso{
 \code{\link[=estimate_dwell_times]{estimate_dwell_times()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=match_ids]{match_ids()}}
-\link{dwell_times}
+\link{delays}
 }

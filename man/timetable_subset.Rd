@@ -32,7 +32,8 @@ timetable_subset
 
 }
 \seealso{
-\code{\link[=wrangle_timetable]{wrangle_timetable()}}
+\code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=calculate_journey_specifications]{calculate_journey_specifications()}}
+\code{\link[=match_ids]{match_ids()}}
 
 Data frame with 792 rows and 12 columns
 }
