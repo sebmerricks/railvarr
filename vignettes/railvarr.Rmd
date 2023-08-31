@@ -194,8 +194,8 @@ plot_clusters(berth_events_clusters)
 Because K-means clustering is a stochastic algorithm, the results of 
 `cluster_journeys()` are occasionally not what would be expected. In that case, 
 simply run the clustering again. Some trains may also be miscategorised. This 
-can be diagnosed visually using `plot_clusters()`, but it is unfortunately a 
-manual process to remedy the issue.
+can be diagnosed visually using `plot_clusters()`. However, it is unfortunately 
+currently a manual process to remedy the issue.
 
 # Timetable
 
