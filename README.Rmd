@@ -147,28 +147,12 @@ The ID matching algorithm matches Centrix IDs with corresponding timetable IDs. 
 
 ### 5. Dwell Time and Delays
 
+Before calculating dwell times, you need to know the length of each berth. This could come from a data source, but we have found that such data is not always reliable. Therefore, `railvarr` provides functionality for estimating berth lengths. This can be done using the [estimate_berth_lengths()](https://sebmerricks.github.io/railvarr/reference/estimate_berth_lengths.html) function. This function first requires running the processed timetable through the [calculate_journey_specifications()](https://sebmerricks.github.io/railvarr/reference/calculate_journey_specifications.html). In order to estimate berth lengths, you must also have an estimate for the total length of the track. This can be done by, for example, measuring it on google maps. See the [berth lengths section of the Get Started page](https://sebmerricks.github.io/railvarr/articles/railvarr.html#berth-lengths).
 
+Once you are in possession of berth lengths, you can calculate dwell times using the [estimate_dwell_times()](https://sebmerricks.github.io/railvarr/reference/estimate_dwell_times.html) function. For more details, see the [dwell times section of the Get Started page](https://sebmerricks.github.io/railvarr/articles/railvarr.html#dwell-times-1). Once you have dwell times, you can then [estimate delays](https://sebmerricks.github.io/railvarr/articles/railvarr.html#delays)
 
 ![Diagram of the processing pipeline that `railvarr` provides](man/figures/README-pipeline.PNG)
 
-## Getting Started
+# Example Data
 
-The first step is to massage your raw data into the correct structure, as `railvarr` provides no reading functionality.
-
-### Centrix
-
-A detailed overview of what is expected for Centrix data can be found in [wrangle_centrix()](https://sebmerricks.github.io/railvarr/reference/wrangle_centrix.html). Here is an example of a valid Centrix data frame:
-
-```{r raw_centrix}
-data(raw_centrix)
-head(raw_centrix, 10)
-```
-
-## Timetable
-
-A detailed overview of what is expected for Timetable data can be found in [wrangle_timetable()](https://sebmerricks.github.io/railvarr/reference/wrangle_timetable.html). Here is an example of a valid Timetable data frame:
-
-```{r raw_timetable}
-data(timetable)
-head(timetable, 10)
-```
+`railvarr` comes with some example data to help get you started. To see a list of these data sets head to [this page](https://sebmerricks.github.io/railvarr/reference/index.html#data). Each data set represents a separate stage of the processing pipeline.

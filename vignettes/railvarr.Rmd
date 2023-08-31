@@ -539,3 +539,7 @@ outliers in the data, as dwell times can not be negative. It's also possible
 that these negative values are caused by incorrect clustering. However, this 
 would likely require manual adjustments to the output of the clustering 
 algorithm.
+
+## Delays
+
+
