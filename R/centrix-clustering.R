@@ -68,8 +68,8 @@ kmeans_clusters <- function(berth_events, ...) {
 #'
 #' @importFrom dplyr group_by mutate first select ungroup anti_join
 #'
-#' @seealso [stats::kmeans()] [plot_clusters()] [berth_events_groups]
-#'   [wrangle_centrix()]
+#' @seealso [stats::kmeans()] [wrangle_centrix()] [plot_clusters()]
+#'   [berth_events] [berth_events_groups]
 #'
 #' @export
 cluster_journeys <- function(berth_events,
@@ -119,9 +119,18 @@ cluster_journeys <- function(berth_events,
 }
 
 #' Plot clustered train journeys
+#'
+#' This function helps with the manual refinement of the clustering process. It
+#' simply takes the output of [cluster_journeys()] and plots travel times for
+#' manual review.
+#'
 #' @param cluster_events Data frame matching output from [cluster_journeys()]
 #' @inherit cluster_journeys examples
+#'
+#' @seealso [cluster_journeys()]
+#'
 #' @import ggplot2
+#'
 #' @export
 plot_clusters <- function(cluster_events) {
   pclusters <- cluster_events %>%

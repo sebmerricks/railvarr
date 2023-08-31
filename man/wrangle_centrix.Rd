@@ -79,6 +79,6 @@ berth_events
 }
 \seealso{
 \code{\link[=preprocess_signal_events]{preprocess_signal_events()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
-\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=calculate_tsars]{calculate_tsars()}} \link{raw_centrix} \link{asset_map}
-\link{state_mapping} \link{berth_events}
+\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=calculate_tsars]{calculate_tsars()}} \code{\link[=cluster_journeys]{cluster_journeys()}}
+\link{raw_centrix} \link{asset_map} \link{state_mapping} \link{berth_events}
 }

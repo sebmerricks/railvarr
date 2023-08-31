@@ -10,7 +10,9 @@ plot_clusters(cluster_events)
 \item{cluster_events}{Data frame matching output from \code{\link[=cluster_journeys]{cluster_journeys()}}}
 }
 \description{
-Plot clustered train journeys
+This function helps with the manual refinement of the clustering process. It
+simply takes the output of \code{\link[=cluster_journeys]{cluster_journeys()}} and plots travel times for
+manual review.
 }
 \examples{
 data(berth_events)
@@ -19,4 +21,7 @@ berth_events_clusters <- cluster_journeys(berth_events,
                                           iter.max = 100L)
 plot_clusters(berth_events_clusters)
 
+}
+\seealso{
+\code{\link[=cluster_journeys]{cluster_journeys()}}
 }

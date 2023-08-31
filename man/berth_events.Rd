@@ -37,7 +37,7 @@ berth_events
 
 }
 \seealso{
-\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=calculate_tsars]{calculate_tsars()}}
+\code{\link[=calculate_tsars]{calculate_tsars()}} \code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=cluster_journeys]{cluster_journeys()}}
 
 A data frame containing 6,952 rows and 15 columns
 }

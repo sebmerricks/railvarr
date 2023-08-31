@@ -127,7 +127,7 @@
 #'
 #' An example of processed Centrix data containing TSAR and its sub-components.
 #'
-#' @seealso [wrangle_centrix()] [calculate_tsars()]
+#' @seealso [calculate_tsars()] [wrangle_centrix()] [cluster_journeys()]
 #'
 #' A data frame containing 6,952 rows and 15 columns
 #'
