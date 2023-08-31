@@ -5,12 +5,35 @@
 \alias{timetable_subset}
 \title{Example timetable subset}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 792 rows and 12 columns.
+\describe{
+\item{train_header}{Train ID. This usually contains headcode information}
+\item{dt_origin}{Date and time of service origin}
+\item{geo}{Name of TIPLOCs that trains pass through or stop at}
+\item{event}{Type of timetable event, e.g., 'Arrive', 'Depart', 'Pass'}
+\item{wtt}{Scheduled date and time of event}
+\item{t}{Actual date and time of event}
+\item{delay}{Difference between actual time and scheduled time}
+\item{allow}{Total delay allowance}
+\item{allow_perf}{Performance allowance}
+\item{allow_path}{Pathing allowance}
+\item{allow_eng}{Engineering allowance}
+\item{group}{Train group, corresponds to its calling pattern}
+}
 }
 \usage{
 timetable_subset
 }
 \description{
-Example timetable subset
+Processed timetable containing only relevant services travelling in one
+direction specified by the Centrix data
+}
+\examples{
+timetable_subset
+
+}
+\seealso{
+\code{\link[=wrangle_timetable]{wrangle_timetable()}}
+
+Data frame with 792 rows and 12 columns
 }
 \keyword{datasets}

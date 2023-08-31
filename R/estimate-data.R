@@ -2,6 +2,8 @@
 #'
 #' An example of a data frame containing estimated berth lengths.
 #'
+#' @seealso [estimate_berth_lengths()]
+#'
 #' A data frame containing 8 rows and 6 columns
 #'
 #' @format
@@ -22,6 +24,8 @@
 #' Example dwell times
 #'
 #' An example of a data frame containing estimated dwell times
+#'
+#' @seealso [estimate_dwell_times()]
 #'
 #' A data frame containing 1,581 rows and 22 columns
 #'
@@ -61,6 +65,8 @@
 #' Example delays
 #'
 #' An example of a data frame containing estimated delays
+#'
+#' @seealso [estimate_delays()]
 #'
 #' A data frame containing 66 row and 8 columns
 #'

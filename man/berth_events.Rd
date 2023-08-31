@@ -32,11 +32,13 @@ berth_events
 \description{
 An example of processed Centrix data containing TSAR and its sub-components.
 }
-\details{
-A data frame containing 6,952 rows and 15 columns
-}
 \examples{
 berth_events
 
+}
+\seealso{
+\code{\link[=calculate_tsars]{calculate_tsars()}}
+
+A data frame containing 6,952 rows and 15 columns
 }
 \keyword{datasets}

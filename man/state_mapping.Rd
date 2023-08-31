@@ -18,14 +18,13 @@ The default 1-1 mapping from signal state to aspect. See
 \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
 This is used as the default state mapping in Centrix wrangling.
 }
-\details{
-A data frame with 4 rows and 2 columns.
-}
 \examples{
 state_mapping
 
 }
 \seealso{
 \code{\link[=wrangle_centrix]{wrangle_centrix()}}
+
+A data frame with 4 rows and 2 columns.
 }
 \keyword{datasets}

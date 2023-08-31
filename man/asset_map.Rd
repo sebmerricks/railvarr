@@ -20,11 +20,13 @@ An example of an asset map showing the relationship between different track
 assets. There is a 1-1 mapping from signal to berth, a 1-many mapping from
 berth to track, and a 1-1 mapping from track to event.
 }
-\details{
-A data frame containing 17 rows and 4 columns.
-}
 \examples{
 asset_map
 
+}
+\seealso{
+\code{\link[=wrangle_centrix]{wrangle_centrix()}}
+
+A data frame containing 17 rows and 4 columns.
 }
 \keyword{datasets}

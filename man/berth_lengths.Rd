@@ -20,11 +20,13 @@ berth_lengths
 \description{
 An example of a data frame containing estimated berth lengths.
 }
-\details{
-A data frame containing 8 rows and 6 columns
-}
 \examples{
 berth_lengths
 
+}
+\seealso{
+\code{\link[=estimate_berth_lengths]{estimate_berth_lengths()}}
+
+A data frame containing 8 rows and 6 columns
 }
 \keyword{datasets}

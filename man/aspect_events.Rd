@@ -18,11 +18,13 @@ aspect_events
 \description{
 An example of Centrix data which have been pre-processed into aspect events.
 }
-\details{
-A data frame containing 32,512 rows and 4 columns.
-}
 \examples{
 aspect_events
 
+}
+\seealso{
+\code{\link[=preprocess_signal_events]{preprocess_signal_events()}}
+
+A data frame containing 32,512 rows and 4 columns.
 }
 \keyword{datasets}

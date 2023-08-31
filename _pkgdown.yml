@@ -3,6 +3,7 @@ template:
   bootstrap: 5
 reference:
 - title: Centrix
+- subtitle: Functions
 - contents:
   - wrangle_centrix
   - preprocess_signal_events
@@ -11,7 +12,20 @@ reference:
   - calculate_tsars
   - cluster_journeys
   - plot_clusters
+- subtitle: Data
+- contents:
+  - raw_centrix
+  - asset_map
+  - state_mapping
+  - aspect_events
+  - track_events
+  - time_windows
+  - valid_aspect_events
+  - valid_track_events
+  - berth_events
+  - berth_events_groups
 - title: Timetable
+- subtitle: Functions
 - contents:
   - wrangle_timetable
   - filter_relevant_services
@@ -19,44 +33,28 @@ reference:
   - find_calling_patterns
   - calculate_journey_specifications
   - match_ids
+- subtitle: Data
+- contents:
+  - timetable
+  - stations
+  - stopping_stations
+  - timetable_subset
+  - timetable_specification
+  - id_matching
 - title: Dwell Times
+- subtitle: Functions
 - contents:
   - estimate_berth_lengths
   - estimate_dwell_times
   - estimate_delays
-- title: Data
-- subtitle: Maps
+- subtitle: Data
 - contents:
-   - state_mapping
-   - asset_map
-- subtitle: Centrix
+  - berth_lengths
+  - dwell_times
+  - delays
+- title: Object Orientation (Unimplemented)
 - contents:
-   - raw_centrix
-   - aspect_events
-   - track_events
-   - time_windows
-   - valid_aspect_events
-   - valid_track_events
-   - berth_events
-- subtitle: Timetable
-- contents:
-   - timetable
-   - stations
-   - stopping_stations
-   - timetable_subset
-   - timetable_specification
-- subtitle: Matching
-- contents:
-   - berth_events_groups
-   - id_matching
-- subtitle: Dwell Times
-- contents:
-   - berth_lengths
-   - dwell_times
-   - delays
-- title: Objects (Experimental)
-- contents:
-   - track_event
-   - aspect
-   - is_aspect
-   - signal_event
+  - track_event
+  - aspect
+  - is_aspect
+  - signal_event

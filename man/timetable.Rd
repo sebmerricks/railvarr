@@ -25,14 +25,13 @@ timetable
 \description{
 Raw timetable data example. This is an anonymised version of a real data set.
 }
-\details{
-A data frame with 8,958 rows and 11 columns
-}
 \examples{
 timetable
 
 }
 \seealso{
 \code{\link[=wrangle_timetable]{wrangle_timetable()}}
+
+A data frame with 8,958 rows and 11 columns
 }
 \keyword{datasets}

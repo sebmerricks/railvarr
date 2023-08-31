@@ -14,14 +14,13 @@ stopping_stations
 List containing stations at which trains stop. This is used for finding
 calling patterns
 }
-\details{
-A list with 3 elements.
-}
 \examples{
 stopping_stations
 
 }
 \seealso{
 \code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}}
+
+A list with 3 elements.
 }
 \keyword{datasets}

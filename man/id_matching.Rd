@@ -17,7 +17,9 @@ id_matching
 \description{
 Data frame containing matched Centrix and timetable IDs
 }
-\details{
+\seealso{
+\code{\link[=match_ids]{match_ids()}}
+
 Data frame with 42 rows and 3 columns
 }
 \keyword{datasets}

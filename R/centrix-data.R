@@ -3,6 +3,8 @@
 #' An example of a data frame containing raw Centrix data. This is real data
 #' containing 15 days of Centrix data. The data have been anonymised.
 #'
+#' @seealso [wrangle_centrix()]
+#'
 #' A data frame containing 110,339 rows and 3 columns.
 #'
 #' @format
@@ -20,6 +22,8 @@
 #' Example aspect events
 #'
 #' An example of Centrix data which have been pre-processed into aspect events.
+#'
+#' @seealso [preprocess_signal_events()]
 #'
 #' A data frame containing 32,512 rows and 4 columns.
 #'
@@ -39,6 +43,8 @@
 #' Example track events
 #'
 #' An example of Centrix data which have been pre-processed into track events.
+#'
+#' @seealso [preprocess_track_events()]
 #'
 #' A data frame containing 25,242 rows and 4 columns.
 #'
@@ -60,6 +66,8 @@
 #' An example of time windows calculated from Centrix data denoting time
 #' intervals of valid train journeys.
 #'
+#' @seealso [calculate_time_windows()]
+#'
 #' A data frame containing 681 rows and 2 columns
 #'
 #' @format
@@ -77,6 +85,8 @@
 #'
 #' An example of aspect events which have been fully processed and validated by
 #' the calculated time windows.
+#'
+#' @seealso [filter_aspect_events()]
 #'
 #' A data frame containing 25,834 rows and 6 columns
 #'
@@ -96,6 +106,8 @@
 #' An example of track events which have been fully processed and validated by
 #' the calculated time windows.
 #'
+#' @seealso [filter_track_events()]
+#'
 #' A data frame containing 24,332 rows and 6 columns
 #'
 #' @format
@@ -112,6 +124,8 @@
 #' Example of berth-level events
 #'
 #' An example of processed Centrix data containing TSAR and its sub-components.
+#'
+#' @seealso [calculate_tsars()]
 #'
 #' A data frame containing 6,952 rows and 15 columns
 #'

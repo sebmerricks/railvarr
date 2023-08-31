@@ -13,14 +13,13 @@ stations
 \description{
 List of example stations. This is used for timetable wrangling
 }
-\details{
-A list with 6 elements.
-}
 \examples{
 stations
 
 }
 \seealso{
 \code{\link[=wrangle_timetable]{wrangle_timetable()}}
+
+A list with 6 elements.
 }
 \keyword{datasets}

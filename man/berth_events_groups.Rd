@@ -34,7 +34,9 @@ berth_events_groups
 Data frame containing wrangled Centrix data with group labels calculated
 through K-means clustering.
 }
-\details{
+\seealso{
+\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=plot_clusters]{plot_clusters()}}
+
 A data frame with 6,952 rows and 16 columns
 }
 \keyword{datasets}

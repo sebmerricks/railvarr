@@ -17,11 +17,13 @@ time_windows
 An example of time windows calculated from Centrix data denoting time
 intervals of valid train journeys.
 }
-\details{
-A data frame containing 681 rows and 2 columns
-}
 \examples{
 time_windows
 
+}
+\seealso{
+\code{\link[=calculate_time_windows]{calculate_time_windows()}}
+
+A data frame containing 681 rows and 2 columns
 }
 \keyword{datasets}

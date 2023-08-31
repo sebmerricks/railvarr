@@ -18,11 +18,13 @@ track_events
 \description{
 An example of Centrix data which have been pre-processed into track events.
 }
-\details{
-A data frame containing 25,242 rows and 4 columns.
-}
 \examples{
 track_events
 
+}
+\seealso{
+\code{\link[=preprocess_track_events]{preprocess_track_events()}}
+
+A data frame containing 25,242 rows and 4 columns.
 }
 \keyword{datasets}

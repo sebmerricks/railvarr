@@ -38,11 +38,13 @@ dwell_times
 \description{
 An example of a data frame containing estimated dwell times
 }
-\details{
-A data frame containing 1,581 rows and 22 columns
-}
 \examples{
 dwell_times
 
+}
+\seealso{
+\code{\link[=estimate_dwell_times]{estimate_dwell_times()}}
+
+A data frame containing 1,581 rows and 22 columns
 }
 \keyword{datasets}

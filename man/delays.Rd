@@ -28,11 +28,13 @@ delays
 \description{
 An example of a data frame containing estimated delays
 }
-\details{
-A data frame containing 66 row and 8 columns
-}
 \examples{
 delays
 
+}
+\seealso{
+\code{\link[=estimate_delays]{estimate_delays()}}
+
+A data frame containing 66 row and 8 columns
 }
 \keyword{datasets}

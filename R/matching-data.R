@@ -3,6 +3,8 @@
 #' Data frame containing wrangled Centrix data with group labels calculated
 #' through K-means clustering.
 #'
+#' @seealso [cluster_journeys()] [plot_clusters()]
+#'
 #' A data frame with 6,952 rows and 16 columns
 #'
 #' @format
@@ -32,6 +34,8 @@
 #' Example ID Matching
 #'
 #' Data frame containing matched Centrix and timetable IDs
+#'
+#' @seealso [match_ids()]
 #'
 #' Data frame with 42 rows and 3 columns
 #'

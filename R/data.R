@@ -4,6 +4,8 @@
 #' \url{https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals}.
 #' This is used as the default state mapping in Centrix wrangling.
 #'
+#' @seealso [wrangle_centrix()]
+#'
 #' A data frame with 4 rows and 2 columns.
 #'
 #' @format
@@ -15,7 +17,6 @@
 #' @examples
 #' state_mapping
 #'
-#' @seealso [wrangle_centrix()]
 "state_mapping"
 
 #' Example asset map
@@ -23,6 +24,8 @@
 #' An example of an asset map showing the relationship between different track
 #' assets. There is a 1-1 mapping from signal to berth, a 1-many mapping from
 #' berth to track, and a 1-1 mapping from track to event.
+#'
+#' @seealso [wrangle_centrix()]
 #'
 #' A data frame containing 17 rows and 4 columns.
 #'

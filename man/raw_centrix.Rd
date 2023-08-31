@@ -18,11 +18,13 @@ raw_centrix
 An example of a data frame containing raw Centrix data. This is real data
 containing 15 days of Centrix data. The data have been anonymised.
 }
-\details{
-A data frame containing 110,339 rows and 3 columns.
-}
 \examples{
 raw_centrix
 
+}
+\seealso{
+\code{\link[=wrangle_centrix]{wrangle_centrix()}}
+
+A data frame containing 110,339 rows and 3 columns.
 }
 \keyword{datasets}

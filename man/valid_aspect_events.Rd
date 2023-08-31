@@ -21,7 +21,9 @@ valid_aspect_events
 An example of aspect events which have been fully processed and validated by
 the calculated time windows.
 }
-\details{
+\seealso{
+\code{\link[=filter_aspect_events]{filter_aspect_events()}}
+
 A data frame containing 25,834 rows and 6 columns
 }
 \keyword{datasets}
