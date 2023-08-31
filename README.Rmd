@@ -102,6 +102,45 @@ Raw Centrix data contains no information about train types or stopping patterns.
 
 ### 3. Timetable Processing
 
+This step filters the timetable to only include relevant services, travelling in the correct direction. It also calculates and attaches calling patterns. The main `railvarr` function you will need for this is [wrangle_timetable()](https://sebmerricks.github.io/railvarr/reference/wrangle_timetable.html). Three inputs are required:
+
+#### 1. Raw Timetable
+
+Your timetable must match the expected structure. This consists of 8 data points:
+
+-   `train_header` the train identifier, usually some from of [headcode](https://www.rail-record.co.uk/understanding-a-headcode/)
+-   `dt_origin` the date and time at which the train originated; this forms a train's unique identifier when combined with the `train_header`
+-   `geo` the location at which the timetable event is taking place, usually stations and TIPLOcs like junctions
+-   `event` the type of event; this can only be one of the following: `"Pass"`, `"Arrive"`, `"Depart"`, `"Originate"`, `"Terminate"`
+-   `wtt` the scheduled date and time of the event
+-   `t` the actual date and time of the event
+-   `delay` the difference between the actual time and the scheduled time of the event
+-   `allow` the timetable delay allowance; this indicates whether delays should be expected
+
+For example, a train with the headcode `'1A23'` originating at 14:17 on the 23rd May 2020 could have the following timetable entry for the station `'Example'`
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay, ~allow,
+  "1A23", lubridate::as_datetime("2020-05-23 14:17:00"), "Example", "Arrive", lubridate::as_datetime("2020-05-23 14:37:00"), lubridate::as_datetime("2020-05-23 14:36:00"), -1, 0,
+  "1A23", lubridate::as_datetime("2020-05-23 14:17:00"), "Example", "Depart", lubridate::as_datetime("2020-05-23 14:37:30"), lubridate::as_datetime("2020-05-23 14:37:00"), -0.5, 0
+)
+```
+
+This timetable entry indicates that the train arrived at the station 1 minute early and departed 30 seconds early. However, it is important to note that timings in the timetable are usually rounded, either to the nearest 15 or 30 seconds.
+
+#### 2. Stations
+
+You should provide a list of stations that you are interested in. For example, a train may stop at many stations on its journey, but your Centrix data only covers a small subset of that journey. Therefore, you should provide a list of stations that completely encompasses your Centrix data. This ensures that all relevant services are included in the processed timetable. However, you may need to ensure that no irrelevant services are accidentally included. If you are using [wrangle_timetable()](https://sebmerricks.github.io/railvarr/reference/wrangle_timetable.html), the order in which you define this list is important, because it specifies the direction in which trains should be travelling. This allows for the filtering of services by direction. You can avoid this by using the lower level functions directly, but these functions do not currently come with input validation, so discretion is advised.
+
+#### 3. Stopping Stations
+
+This is a list of only those stations which are covered by the Centrix data. For example, imagine you have the following track layout:
+
+|------------[Station 1]-----------(Centrix starts)|-----------------[Station 2]-------------------|(Centrix ends)-----------[Station 3]-------------------|
+
+The first list should include all three stations in order to capture all trains which use the track included in the Centrix data. However, because only Station 2 is actually included in the Centrix data, this second list should contain only this station. This second list is used to calculate calling patterns, so any trains which do not stop at any of the stations in the list will be labeled as `'fast'` trains. In the above example, trains which stop at Station 1 and Station 3, but not Station 2, would be labeled as `'fast'`.
+
 ### 4. ID Matching
 
 ### 5. Dwell Time and Delays
