@@ -6,6 +6,34 @@
 #'
 #' @inheritParams wrangle_timetable
 #' @param spec_stations List of stations for which to calculate journey times.
+#'   Calculates the total journey time from the first station in the list to the
+#'   last station in the list, as well as every component of that journey.
+#'
+#' @return Journey times as specified by `spec_stations`. A data frame with 10
+#'   columns:
+#'   \itemize{
+#'     \item{`train_header`}{Train identifier}
+#'     \item{`dt_origin`}{Datetime at which the train originated}
+#'     \item{`wtt`}{Scheduled datetime of event}
+#'     \item{`group`}{Calling pattern}
+#'     \item{`xi`}{Start of journey component}
+#'     \item{`xk`}{End of journey component}
+#'     \item{`duration`}{Duration of journey component}
+#'     \item{`type`}{Type of component, either `moving` for sections in-between
+#'                   stations, or `dwell` when the component represents a stop
+#'                   at a station}
+#'     \item{`j`}{Component ID}
+#'     \item{`T_journey`}{Total journey time across all components}
+#'   }
+#'
+#' @examples
+#' data(timetable_subset)
+#' timetable_subset
+#' # spec_stations contains stations that completely encompass the Centrix track
+#' spec_stations <- list("geo6", "geo110", "geo111", "geo112", "geo7")
+#' calculate_journey_specifications(timetable_subset, spec_stations)
+#'
+#' @seealso [wrangle_timetable()] [timetable_specification]
 #'
 #' @export
 calculate_journey_specifications <- function(timetable, spec_stations) {

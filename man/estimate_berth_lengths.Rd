@@ -24,6 +24,36 @@ Centrix track to end}
 
 \item{track_length}{Total length of Centrix track in miles}
 }
+\value{
+Berth lengths and median travel times. A data frame with 6 columns:
+\itemize{
+\item{\code{berth}}{Berth ID}
+\item{\code{median_travel}}{Median travel time for fast trains across that
+berth}
+\item{\code{v.mph}}{Expected speed for fast trains across that berth}
+\item{\code{L.miles}}{Estimated berth length in miles}
+\item{\code{L.km}}{Estimated berth length in kilometres}
+\item{\code{L}}{Estimated berth length in metres}
+}
+}
 \description{
-Estimate berth lengths
+This function estimates berth lengths based on the median travel times across
+each berth for unimpeded fast trains, with a given total journey time and
+total track length.
+}
+\examples{
+data(timetable_specification, id_matching, berth_events_groups)
+timetable_specification
+id_matching
+berth_events_groups
+estimate_berth_lengths(timetable_specification,
+                       id_matching,
+                       berth_events_groups,
+                       expected_journey_time = 270,
+                       track_length = 5.97)
+
+}
+\seealso{
+\code{\link[=calculate_journey_specifications]{calculate_journey_specifications()}} \code{\link[=match_ids]{match_ids()}}
+\code{\link[=cluster_journeys]{cluster_journeys()}} \link{berth_lengths}
 }

@@ -68,7 +68,8 @@ kmeans_clusters <- function(berth_events, ...) {
 #'
 #' @importFrom dplyr group_by mutate first select ungroup anti_join
 #'
-#' @seealso [stats::kmeans()]
+#' @seealso [stats::kmeans()] [plot_clusters()] [berth_events_groups]
+#'   [wrangle_centrix()]
 #'
 #' @export
 cluster_journeys <- function(berth_events,

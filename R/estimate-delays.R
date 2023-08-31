@@ -63,6 +63,8 @@
 #' delays <- estimate_delays(dwell_times, timetable_subset, id_matching)
 #' delays
 #'
+#' @seealso [estimate_dwell_times()] [wrangle_timetable()] [match_ids()]
+#'   [dwell_times]
 #'
 #' @importFrom dplyr filter inner_join select mutate
 #' @importFrom tidyr pivot_wider

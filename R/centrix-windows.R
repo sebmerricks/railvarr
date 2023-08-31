@@ -55,7 +55,8 @@
 #'                                        asset_map)
 #' time_windows
 #'
-#' @seealso [preprocess_signal_events()]
+#' @seealso [wrangle_centrix()] [preprocess_signal_events()] [aspect_events]
+#'   [track_events] [asset_map] [time_windows]
 #'
 #' @importFrom dplyr semi_join
 #'

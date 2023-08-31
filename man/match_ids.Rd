@@ -126,3 +126,6 @@ wider_window <- match_ids(berth_events_groups, timetable_groups, match_mapping)
 wider_window
 
 }
+\seealso{
+\code{\link[=cluster_journeys]{cluster_journeys()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}} \link{id_matching}
+}

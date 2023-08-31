@@ -77,3 +77,8 @@ berth_events <- wrangle_centrix(raw_centrix, asset_map)
 berth_events
 
 }
+\seealso{
+\code{\link[=preprocess_signal_events]{preprocess_signal_events()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
+\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=calculate_tsars]{calculate_tsars()}} \link{raw_centrix} \link{asset_map}
+\link{state_mapping} \link{berth_events}
+}

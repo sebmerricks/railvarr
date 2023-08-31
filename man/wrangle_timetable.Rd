@@ -56,5 +56,6 @@ timetable_subset
 
 }
 \seealso{
-\code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}}
+\code{\link[=filter_relevant_services]{filter_relevant_services()}} \code{\link[=find_calling_patterns]{find_calling_patterns()}} \link{timetable}
+\link{timetable_subset}
 }

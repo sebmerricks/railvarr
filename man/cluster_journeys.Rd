@@ -75,5 +75,6 @@ plot_clusters(berth_events_clusters)
 
 }
 \seealso{
-\code{\link[stats:kmeans]{stats::kmeans()}}
+\code{\link[stats:kmeans]{stats::kmeans()}} \code{\link[=plot_clusters]{plot_clusters()}} \link{berth_events_groups}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}}
 }

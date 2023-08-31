@@ -50,6 +50,8 @@
 #'                                 asset_map)
 #' berth_events
 #'
+#' @seealso [filter_aspect_events()] [wrangle_centrix()] [berth_events]
+#'
 #' @importFrom dplyr inner_join select arrange group_by mutate ungroup lead
 #'   cur_group_id
 #'

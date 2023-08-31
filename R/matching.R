@@ -113,6 +113,8 @@
 #' # More matches are found with the wider window
 #' wider_window
 #'
+#' @seealso [cluster_journeys()] [wrangle_timetable()] [id_matching]
+#'
 #' @export
 #'
 match_ids <- function(berth_events_groups, timetable_groups, match_mapping) {

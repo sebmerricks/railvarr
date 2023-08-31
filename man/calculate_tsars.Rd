@@ -77,3 +77,6 @@ berth_events <- calculate_tsars(valid_track_events,
 berth_events
 
 }
+\seealso{
+\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=wrangle_centrix]{wrangle_centrix()}} \link{berth_events}
+}

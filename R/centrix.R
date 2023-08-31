@@ -64,6 +64,10 @@
 #' berth_events <- wrangle_centrix(raw_centrix, asset_map)
 #' berth_events
 #'
+#' @seealso [preprocess_signal_events()] [calculate_time_windows()]
+#'   [filter_aspect_events()] [calculate_tsars()] [raw_centrix] [asset_map]
+#'   [state_mapping] [berth_events]
+#'
 #' @export
 wrangle_centrix <- function(raw_centrix,
                             asset_map,

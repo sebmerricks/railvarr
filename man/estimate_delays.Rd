@@ -74,5 +74,8 @@ id_matching
 delays <- estimate_delays(dwell_times, timetable_subset, id_matching)
 delays
 
-
+}
+\seealso{
+\code{\link[=estimate_dwell_times]{estimate_dwell_times()}} \code{\link[=wrangle_timetable]{wrangle_timetable()}} \code{\link[=match_ids]{match_ids()}}
+\link{dwell_times}
 }
