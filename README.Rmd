@@ -67,14 +67,68 @@ train exiting the track.
 
 #### 2. Asset mapping
 
+The asset mapping is a representation of the track section. Currently, the track
+is represented by a linear data frame. However, this does not support more 
+complex track layouts like junctions. The asset map should contain a 1-1 mapping
+from signal ID to berth name, a 1-many mapping from berth name to track ID, and
+an extra `event` column. For example, a simple track section with two berths, 
+two signals, and three tracks would be:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~signal, ~berth, ~track, ~event,
+  "S1", "A", "TA-1", "enters",
+  "S1", "A", "TA-1", "vacates",
+  "S1", "A", "TA-2", "enters",
+  "S1", "A", "TA-2", "vacates",
+  "S2", "B", "TB", "enters",
+  "S2", "B", "TB", "vacates"
+)
+```
+
+The `event` column represents the fact that there are separate Centrix 
+observations for trains entering and exiting a track. Therefore, each track can
+have both an `'enters'` and `'vacates'` event associated with it. In order to
+calculate berth travel times, it is necessary to know when a train entered the
+following berth. However, if we used the asset map given above, we would not 
+include data for the `'enters'` event at signal `'S3'`. Therefore, we would not
+be able to calculate travel times for `'S2'`. If these travel time calculations
+are important, it is recommended to include the extra event in the asset map:
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~signal, ~berth, ~track, ~event,
+  "S3", "C", "TC", "enters"
+)
+```
 
 #### 3. State mapping
 
-![Diagram of the processing pipeline that railvarr provides](man/figures/README-pipeline.PNG)
+The state mapping provides a 1-1 mapping from signal state codes to signal 
+aspects. This is standardised, so `railvarr` provides a default mapping that you
+can access by running
+
+```{r}
+data(state_mapping)
+state_mapping
+```
+
+See [this website](https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals)
+for other codes.
+
+### 2. Centrix Clustering
+
+### 3. Timetable Processing
+
+### 4. ID Matching
+
+### 5. Dwell Time and Delays
+
+![Diagram of the processing pipeline that `railvarr` provides](man/figures/README-pipeline.PNG)
 
 ## Getting Started
 
-The first step is to massage your raw data into the correct structure, as railvarr provides no reading functionality.
+The first step is to massage your raw data into the correct structure, as `railvarr` provides no reading functionality.
 
 ### Centrix
 
