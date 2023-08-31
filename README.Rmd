@@ -143,7 +143,11 @@ The first list should include all three stations in order to capture all trains 
 
 ### 4. ID Matching
 
+The ID matching algorithm matches Centrix IDs with corresponding timetable IDs. This is necessary because raw Centrix data contain no identification information. Furthermore, there can be mismatches, where Centrix says there are trains present when the timetable doesn't, and vice-versa. An extra input is required here, containing instructions for the matching process. For more details, see [match_ids()](https://sebmerricks.github.io/railvarr/reference/match_ids.html) and the [ID Matching section of the Get Started page](https://sebmerricks.github.io/railvarr/articles/railvarr.html#id-matching).
+
 ### 5. Dwell Time and Delays
+
+
 
 ![Diagram of the processing pipeline that `railvarr` provides](man/figures/README-pipeline.PNG)
 
