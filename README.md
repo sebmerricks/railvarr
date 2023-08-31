@@ -12,7 +12,7 @@ The goal of `railvarr` is to ...
 
 ## Installation
 
-You can install the development version of railvarr from [GitHub](https://github.com/) with:
+You can install the development version of `railvarr` from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
@@ -25,7 +25,7 @@ devtools::install_github("sebmerricks/railvarr")
 
 ### 1. Centrix Processing
 
-In this step, the raw Centrix data are converted into human-readable berth-level observations. This step also removes anomalies and invalid data. Up to around 5% of the data can be lost. There are three inputs for this step:
+In this step, the raw Centrix data are converted into human-readable berth-level observations, including labeling train IDs. This step also removes anomalies and invalid data. Up to around 5% of the data can be lost. The main function you will need for this step is [wrangle_centrix()](https://sebmerricks.github.io/railvarr/reference/wrangle_centrix.html). There are three inputs for this step:
 
 #### 1. Raw Centrix data
 
@@ -92,6 +92,8 @@ See [this website](https://wiki.openraildata.com/index.php/Signalling_Nomenclatu
 
 ### 2. Centrix Clustering
 
+Raw Centrix data contains no information about train types or stopping patterns. However, knowledge of these stopping patterns is useful for analysis and it is pre-requisite to the ID matching process. `railvarr` provides functionality for clustering by travel time. Specifically, K-Means Clustering is used. Currently, this implementation does not support outlier detection. However, you can perform your own outlier detection and give a list of outliers to the clustering function in order to remove those observations from the analysis. See [cluster_journeys()](https://sebmerricks.github.io/railvarr/reference/cluster_journeys.html) for more information.
+
 ### 3. Timetable Processing
 
 ### 4. ID Matching
@@ -104,7 +106,7 @@ See [this website](https://wiki.openraildata.com/index.php/Signalling_Nomenclatu
 
 <figcaption aria-hidden="true">
 
-Diagram of the processing pipeline that railvarr provides
+Diagram of the processing pipeline that <code>railvarr</code> provides
 
 </figcaption>
 
@@ -112,7 +114,7 @@ Diagram of the processing pipeline that railvarr provides
 
 ## Getting Started
 
-The first step is to massage your raw data into the correct structure, as railvarr provides no reading functionality.
+The first step is to massage your raw data into the correct structure, as `railvarr` provides no reading functionality.
 
 ### Centrix
 
