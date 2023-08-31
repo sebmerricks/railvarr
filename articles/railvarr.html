@@ -132,6 +132,14 @@ time <code>1</code>. The third observation correspondingly says that
 signal <code>S1</code> changed to red (<code>RGE</code>) at time
 <code>1</code>. The signal state (which corresponds to its aspect) is
 embedded as a suffix to the asset ID.</p>
+<p>Using both transition types for signal data would allow for knowing
+what aspect a signal was on prior to turning red. However, due to the
+prevalence of missing <code>"DN to UP"</code> transitions,
+<code>railvarr</code> does not make us of these. Instead, the previous
+aspect is simply derived from whatever aspect was recorded the last time
+there was a <code>"UP to DN"</code> transition. In practice, this is an
+implementation detail and you can simply ignore <code>"DN to UP"</code>
+signal transitions.</p>
 </div>
 <div class="section level3">
 <h3 id="processing">Processing<a class="anchor" aria-label="anchor" href="#processing"></a>
@@ -168,7 +176,8 @@ sufficient.</p>
 handle linear sections of track, travelling in a single direction. More
 complex track layouts such as junctions are not supported.</p>
 <p>With a <code>raw_centrix</code> data frame along with the
-<code>asset_map</code>, you can process the data using:</p>
+<code>asset_map</code>, you can process the data using the following
+code (using <code>railvarr</code>’s example data):</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">raw_centrix</span>, <span class="va">asset_map</span><span class="op">)</span></span>
 <span><span class="va">raw_centrix</span></span>
@@ -295,8 +304,8 @@ the <code>centers</code> parameter.</p>
 <code><a href="../reference/cluster_journeys.html">cluster_journeys()</a></code> are occasionally not what would be
 expected. In that case, simply run the clustering again. Some trains may
 also be miscategorised. This can be diagnosed visually using
-<code><a href="../reference/plot_clusters.html">plot_clusters()</a></code>, but it is unfortunately a manual process
-to remedy the issue.</p>
+<code><a href="../reference/plot_clusters.html">plot_clusters()</a></code>. However, it is unfortunately currently a
+manual process to remedy the issue.</p>
 </div>
 </div>
 <div class="section level2">
@@ -766,6 +775,83 @@ output of the clustering algorithm.</p>
 <div class="section level3">
 <h3 id="delays">Delays<a class="anchor" aria-label="anchor" href="#delays"></a>
 </h3>
+<p>Once you have calculated dwell times, you can combine them with the
+timetable to calculate delays. These delay calculations are very useful,
+but it is important to remember that they are only estimates.
+Furthermore, due to the large amount of data lost in the ID matching
+process, you will end up with far less delay data than dwell time data.
+Nevertheless, this can still be helpful. Assuming you have already run
+other parts of the analysis, calculating delays is trivial using <a href="https://sebmerricks.github.io/railvarr/reference/estimate_delays.html">estimate_delays()</a>:</p>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">dwell_times</span>, <span class="va">timetable_subset</span>, <span class="va">id_matching</span><span class="op">)</span></span>
+<span><span class="va">dwell_times</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 1,581 × 22</span></span></span>
+<span><span class="co">#&gt;    signal berth station train_id group      t_enters            T_travel v_entry</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> S1     A     geo110         1 stopping-… 2000-01-01 <span style="color: #949494;">13:07:11</span>     127.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> S4     D     geo111         1 stopping-… 2000-01-01 <span style="color: #949494;">13:10:41</span>     118.    22.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> S6     F     geo112         1 stopping-… 2000-01-01 <span style="color: #949494;">13:13:18</span>     137.    22.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> S1     A     geo110         5 stopping-… 2000-01-01 <span style="color: #949494;">14:07:06</span>     128.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> S4     D     geo111         5 stopping-… 2000-01-01 <span style="color: #949494;">14:10:40</span>     111.    21.4</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> S6     F     geo112         5 stopping-… 2000-01-01 <span style="color: #949494;">14:13:14</span>     141.    20.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> S1     A     geo110        11 stopping-… 2000-01-01 <span style="color: #949494;">14:40:42</span>     125.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> S4     D     geo111        11 stopping-… 2000-01-01 <span style="color: #949494;">14:44:20</span>     111.    19.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> S6     F     geo112        11 stopping-… 2000-01-01 <span style="color: #949494;">14:46:53</span>     127.    20.6</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> S1     A     geo110        13 stopping-… 2000-01-01 <span style="color: #949494;">15:06:54</span>     110.    23.5</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1,571 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 14 more variables: a_brake &lt;dbl&gt;, L1 &lt;dbl&gt;, v_exit &lt;dbl&gt;, a_tract &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   L2 &lt;dbl&gt;, T_brake &lt;dbl&gt;, S_brake &lt;dbl&gt;, T_const_one &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   T_move_one &lt;dbl&gt;, T_tract &lt;dbl&gt;, S_tract &lt;dbl&gt;, T_const_two &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   T_move_two &lt;dbl&gt;, T_dwell &lt;dbl&gt;</span></span></span>
+<span><span class="va">timetable_subset</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 792 × 12</span></span></span>
+<span><span class="co">#&gt;    train_header dt_origin           geo    event  wtt                </span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Arrive 2000-01-01 <span style="color: #949494;">13:34:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo5   Depart 2000-01-01 <span style="color: #949494;">13:35:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo6   Pass   2000-01-01 <span style="color: #949494;">13:37:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Arrive 2000-01-01 <span style="color: #949494;">13:39:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo110 Depart 2000-01-01 <span style="color: #949494;">13:39:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Arrive 2000-01-01 <span style="color: #949494;">13:42:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo111 Depart 2000-01-01 <span style="color: #949494;">13:42:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Arrive 2000-01-01 <span style="color: #949494;">13:44:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo112 Depart 2000-01-01 <span style="color: #949494;">13:45:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> 108H         2000-01-01 <span style="color: #949494;">12:55:00</span> geo7   Arrive 2000-01-01 <span style="color: #949494;">13:48:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 782 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 7 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;, allow_perf &lt;dbl&gt;,</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;">#   allow_path &lt;dbl&gt;, allow_eng &lt;dbl&gt;, group &lt;chr&gt;</span></span></span>
+<span><span class="va">id_matching</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 42 × 3</span></span></span>
+<span><span class="co">#&gt;    train_id train_header dt_origin          </span></span>
+<span><span class="co">#&gt;       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span>        5 109H         2000-01-01 <span style="color: #949494;">13:25:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span>        6 46H          2000-01-01 <span style="color: #949494;">13:36:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span>        9 185H         2000-01-01 <span style="color: #949494;">13:52:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span>       10 1H           2000-01-01 <span style="color: #949494;">14:00:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span>       12 16H          2000-01-01 <span style="color: #949494;">14:15:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span>       13 111H         2000-01-01 <span style="color: #949494;">14:25:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span>       14 47H          2000-01-01 <span style="color: #949494;">14:39:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span>       15 186H         2000-01-01 <span style="color: #949494;">14:52:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span>       15 2H           2000-01-01 <span style="color: #949494;">15:00:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span>       16 112H         2000-01-01 <span style="color: #949494;">14:55:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 32 more rows</span></span></span>
+<span><span class="va">delays</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_delays.html">estimate_delays</a></span><span class="op">(</span><span class="va">dwell_times</span>, <span class="va">timetable_subset</span>, <span class="va">id_matching</span><span class="op">)</span></span>
+<span><span class="va">delays</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 66 × 8</span></span></span>
+<span><span class="co">#&gt;    signal train_id station T_dwell arrival_delay  departure_delay</span></span>
+<span><span class="co">#&gt;    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;drtn&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;drtn&gt;</span>         </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 1</span> S1            5 geo110    15.9  -59.52909 secs  -73.60537 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 2</span> S4            5 geo111    13.9  -32.17117 secs  -48.28861 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 3</span> S6            5 geo112    35.9  -24.92197 secs  -18.98806 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 4</span> S1           13 geo110    -<span style="color: #BB0000;">2.13</span> -71.54309 secs -103.67437 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 5</span> S4           13 geo111    47.2  -68.05317 secs  -50.87861 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 6</span> S6           13 geo112    39.3  -30.00197 secs  -20.74406 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 7</span> S1           16 geo110     5.62 105.54191 secs   81.16663 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 8</span> S4           16 geo111    14.0  117.69183 secs  101.67739 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;"> 9</span> S6           16 geo112    18.6  124.26103 secs  112.86294 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">10</span> S1           19 geo110     1.53  74.39591 secs   45.93063 secs</span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 56 more rows</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: excess_dwell_time &lt;drtn&gt;, early &lt;lgl&gt;</span></span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
