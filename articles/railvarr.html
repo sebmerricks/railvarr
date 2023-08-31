@@ -335,8 +335,22 @@ further column named <code>allow</code>, which is used for any
 timetabled delay allowance. This is commonly used for ECS trains
 (headcode starts with ‘5’) as they often incur delays waiting for
 passenger services. The allowance means that delays can be expected and
-aren’t necessarily problematic. For further information on the expected
-structure of a raw timetable, see <code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code>.</p>
+aren’t necessarily problematic.</p>
+<p>For example, a train with the headcode <code>'1A23'</code>
+originating at 14:17 on the 23rd May 2020 could have the following
+timetable entry for the station <code>'Example'</code></p>
+<pre><code><span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 2 × 8</span></span></span>
+<span><span class="co">#&gt;   train_header dt_origin           geo     event  wtt                </span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>  <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span>             </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> 1A23         2020-05-23 <span style="color: #949494;">14:17:00</span> Example Arrive 2020-05-23 <span style="color: #949494;">14:37:00</span></span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> 1A23         2020-05-23 <span style="color: #949494;">14:17:00</span> Example Depart 2020-05-23 <span style="color: #949494;">14:37:30</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 3 more variables: t &lt;dttm&gt;, delay &lt;dbl&gt;, allow &lt;dbl&gt;</span></span></span></code></pre>
+<p>This timetable entry indicates that the train arrived at the station
+1 minute early and departed 30 seconds early. However, it is important
+to note that timings in the timetable are usually rounded, either to the
+nearest 15 or 30 seconds.</p>
+<p>For further information on the expected structure of a raw timetable,
+see <code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code>.</p>
 <p>Once your timetable is in the correct structure, you can go ahead and
 use the <code><a href="../reference/wrangle_timetable.html">wrangle_timetable()</a></code> function. This function wraps
 three processing functions:</p>
@@ -366,7 +380,7 @@ which do stop at these stations will be labeled with ‘stopping-’, with
 the specific stations at which they stop attached as suffixes. For
 example, if a train stops at ‘geo10’, its calling pattern will be
 labeled as ‘stopping-geo10’.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Load example data from railvarr</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">timetable</span>, <span class="va">stations</span>, <span class="va">stopping_stations</span><span class="op">)</span></span>
 <span><span class="co"># Raw timetable: note the number of observations and that none of the TIPLOCs </span></span>
@@ -636,7 +650,7 @@ speed is calculated using the expected journey time and the reference
 length.</p>
 <p>In our example dataset, the track length is 5.97 miles and the
 expected journey time is 270 seconds.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">timetable_specification</span>, <span class="va">id_matching</span>, <span class="va">berth_events_groups</span><span class="op">)</span></span>
 <span><span class="fu">railvarr</span><span class="fu">::</span><span class="fu"><a href="../reference/estimate_berth_lengths.html">estimate_berth_lengths</a></span><span class="op">(</span><span class="va">timetable_specification</span>,</span>
 <span>                                 <span class="va">id_matching</span>,</span>
@@ -693,7 +707,7 @@ be a data frame with two columns named <code>group</code> and
 <p>Next, we need to specify the braking and acceleration capacities.
 Here, we use values of 0.4 m/s^2 for braking and 0.35 m/s^2 for
 acceleration.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">a_brake</span> <span class="op">=</span> <span class="fl">0.4</span></span>
 <span><span class="va">a_tract</span> <span class="op">=</span> <span class="fl">0.35</span></span></code></pre></div>
 <p>Optionally, you can specify where the stations are situated in each
@@ -712,7 +726,7 @@ berth. For example:</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> geo111    594   420</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> geo112    621   366</span></span></code></pre>
 <p>Once your parameters have been set up, simply call the function:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">dwell_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/estimate_dwell_times.html">estimate_dwell_times</a></span><span class="op">(</span><span class="va">berth_events_groups</span>,</span>
 <span>                                    <span class="va">berth_lengths</span>,</span>
 <span>                                    <span class="va">station_names</span>,</span>
@@ -739,7 +753,7 @@ berth. For example:</p>
 <span><span class="co">#&gt; <span style="color: #949494;">#   T_move_one &lt;dbl&gt;, T_tract &lt;dbl&gt;, S_tract &lt;dbl&gt;, T_const_two &lt;dbl&gt;,</span></span></span>
 <span><span class="co">#&gt; <span style="color: #949494;">#   T_move_two &lt;dbl&gt;, T_dwell &lt;dbl&gt;</span></span></span></code></pre></div>
 <p>You can easily overview the dwell time distribution using:</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">dwell_times</span><span class="op">$</span><span class="va">T_dwell</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. </span></span>
 <span><span class="co">#&gt;  -50.25   14.82   21.67   29.08   33.13  113.56</span></span></code></pre></div>

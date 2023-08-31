@@ -3,7 +3,7 @@ pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   railvarr: railvarr.html
-last_built: 2023-08-31T14:21Z
+last_built: 2023-08-31T15:09Z
 urls:
   reference: https://sebmerricks.github.io/railvarr/reference
   article: https://sebmerricks.github.io/railvarr/articles

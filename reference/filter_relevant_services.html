@@ -91,13 +91,24 @@ time of event</p></li>
 
 
 <dt>stations</dt>
-<dd><p>A list of TIPLOCs (<code>geo</code>) through which trains pass. This list
-is used to work out which trains travel through the track section of
-interest. For example, there could be a fork in the track, where trains can
-travel to the left or to the right. If you want to only look at trains which
-turn to the left, <code>stations</code> would include all the TIPLOCs of interest which
-are situated along the left track. Any trains which do not pass through any
-of the TIPLOCs specified in <code>stations</code> will be discarded.</p></dd>
+<dd><p>You should provide a list of stations that you are interested
+in. For example, a train may stop at many stations on its journey, but your
+Centrix data only covers a small subset of that journey. Any trains which do
+not pass through any of the stations specified will be discarded. It is
+important to note that timetables do not only include station stops, they
+also include junctions and other <code>'Pass'</code> events. These locations must also
+be included in <code>stations</code>, even though they are not actually stations.</p>
+<p>Therefore, your list should completely encompasses your Centrix data. This
+ensures that all relevant services are included in the processed timetable.
+However, you may need to ensure that no irrelevant services are accidentally
+included.</p>
+<p>The order in which you define this list is important if you are using
+<code><a href="wrangle_timetable.html">wrangle_timetable()</a></code> or <code>filter_relevant_direction()</code>, because it specifies
+the direction in which trains should be travelling. This allows for the
+filtering of services by direction. You can avoid this by using the lower
+level functions directly and not using <code>filter_relevant_direction()</code>, but
+these functions do not currently come with input validation, so discretion
+is advised.</p></dd>
 
 </dl></div>
     <div class="section level2">
