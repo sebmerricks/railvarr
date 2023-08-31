@@ -80,6 +80,13 @@ third observation correspondingly says that signal `S1` changed to red (`RGE`)
 at time `1`. The signal state (which corresponds to its aspect) is embedded as a
 suffix to the asset ID.
 
+Using both transition types for signal data would allow for knowing what aspect
+a signal was on prior to turning red. However, due to the prevalence of missing 
+`"DN to UP"` transitions, `railvarr` does not make us of these. Instead, the 
+previous aspect is simply derived from whatever aspect was recorded the last 
+time there was a `"UP to DN"` transition. In practice, this is an implementation
+detail and you can simply ignore `"DN to UP"` signal transitions.
+
 ## Processing
 
 `railvarr` provides a number of functions to facilitate the processing of 
