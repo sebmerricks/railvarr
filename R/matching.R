@@ -8,6 +8,9 @@
 #'   timetable. This function results in data loss, the amount of which depends
 #'   on how accurate the matching needs to be.
 #'
+#'   Please ensure that your Centrix data and timetable data have the same time
+#'   zones. If they do not, you may not get the results you were expecting.
+#'
 #' @details There are two methods for matching Centrix data with timetable data.
 #'   The method that is used depends on whether the train is a fast train (does
 #'   not stop at any stations present in the Centrix data set) or not.
