@@ -35,11 +35,18 @@
 #'       change. Therefore, any signals with a "DN to UP" transition will be
 #'       ignored.
 #'   }
-#' @param asset_map A data frame containing a 1-1 mapping from signals to berths
-#'   and a 1-many mapping from berths to tracks. The map also contains a 1-many
-#'   mapping from tracks to events, reflecting the fact that there is an 'enter'
-#'   and a 'vacate' event for each track. Therefore, the data frame should
-#'   adhere to the following structure:
+#' @param asset_map The asset map is a representation of the track section.
+#'   Currently, the track is represented by a linear data frame. However, this
+#'   does not support more complex track layouts, such as junctions. The asset
+#'   map should be a data frame containing a 1-1 mapping from signal ID to berth
+#'   name, a 1-many mapping from berth name to track ID, and an extra `event`
+#'   column. The `event` column represents the fact that there are separate
+#'   Centrix observations for trains entering and exiting a track. Therefore,
+#'   each track can have both an `'enters'` and a `'vacates'` events associated
+#'   with it. Note that in order to calculate berth travel times, it is
+#'   necessary to know when the train entered to next berth. Therefore, it may
+#'   be impossible to calculate travel times for the final berth. The asset map
+#'   data frame should adhere to the following structure:
 #'   \itemize{
 #'     \item{\code{signal}}: A [character()] vector containing the signal ID. It
 #'       should follow the regex pattern `"S[0-9]+"`.
@@ -50,9 +57,12 @@
 #'     \item{\code{event}}: A [character()] vector containing the event type. It
 #'       must be one of either "enters" or "vacates".
 #'    }
-#' @param state_map A data frame containing a 1-1 mapping from signal state to
-#'   signal aspect. See [state_mapping] (the default) for the expected
-#'   structure.
+#' @param state_map The state mapping provides a 1-1 mapping from signal state
+#'   codes to signal aspects. This is standardised, so `railvarr` provides a
+#'   default mapping (see [state_mapping]). Simply leave this parameter blank to
+#'   make use of this default mapping. See [this
+#'   website](https://wiki.openraildata.com/index.php/Signalling_Nomenclature#Signals)
+#'   for other codes.
 #'
 #' @returns A data frame containing the fully processed Centrix data, containing
 #'   berth-level information about signal and track events. This includes TSARs

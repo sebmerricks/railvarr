@@ -15,11 +15,18 @@ structure returned by the function \code{\link[=filter_track_events]{filter_trac
 validation is performed. It is assumed that the data frame will follow the
 structure returns by the function \code{\link[=filter_aspect_events]{filter_aspect_events()}}}
 
-\item{asset_map}{A data frame containing a 1-1 mapping from signals to berths
-and a 1-many mapping from berths to tracks. The map also contains a 1-many
-mapping from tracks to events, reflecting the fact that there is an 'enter'
-and a 'vacate' event for each track. Therefore, the data frame should
-adhere to the following structure:
+\item{asset_map}{The asset map is a representation of the track section.
+Currently, the track is represented by a linear data frame. However, this
+does not support more complex track layouts, such as junctions. The asset
+map should be a data frame containing a 1-1 mapping from signal ID to berth
+name, a 1-many mapping from berth name to track ID, and an extra \code{event}
+column. The \code{event} column represents the fact that there are separate
+Centrix observations for trains entering and exiting a track. Therefore,
+each track can have both an \code{'enters'} and a \code{'vacates'} events associated
+with it. Note that in order to calculate berth travel times, it is
+necessary to know when the train entered to next berth. Therefore, it may
+be impossible to calculate travel times for the final berth. The asset map
+data frame should adhere to the following structure:
 \itemize{
 \item{\code{signal}}: A \code{\link[=character]{character()}} vector containing the signal ID. It
 should follow the regex pattern \code{"S[0-9]+"}.

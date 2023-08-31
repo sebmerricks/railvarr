@@ -27,13 +27,26 @@ time of event}
 \item{\code{allow}}{\code{\link[=numeric]{numeric()}} Timetabled delay allowance}
 }}
 
-\item{stations}{A list of TIPLOCs (\code{geo}) through which trains pass. This list
-is used to work out which trains travel through the track section of
-interest. For example, there could be a fork in the track, where trains can
-travel to the left or to the right. If you want to only look at trains which
-turn to the left, \code{stations} would include all the TIPLOCs of interest which
-are situated along the left track. Any trains which do not pass through any
-of the TIPLOCs specified in \code{stations} will be discarded.}
+\item{stations}{You should provide a list of stations that you are interested
+in. For example, a train may stop at many stations on its journey, but your
+Centrix data only covers a small subset of that journey. Any trains which do
+not pass through any of the stations specified will be discarded. It is
+important to note that timetables do not only include station stops, they
+also include junctions and other \code{'Pass'} events. These locations must also
+be included in \code{stations}, even though they are not actually stations.
+
+Therefore, your list should completely encompasses your Centrix data. This
+ensures that all relevant services are included in the processed timetable.
+However, you may need to ensure that no irrelevant services are accidentally
+included.
+
+The order in which you define this list is important if you are using
+\code{\link[=wrangle_timetable]{wrangle_timetable()}} or \code{\link[=filter_relevant_direction]{filter_relevant_direction()}}, because it specifies
+the direction in which trains should be travelling. This allows for the
+filtering of services by direction. You can avoid this by using the lower
+level functions directly and not using \code{\link[=filter_relevant_direction]{filter_relevant_direction()}}, but
+these functions do not currently come with input validation, so discretion
+is advised.}
 }
 \value{
 \code{filter_relevant_services} returns a (usually) smaller timetable

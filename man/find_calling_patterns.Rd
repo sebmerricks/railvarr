@@ -24,7 +24,7 @@ time of event}
 \item{\code{allow}}{\code{\link[=numeric]{numeric()}} Timetabled delay allowance}
 }}
 
-\item{stopping_stations}{A subset of \code{stations}, which specifies which TIPLOCs
+\item{stopping_stations}{A subset of \code{stations} that specifies which stations
 trains can stop at. This is used for calculating calling patterns.
 Therefore, any train which does not stop at any of the stations specified in
 \code{stopping_stations} will be labeled as a 'fast' train. Trains which do stop

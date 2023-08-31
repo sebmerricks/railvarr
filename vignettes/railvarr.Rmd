@@ -216,8 +216,25 @@ delay (`delay`) which is simply the difference between the actual and scheduled
 times. There is a further column named `allow`, which is used for any timetabled
 delay allowance. This is commonly used for ECS trains (headcode starts with '5')
 as they often incur delays waiting for passenger services. The allowance means 
-that delays can be expected and aren't necessarily problematic. For further
-information on the expected structure of a raw timetable, see 
+that delays can be expected and aren't necessarily problematic.
+
+For example, a train with the headcode `'1A23'` originating at 14:17 on the 23rd 
+May 2020 could have the following timetable entry for the station `'Example'`
+
+```{r echo = FALSE}
+dplyr::tribble(
+  ~train_header, ~dt_origin, ~geo, ~event, ~wtt, ~t, ~delay, ~allow,
+  "1A23", lubridate::as_datetime("2020-05-23 14:17:00"), "Example", "Arrive", lubridate::as_datetime("2020-05-23 14:37:00"), lubridate::as_datetime("2020-05-23 14:36:00"), -1, 0,
+  "1A23", lubridate::as_datetime("2020-05-23 14:17:00"), "Example", "Depart", lubridate::as_datetime("2020-05-23 14:37:30"), lubridate::as_datetime("2020-05-23 14:37:00"), -0.5, 0
+)
+```
+
+This timetable entry indicates that the train arrived at the station 1 minute 
+early and departed 30 seconds early. However, it is important to note that 
+timings in the timetable are usually rounded, either to the nearest 15 or 30 
+seconds.
+
+For further information on the expected structure of a raw timetable, see 
 `wrangle_timetable()`.
 
 Once your timetable is in the correct structure, you can go ahead and use the

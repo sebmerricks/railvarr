@@ -19,14 +19,27 @@
 #'        time of event}
 #'     \item{`allow`}{[numeric()] Timetabled delay allowance}
 #'   }
-#'@param stations A list of TIPLOCs (`geo`) through which trains pass. This list
-#'  is used to work out which trains travel through the track section of
-#'  interest. For example, there could be a fork in the track, where trains can
-#'  travel to the left or to the right. If you want to only look at trains which
-#'  turn to the left, `stations` would include all the TIPLOCs of interest which
-#'  are situated along the left track. Any trains which do not pass through any
-#'  of the TIPLOCs specified in `stations` will be discarded.
-#'@param stopping_stations A subset of `stations`, which specifies which TIPLOCs
+#'@param stations You should provide a list of stations that you are interested
+#'  in. For example, a train may stop at many stations on its journey, but your
+#'  Centrix data only covers a small subset of that journey. Any trains which do
+#'  not pass through any of the stations specified will be discarded. It is
+#'  important to note that timetables do not only include station stops, they
+#'  also include junctions and other `'Pass'` events. These locations must also
+#'  be included in `stations`, even though they are not actually stations.
+#'
+#'  Therefore, your list should completely encompasses your Centrix data. This
+#'  ensures that all relevant services are included in the processed timetable.
+#'  However, you may need to ensure that no irrelevant services are accidentally
+#'  included.
+#'
+#'  The order in which you define this list is important if you are using
+#'  [wrangle_timetable()] or [filter_relevant_direction()], because it specifies
+#'  the direction in which trains should be travelling. This allows for the
+#'  filtering of services by direction. You can avoid this by using the lower
+#'  level functions directly and not using [filter_relevant_direction()], but
+#'  these functions do not currently come with input validation, so discretion
+#'  is advised.
+#'@param stopping_stations A subset of `stations` that specifies which stations
 #'  trains can stop at. This is used for calculating calling patterns.
 #'  Therefore, any train which does not stop at any of the stations specified in
 #'  `stopping_stations` will be labeled as a 'fast' train. Trains which do stop
