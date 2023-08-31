@@ -34,7 +34,7 @@
 #'
 #' #----------------------------------------------------------------------------
 #'
-#' @seealso [wrangle_centrix()] [aspect_events] [track_events]
+#' @seealso [wrangle_centrix()] [calculate_time_windows()] [aspect_events] [track_events]
 #'
 #' @importFrom dplyr mutate filter select semi_join inner_join arrange group_by
 #'   ungroup lag if_else

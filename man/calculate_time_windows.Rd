@@ -83,6 +83,7 @@ time_windows
 
 }
 \seealso{
-\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=preprocess_signal_events]{preprocess_signal_events()}} \link{aspect_events}
-\link{track_events} \link{asset_map} \link{time_windows}
+\code{\link[=preprocess_signal_events]{preprocess_signal_events()}} \code{\link[=wrangle_centrix]{wrangle_centrix()}}
+\code{\link[=filter_aspect_events]{filter_aspect_events()}} \link{aspect_events} \link{track_events} \link{asset_map}
+\link{time_windows}
 }

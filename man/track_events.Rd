@@ -23,7 +23,8 @@ track_events
 
 }
 \seealso{
-\code{\link[=preprocess_track_events]{preprocess_track_events()}}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=preprocess_track_events]{preprocess_track_events()}}
+\code{\link[=calculate_time_windows]{calculate_time_windows()}}
 
 A data frame containing 25,242 rows and 4 columns.
 }

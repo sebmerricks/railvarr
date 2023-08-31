@@ -64,8 +64,8 @@ A data frame containing filtered events, with additional columns:
 }
 }
 \description{
-Filter Centrix events to only those that occur within the calculated valid
-time intervals.
+Filter Centrix events to only those that occur within the
+calculated valid time intervals.
 
 \code{filter_track_events()} filters to only the tracks specified in the asset
 map.
@@ -92,5 +92,6 @@ valid_track_events
 
 }
 \seealso{
-\code{\link[=preprocess_track_events]{preprocess_track_events()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}} \link{valid_aspect_events}
+\link{valid_track_events}
 }

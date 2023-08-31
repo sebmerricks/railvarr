@@ -25,7 +25,7 @@ asset_map
 
 }
 \seealso{
-\code{\link[=wrangle_centrix]{wrangle_centrix()}}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}}
 
 A data frame containing 17 rows and 4 columns.
 }

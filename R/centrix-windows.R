@@ -55,8 +55,9 @@
 #'                                        asset_map)
 #' time_windows
 #'
-#' @seealso [wrangle_centrix()] [preprocess_signal_events()] [aspect_events]
-#'   [track_events] [asset_map] [time_windows]
+#' @seealso [preprocess_signal_events()] [wrangle_centrix()]
+#'   [filter_aspect_events()] [aspect_events] [track_events] [asset_map]
+#'   [time_windows]
 #'
 #' @importFrom dplyr semi_join
 #'
@@ -76,9 +77,8 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
 
 #' Filter Centrix events by time intervals
 #'
-#' @description
-#' Filter Centrix events to only those that occur within the calculated valid
-#' time intervals.
+#' @description Filter Centrix events to only those that occur within the
+#' calculated valid time intervals.
 #'
 #' `filter_track_events()` filters to only the tracks specified in the asset
 #' map.
@@ -87,7 +87,7 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
 #' map.
 #'
 #' @param aspect_events A data frame containing pre-processed aspect events with
-#' columns:
+#'   columns:
 #' \itemize{
 #'   \item{\code{signal}} [character()] signal ID.
 #'   \item{\code{dt}} [lubridate::POSIXct()] datetime.
@@ -129,7 +129,8 @@ calculate_time_windows <- function(aspect_events, track_events, asset_map) {
 #'                                           asset_map)
 #' valid_track_events
 #'
-#' @seealso [preprocess_track_events()] [calculate_time_windows()]
+#' @seealso [wrangle_centrix()] [calculate_time_windows()] [valid_aspect_events]
+#'   [valid_track_events]
 #'
 #' @importFrom dplyr inner_join mutate join_by select
 #'

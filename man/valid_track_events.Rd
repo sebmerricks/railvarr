@@ -22,7 +22,7 @@ An example of track events which have been fully processed and validated by
 the calculated time windows.
 }
 \seealso{
-\code{\link[=filter_track_events]{filter_track_events()}}
+\code{\link[=filter_track_events]{filter_track_events()}} \code{\link[=calculate_tsars]{calculate_tsars()}}
 
 A data frame containing 24,332 rows and 6 columns
 }

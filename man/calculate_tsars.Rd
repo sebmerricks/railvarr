@@ -78,5 +78,6 @@ berth_events
 
 }
 \seealso{
-\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=wrangle_centrix]{wrangle_centrix()}} \link{berth_events}
+\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=wrangle_centrix]{wrangle_centrix()}} \link{valid_track_events}
+\link{valid_aspect_events} \link{berth_events}
 }

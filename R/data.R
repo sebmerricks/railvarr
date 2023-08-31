@@ -25,7 +25,7 @@
 #' assets. There is a 1-1 mapping from signal to berth, a 1-many mapping from
 #' berth to track, and a 1-1 mapping from track to event.
 #'
-#' @seealso [wrangle_centrix()]
+#' @seealso [wrangle_centrix()] [calculate_time_windows()]
 #'
 #' A data frame containing 17 rows and 4 columns.
 #'

@@ -22,7 +22,7 @@ An example of aspect events which have been fully processed and validated by
 the calculated time windows.
 }
 \seealso{
-\code{\link[=filter_aspect_events]{filter_aspect_events()}}
+\code{\link[=filter_aspect_events]{filter_aspect_events()}} \code{\link[=calculate_tsars]{calculate_tsars()}}
 
 A data frame containing 25,834 rows and 6 columns
 }

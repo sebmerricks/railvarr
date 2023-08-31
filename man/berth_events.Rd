@@ -37,7 +37,7 @@ berth_events
 
 }
 \seealso{
-\code{\link[=calculate_tsars]{calculate_tsars()}}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=calculate_tsars]{calculate_tsars()}}
 
 A data frame containing 6,952 rows and 15 columns
 }

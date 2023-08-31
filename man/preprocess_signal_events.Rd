@@ -108,5 +108,5 @@ track_events
 
 }
 \seealso{
-\code{\link[=wrangle_centrix]{wrangle_centrix()}} \link{aspect_events} \link{track_events}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=calculate_time_windows]{calculate_time_windows()}} \link{aspect_events} \link{track_events}
 }

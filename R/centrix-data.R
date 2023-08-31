@@ -23,9 +23,10 @@
 #'
 #' An example of Centrix data which have been pre-processed into aspect events.
 #'
-#' @seealso [preprocess_signal_events()]
+#' @seealso [wrangle_centrix()] [preprocess_signal_events()]
+#'   [calculate_time_windows()]
 #'
-#' A data frame containing 32,512 rows and 4 columns.
+#'   A data frame containing 32,512 rows and 4 columns.
 #'
 #' @format
 #' \describe{
@@ -44,7 +45,8 @@
 #'
 #' An example of Centrix data which have been pre-processed into track events.
 #'
-#' @seealso [preprocess_track_events()]
+#' @seealso [wrangle_centrix()] [preprocess_track_events()]
+#'   [calculate_time_windows()]
 #'
 #' A data frame containing 25,242 rows and 4 columns.
 #'
@@ -86,7 +88,7 @@
 #' An example of aspect events which have been fully processed and validated by
 #' the calculated time windows.
 #'
-#' @seealso [filter_aspect_events()]
+#' @seealso [filter_aspect_events()] [calculate_tsars()]
 #'
 #' A data frame containing 25,834 rows and 6 columns
 #'
@@ -106,7 +108,7 @@
 #' An example of track events which have been fully processed and validated by
 #' the calculated time windows.
 #'
-#' @seealso [filter_track_events()]
+#' @seealso [filter_track_events()] [calculate_tsars()]
 #'
 #' A data frame containing 24,332 rows and 6 columns
 #'
@@ -125,7 +127,7 @@
 #'
 #' An example of processed Centrix data containing TSAR and its sub-components.
 #'
-#' @seealso [calculate_tsars()]
+#' @seealso [wrangle_centrix()] [calculate_tsars()]
 #'
 #' A data frame containing 6,952 rows and 15 columns
 #'

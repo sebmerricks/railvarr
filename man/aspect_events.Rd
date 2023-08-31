@@ -23,7 +23,8 @@ aspect_events
 
 }
 \seealso{
-\code{\link[=preprocess_signal_events]{preprocess_signal_events()}}
+\code{\link[=wrangle_centrix]{wrangle_centrix()}} \code{\link[=preprocess_signal_events]{preprocess_signal_events()}}
+\code{\link[=calculate_time_windows]{calculate_time_windows()}}
 
 A data frame containing 32,512 rows and 4 columns.
 }
